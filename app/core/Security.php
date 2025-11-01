@@ -10,7 +10,7 @@ class Security
     private $csrfTokenName = '_csrf_token';
     private $csrfCookieName = '_csrf_cookie';
     private $csrfExpire = 7200; // 2 hours
-    private $csrfRegenerate = true;
+    private $csrfRegenerate = false;
     
     private function __construct()
     {

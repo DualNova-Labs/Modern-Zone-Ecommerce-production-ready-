@@ -1182,15 +1182,15 @@ ob_start();
                         reader.onload = function(e) {
                             uploadLabel.innerHTML = `
                                 <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: contain;">
-                                <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray-600);">
+                                <div style="margin-top: 1rem; font-size: 0.875rem; color: #64748b;">
                                     <strong>${file.name}</strong><br>
                                     <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small><br>
-                                    <button type="button" onclick="clearImageUpload()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--danger-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
+                                    <button type="button" onclick="clearImageUpload()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
                                         Remove Image
                                     </button>
                                 </div>
                             `;
-                            uploadLabel.style.border = '2px solid var(--success-color)';
+                            uploadLabel.style.border = '2px solid #10b981';
                             uploadLabel.style.background = 'rgba(16, 185, 129, 0.05)';
                         };
                         reader.readAsDataURL(file);
@@ -1210,15 +1210,15 @@ ob_start();
                         reader.onload = function(e) {
                             uploadLabel.innerHTML = `
                                 <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: contain;">
-                                <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray-600);">
+                                <div style="margin-top: 1rem; font-size: 0.875rem; color: #64748b;">
                                     <strong>${file.name}</strong><br>
                                     <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small><br>
-                                    <button type="button" onclick="clearEditImageUpload()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--danger-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
+                                    <button type="button" onclick="clearEditImageUpload()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: #ef4444; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
                                         Remove Image
                                     </button>
                                 </div>
                             `;
-                            uploadLabel.style.border = '2px solid var(--success-color)';
+                            uploadLabel.style.border = '2px solid #10b981';
                             uploadLabel.style.background = 'rgba(16, 185, 129, 0.05)';
                         };
                         reader.readAsDataURL(file);
@@ -1248,8 +1248,8 @@ ob_start();
                         <small>PNG, JPG, GIF up to 10MB (Optional)</small>
                     </div>
                 `;
-                uploadLabel.style.border = '2px dashed var(--gray-300)';
-                uploadLabel.style.background = 'var(--gray-50)';
+                uploadLabel.style.border = '2px dashed #e2e8f0';
+                uploadLabel.style.background = '#f8fafc';
             }
         }
         
@@ -1274,8 +1274,8 @@ ob_start();
                         <small>PNG, JPG, GIF up to 10MB (Optional - leave empty to keep current image)</small>
                     </div>
                 `;
-                uploadLabel.style.border = '2px dashed var(--gray-300)';
-                uploadLabel.style.background = 'var(--gray-50)';
+                uploadLabel.style.border = '2px dashed #e2e8f0';
+                uploadLabel.style.background = '#f8fafc';
             }
         }
 </script>

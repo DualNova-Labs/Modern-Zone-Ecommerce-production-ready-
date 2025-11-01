@@ -35,11 +35,26 @@ class HomeController
         
         // Format products for display
         return array_map(function($product) {
+            // Handle image path - if it starts with 'public/', use BASE_URL, otherwise use View::asset
+            $imagePath = '';
+            if (!empty($product['image'])) {
+                if (strpos($product['image'], 'public/') === 0) {
+                    // Image path already includes 'public/', so just add BASE_URL
+                    $imagePath = BASE_URL . '/' . $product['image'];
+                } else {
+                    // Legacy path, use View::asset
+                    $imagePath = View::asset('images/products/' . $product['image']);
+                }
+            } else {
+                // No image, use placeholder
+                $imagePath = View::asset('images/placeholder.svg');
+            }
+            
             return [
                 'id' => $product['id'],
                 'title' => $product['name'],
                 'slug' => $product['slug'],
-                'image' => !empty($product['image']) ? BASE_URL . '/' . $product['image'] : View::asset('images/placeholder.svg'),
+                'image' => $imagePath,
                 'price' => $product['price'],
                 'description' => $product['description'] ?? '',
                 'category' => $product['category_name'] ?? '',
@@ -96,11 +111,26 @@ class HomeController
                 ? round((($originalPrice - $product['price']) / $originalPrice) * 100) 
                 : null;
             
+            // Handle image path - if it starts with 'public/', use BASE_URL, otherwise use View::asset
+            $imagePath = '';
+            if (!empty($product['image'])) {
+                if (strpos($product['image'], 'public/') === 0) {
+                    // Image path already includes 'public/', so just add BASE_URL
+                    $imagePath = BASE_URL . '/' . $product['image'];
+                } else {
+                    // Legacy path, use View::asset
+                    $imagePath = View::asset('images/products/' . $product['image']);
+                }
+            } else {
+                // No image, use placeholder
+                $imagePath = View::asset('images/placeholder.svg');
+            }
+            
             return [
                 'id' => $product['id'],
                 'title' => $product['name'],
                 'slug' => $product['slug'],
-                'image' => !empty($product['image']) ? BASE_URL . '/' . $product['image'] : View::asset('images/placeholder.svg'),
+                'image' => $imagePath,
                 'price' => $product['price'],
                 'original_price' => $originalPrice,
                 'discount' => $discount,
