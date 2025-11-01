@@ -81,15 +81,15 @@ section {
 .logo {
     flex-shrink: 0
 }
-
 .logo a {
     display: flex;
     align-items: center
 }
 
 .logo-img {
-    height: 50px;
+    height: 60px;
     width: auto;
+    max-width: 280px;
     object-fit: contain
 }
 
