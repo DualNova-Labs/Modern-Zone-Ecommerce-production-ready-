@@ -2,6 +2,10 @@
 /**
  * Product Controller
  */
+require_once APP_PATH . '/models/Product.php';
+require_once APP_PATH . '/models/Category.php';
+require_once APP_PATH . '/models/Brand.php';
+
 class ProductController
 {
     public function index()
@@ -18,23 +22,23 @@ class ProductController
             return;
         }
         
-        // Get all products
-        $allProducts = $this->getProducts($category, $search);
+        // Get products from database
+        $allProducts = $this->getProductsFromDatabase($category, $search);
         
-        // If no products found with category filter and category was specified, show all products
-        if (empty($allProducts) && $category) {
-            $allProducts = $this->getProducts(null, $search);
-        }
+        // Paginate products
+        $offset = ($page - 1) * $perPage;
+        $paginatedProducts = array_slice($allProducts, $offset, $perPage);
         
         $data = [
             'title' => 'Industrial Tools & Equipment - Modern Zone Trading',
             'description' => 'Browse our extensive range of industrial tools including cutting tools, CNC machine holders, measuring instruments, power tools and accessories from leading brands.',
-            'products' => $allProducts,
-            'categories' => $this->getCategories(),
+            'products' => $paginatedProducts,
+            'categories' => $this->getCategoriesFromDatabase(),
             'currentPage' => $page,
             'totalPages' => max(1, ceil(count($allProducts) / $perPage)),
             'currentCategory' => $category,
             'searchQuery' => $search,
+            'totalProducts' => count($allProducts),
         ];
         
         View::render('pages/products/index', $data);
@@ -42,17 +46,13 @@ class ProductController
     
     public function brand($slug)
     {
-        // Load brands data
-        $brandsData = $this->getBrandsData();
-        $brand = null;
+        $db = Database::getInstance();
         
-        // Find the specific brand
-        foreach ($brandsData['brands'] as $b) {
-            if ($b['slug'] === $slug) {
-                $brand = $b;
-                break;
-            }
-        }
+        // Get brand from database
+        $brand = $db->selectOne(
+            "SELECT * FROM brands WHERE slug = :slug AND status = 'active'",
+            ['slug' => $slug]
+        );
         
         // If brand not found, show 404
         if (!$brand) {
@@ -61,15 +61,19 @@ class ProductController
             return;
         }
         
-        // Get products for this brand
-        $products = $this->getProductsByBrand($slug);
+        // Get products for this brand from database
+        $products = $this->getProductsByBrandFromDatabase($brand['id']);
+        
+        // Get product categories for this brand
+        $brandCategories = $this->getBrandCategoriesFromDatabase($brand['id']);
         
         $data = [
             'title' => $brand['name'] . ' Products - Modern Zone Trading | Authorized Distributor',
             'description' => 'Shop ' . $brand['name'] . ' industrial tools at Modern Zone Trading. Authorized distributor in Saudi Arabia offering genuine products with warranty.',
             'brand' => $brand,
             'products' => $products,
-            'categories' => $this->getCategories(),
+            'categories' => $this->getCategoriesFromDatabase(),
+            'brand_categories' => $brandCategories,
         ];
         
         View::render('pages/brands/detail', $data);
@@ -77,93 +81,98 @@ class ProductController
     
     public function category($slug)
     {
-        // Load category data from JSON
-        $categoryData = $this->getCategoryData($slug);
+        $db = Database::getInstance();
+        
+        // Get category from database
+        $category = $db->selectOne(
+            "SELECT * FROM categories WHERE slug = :slug AND status = 'active'",
+            ['slug' => $slug]
+        );
         
         // If category not found, show 404
-        if (!$categoryData) {
+        if (!$category) {
             http_response_code(404);
             View::render('errors/404');
             return;
         }
         
+        // Get products for this category
+        $products = $this->getProductsFromDatabase($slug, null);
+        
         $data = [
-            'title' => $categoryData['name'] . ' - Modern Zone Trading | Industrial Tools',
-            'description' => $categoryData['description'] . ' Available at Modern Zone Trading, Saudi Arabia.',
-            'category' => $categoryData,
-            'products' => $categoryData['products'],
-            'categories' => $this->getCategories(),
+            'title' => $category['name'] . ' - Modern Zone Trading | Industrial Tools',
+            'description' => ($category['description'] ?? '') . ' Available at Modern Zone Trading, Saudi Arabia.',
+            'category' => $category,
+            'products' => $products,
+            'categories' => $this->getCategoriesFromDatabase(),
         ];
         
         View::render('pages/categories/detail', $data);
     }
     
-    private function getBrandsData()
-    {
-        $jsonPath = __DIR__ . '/../data/brands.json';
-        if (!file_exists($jsonPath)) {
-            return ['brands' => []];
-        }
-        
-        $jsonContent = file_get_contents($jsonPath);
-        return json_decode($jsonContent, true);
-    }
     
-    private function getProductsData()
+    private function getProductsByBrandFromDatabase($brandId)
     {
-        $jsonPath = __DIR__ . '/../data/products.json';
-        if (!file_exists($jsonPath)) {
-            return ['products' => []];
-        }
+        $db = Database::getInstance();
         
-        $jsonContent = file_get_contents($jsonPath);
-        return json_decode($jsonContent, true);
-    }
-    
-    private function getCategoryData($categorySlug)
-    {
-        // Load category data from JSON file
-        $jsonPath = __DIR__ . '/../data/categories/' . $categorySlug . '.json';
+        // Get all products for this brand
+        $products = $db->select("
+            SELECT p.*, 
+                   c.name as category_name,
+                   c.slug as category_slug
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            WHERE p.brand_id = :brand_id 
+            AND p.status = 'active'
+            ORDER BY c.name, p.name
+        ", ['brand_id' => $brandId]);
         
-        if (!file_exists($jsonPath)) {
-            return null;
-        }
-        
-        $jsonContent = file_get_contents($jsonPath);
-        return json_decode($jsonContent, true);
-    }
-    
-    private function getProductsByBrand($brandSlug)
-    {
-        // Load products from JSON file for this brand
-        $jsonPath = __DIR__ . '/../data/products/' . $brandSlug . '.json';
-        
-        if (!file_exists($jsonPath)) {
-            // If brand-specific file doesn't exist, return empty array
-            return [];
-        }
-        
-        $jsonContent = file_get_contents($jsonPath);
-        $brandData = json_decode($jsonContent, true);
-        
-        if (!$brandData) {
-            return [];
-        }
-        
-        // Check if brand has categories (major brands) or direct products (simple brands)
-        if (isset($brandData['categories'])) {
-            // Flatten all products from all categories
-            $products = [];
-            foreach ($brandData['categories'] as $category => $categoryProducts) {
-                $products = array_merge($products, $categoryProducts);
+        // Format products for display
+        return array_map(function($product) {
+            // Handle image path
+            $imagePath = '';
+            if (!empty($product['image'])) {
+                if (strpos($product['image'], 'public/') === 0) {
+                    $imagePath = BASE_URL . '/' . $product['image'];
+                } else {
+                    $imagePath = View::asset('images/products/' . $product['image']);
+                }
+            } else {
+                $imagePath = View::asset('images/placeholder.svg');
             }
-            return $products;
-        } elseif (isset($brandData['products'])) {
-            // Return products directly for simple brands
-            return $brandData['products'];
-        }
+            
+            return [
+                'id' => $product['id'],
+                'title' => $product['name'],
+                'slug' => $product['slug'],
+                'image' => $imagePath,
+                'price' => $product['price'],
+                'category' => $product['category_slug'] ?? '',
+                'category_name' => $product['category_name'] ?? '',
+                'description' => $product['description'] ?? '',
+                'sku' => $product['sku'],
+                'stock' => $product['quantity'] > 0
+            ];
+        }, $products);
+    }
+    
+    private function getBrandCategoriesFromDatabase($brandId)
+    {
+        $db = Database::getInstance();
         
-        return [];
+        // Get categories that have products for this brand
+        $categories = $db->select("
+            SELECT c.id, c.name, c.slug, COUNT(p.id) as product_count
+            FROM categories c
+            INNER JOIN products p ON c.id = p.category_id
+            WHERE p.brand_id = :brand_id 
+            AND p.status = 'active'
+            AND c.status = 'active'
+            GROUP BY c.id, c.name, c.slug
+            ORDER BY c.name
+        ", ['brand_id' => $brandId]);
+        
+        return $categories;
     }
     
     public function show($slug)
@@ -186,125 +195,74 @@ class ProductController
         View::render('pages/products/detail', $data);
     }
     
-    private function getProducts($category = null, $search = null)
+    private function getProductsFromDatabase($category = null, $search = null)
     {
-        // Mock data - replace with database query
-        $products = [
-            // Featured Products
-            [
-                'id' => 1,
-                'title' => 'HSS Drill Bits Set',
-                'slug' => 'hss-drill-bits-set',
-                'image' => View::asset('images/products/hss-drill-bits.png'),
-                'price' => 189.00,
-                'category' => 'drill-bits',
-                'description' => 'Professional 25-piece HSS drill bit set for metal and steel',
-            ],
-            [
-                'id' => 2,
-                'title' => 'Conical Drills',
-                'slug' => 'conical-drills',
-                'image' => View::asset('images/products/conical-drills.png'),
-                'price' => 125.00,
-                'category' => 'drill-bits',
-                'description' => 'High-quality step drill bits for precise hole enlargement',
-            ],
-            [
-                'id' => 3,
-                'title' => 'Key Type Drill Chuck',
-                'slug' => 'key-drill-chuck',
-                'image' => View::asset('images/products/key-drill-chuck.png'),
-                'price' => 145.00,
-                'category' => 'drill-chucks',
-                'description' => 'Heavy-duty keyed drill chuck for maximum grip and precision',
-            ],
-            [
-                'id' => 4,
-                'title' => 'Keyless Drill Chuck',
-                'slug' => 'keyless-drill-chuck',
-                'image' => View::asset('images/products/keyless-drill-chuck.png'),
-                'price' => 185.00,
-                'category' => 'drill-chucks',
-                'description' => 'Quick-change keyless drill chuck for fast bit changes',
-            ],
-            // Best Selling Products
-            [
-                'id' => 11,
-                'title' => 'Carbide End Mills Set',
-                'slug' => 'carbide-end-mills-set',
-                'image' => View::asset('images/products/carbide-end-mills.png'),
-                'price' => 425.00,
-                'category' => 'end-mills',
-                'description' => 'Professional carbide end mills for precision milling operations',
-            ],
-            [
-                'id' => 12,
-                'title' => 'Tungsten Carbide Rotary Burrs',
-                'slug' => 'tungsten-carbide-rotary-burrs',
-                'image' => View::asset('images/products/rotary-burrs.png'),
-                'price' => 215.00,
-                'category' => 'rotary-burrs',
-                'description' => 'High-speed rotary burr set for metal working and shaping',
-            ],
-            [
-                'id' => 13,
-                'title' => 'Band Saw Blades',
-                'slug' => 'band-saw-blades',
-                'image' => View::asset('images/products/bandsaw-blades.png'),
-                'price' => 165.00,
-                'category' => 'blades',
-                'description' => 'Premium quality band saw blades for cutting various materials',
-            ],
-            [
-                'id' => 14,
-                'title' => 'Step Drill Bits',
-                'slug' => 'step-drill-bits',
-                'image' => View::asset('images/products/step-drills.png'),
-                'price' => 195.00,
-                'category' => 'drill-bits',
-                'description' => 'Multi-size step drill bits perfect for sheet metal work',
-            ],
-            [
-                'id' => 15,
-                'title' => 'Brazed Tool Set',
-                'slug' => 'brazed-tool-set',
-                'image' => View::asset('images/products/brazed-tools.png'),
-                'price' => 385.00,
-                'category' => 'brazed-tools',
-                'description' => 'Professional brazed cutting tools for turning operations',
-            ],
-            [
-                'id' => 16,
-                'title' => 'Precision Bushes',
-                'slug' => 'precision-bushes',
-                'image' => View::asset('images/products/precision-bushes.png'),
-                'price' => 95.00,
-                'category' => 'bushes',
-                'description' => 'High-precision guide bushes for dies and molds',
-            ],
-        ];
+        $db = Database::getInstance();
         
-        // Filter by category
+        // Build query
+        $sql = "SELECT p.*, 
+                       c.name as category_name, 
+                       c.slug as category_slug,
+                       b.name as brand_name,
+                       p.image as image
+                FROM products p
+                LEFT JOIN categories c ON p.category_id = c.id
+                LEFT JOIN brands b ON p.brand_id = b.id
+                WHERE p.status = 'active'";
+        
+        $params = [];
+        
+        // Add category filter
         if ($category) {
-            $products = array_filter($products, function($p) use ($category) {
-                return $p['category'] === $category;
-            });
+            $sql .= " AND c.slug = :category";
+            $params['category'] = $category;
         }
         
-        // Filter by search
+        // Add search filter
         if ($search) {
-            $products = array_filter($products, function($p) use ($search) {
-                return stripos($p['title'], $search) !== false || 
-                       stripos($p['description'], $search) !== false;
-            });
+            $sql .= " AND (p.name LIKE :search OR p.description LIKE :search OR p.sku LIKE :search_sku)";
+            $params['search'] = "%{$search}%";
+            $params['search_sku'] = $search;
         }
         
-        return array_values($products);
+        $sql .= " ORDER BY p.featured DESC, p.best_seller DESC, p.created_at DESC";
+        
+        $products = $db->select($sql, $params);
+        
+        // Format products for display (same as HomePage)
+        return array_map(function($product) {
+            // Handle image path
+            $imagePath = '';
+            if (!empty($product['image'])) {
+                if (strpos($product['image'], 'public/') === 0) {
+                    $imagePath = BASE_URL . '/' . $product['image'];
+                } else {
+                    $imagePath = View::asset('images/products/' . $product['image']);
+                }
+            } else {
+                $imagePath = View::asset('images/placeholder.svg');
+            }
+            
+            return [
+                'id' => $product['id'],
+                'title' => $product['name'],
+                'slug' => $product['slug'],
+                'image' => $imagePath,
+                'price' => $product['price'],
+                'category' => $product['category_slug'] ?? '',
+                'category_name' => $product['category_name'] ?? '',
+                'brand_name' => $product['brand_name'] ?? '',
+                'description' => $product['description'] ?? '',
+                'featured' => $product['featured'],
+                'best_seller' => $product['best_seller'],
+                'sku' => $product['sku']
+            ];
+        }, $products);
     }
     
     private function getProductBySlug($slug)
     {
-        $products = $this->getProducts();
+        $products = $this->getProductsFromDatabase();
         
         foreach ($products as $product) {
             if ($product['slug'] === $slug) {
@@ -378,22 +336,32 @@ class ProductController
     
     private function getRelatedProducts($productId)
     {
-        $products = $this->getProducts();
+        $products = $this->getProductsFromDatabase();
         return array_filter($products, function($p) use ($productId) {
             return $p['id'] !== $productId;
         });
     }
     
-    private function getCategories()
+    private function getCategoriesFromDatabase()
     {
-        return [
-            ['slug' => 'drill-bits', 'name' => 'Drill Bits', 'count' => 3],
-            ['slug' => 'drill-chucks', 'name' => 'Drill Chucks', 'count' => 2],
-            ['slug' => 'end-mills', 'name' => 'End Mills', 'count' => 1],
-            ['slug' => 'rotary-burrs', 'name' => 'Rotary Burrs', 'count' => 1],
-            ['slug' => 'blades', 'name' => 'Blades & Saws', 'count' => 1],
-            ['slug' => 'brazed-tools', 'name' => 'Brazed Tools', 'count' => 1],
-            ['slug' => 'bushes', 'name' => 'Bushes', 'count' => 1],
-        ];
+        $db = Database::getInstance();
+        
+        // Get categories with product counts
+        $categories = $db->select("
+            SELECT c.*, COUNT(p.id) as product_count
+            FROM categories c
+            LEFT JOIN products p ON c.id = p.category_id AND p.status = 'active'
+            WHERE c.status = 'active'
+            GROUP BY c.id
+            ORDER BY c.sort_order, c.name
+        ");
+        
+        return array_map(function($category) {
+            return [
+                'slug' => $category['slug'],
+                'name' => $category['name'],
+                'count' => $category['product_count']
+            ];
+        }, $categories);
     }
 }

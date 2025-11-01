@@ -9,7 +9,7 @@ ob_start();
         <div class="brand-hero-content">
             <div class="brand-logo-container">
                 <div class="brand-logo-circle">
-                    <img src="<?= htmlspecialchars($brand['logo']) ?>" 
+                    <img src="<?= !empty($brand['logo']) ? View::asset('images/brands/' . $brand['logo']) : View::asset('images/placeholder.svg') ?>" 
                          alt="<?= htmlspecialchars($brand['name']) ?> Logo" 
                          class="brand-logo-img"
                          onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -19,7 +19,7 @@ ob_start();
                 </div>
             </div>
             <h1 class="brand-name"><?= htmlspecialchars($brand['name']) ?></h1>
-            <p class="brand-tagline"><?= htmlspecialchars($brand['description']) ?></p>
+            <p class="brand-tagline"><?= htmlspecialchars($brand['description'] ?? 'Premium quality industrial tools and equipment') ?></p>
             <div class="brand-meta">
                 <?php if (isset($brand['country'])): ?>
                     <span class="brand-meta-item">
