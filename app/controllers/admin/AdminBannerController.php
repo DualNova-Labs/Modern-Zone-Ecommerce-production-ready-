@@ -68,6 +68,13 @@ class AdminBannerController
             exit;
         }
         
+        // Validate CSRF token
+        if (!$this->security->validateCsrfToken()) {
+            $_SESSION['error'] = 'Invalid security token. Please try again.';
+            header('Location: ' . View::url('admin/banners'));
+            exit;
+        }
+        
         // Validate required fields
         $errors = [];
         
@@ -88,12 +95,17 @@ class AdminBannerController
             $fileName = time() . '_' . basename($_FILES['image']['name']);
             $targetPath = $uploadDir . $fileName;
             
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+            // Resize and save image
+            if ($this->resizeAndSaveImage($_FILES['image']['tmp_name'], $targetPath, 1920, 600)) {
                 $imagePath = 'public/assets/images/banners/' . $fileName;
             } else {
-                $errors[] = 'Failed to upload image';
+                error_log('Failed to process image: ' . $_FILES['image']['name']);
+                $errors[] = 'Failed to process image. Please try a different image format.';
             }
         } else {
+            if (isset($_FILES['image'])) {
+                error_log('File upload error: ' . $_FILES['image']['error']);
+            }
             $errors[] = 'Banner image is required';
         }
         
@@ -128,24 +140,27 @@ class AdminBannerController
     }
     
     /**
-     * Show edit banner form
+     * Get banner data for editing (AJAX endpoint)
      */
     public function edit($id)
     {
+        header('Content-Type: application/json');
+        
         $banner = $this->bannerModel->getBannerById($id);
         
         if (!$banner) {
-            $_SESSION['error'] = 'Banner not found';
-            header('Location: ' . View::url('admin/banners'));
+            echo json_encode([
+                'success' => false,
+                'message' => 'Banner not found'
+            ]);
             exit;
         }
         
-        $data = [
-            'title' => 'Edit Banner',
+        echo json_encode([
+            'success' => true,
             'banner' => $banner
-        ];
-        
-        View::render('admin/banners/edit', $data);
+        ]);
+        exit;
     }
     
     /**
@@ -154,6 +169,13 @@ class AdminBannerController
     public function update($id)
     {
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: ' . View::url('admin/banners'));
+            exit;
+        }
+        
+        // Validate CSRF token
+        if (!$this->security->validateCsrfToken()) {
+            $_SESSION['error'] = 'Invalid security token. Please try again.';
             header('Location: ' . View::url('admin/banners'));
             exit;
         }
@@ -185,7 +207,8 @@ class AdminBannerController
             $fileName = time() . '_' . basename($_FILES['image']['name']);
             $targetPath = $uploadDir . $fileName;
             
-            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+            // Resize and save image
+            if ($this->resizeAndSaveImage($_FILES['image']['tmp_name'], $targetPath, 1920, 600)) {
                 // Delete old image
                 $oldImagePath = ROOT_PATH . '/' . $banner['image'];
                 if (file_exists($oldImagePath)) {
@@ -278,5 +301,120 @@ class AdminBannerController
             'message' => $success ? 'Status updated successfully' : 'Failed to update status'
         ]);
         exit;
+    }
+    
+    /**
+     * Resize and save image to specified dimensions
+     */
+    private function resizeAndSaveImage($sourcePath, $targetPath, $targetWidth, $targetHeight)
+    {
+        // Check if GD extension is loaded
+        if (!extension_loaded('gd')) {
+            error_log('GD extension not loaded - falling back to simple file copy');
+            return copy($sourcePath, $targetPath);
+        }
+        
+        // Get image info
+        $imageInfo = getimagesize($sourcePath);
+        if (!$imageInfo) {
+            error_log('Could not get image info - falling back to simple file copy');
+            return copy($sourcePath, $targetPath);
+        }
+        
+        $sourceWidth = $imageInfo[0];
+        $sourceHeight = $imageInfo[1];
+        $mimeType = $imageInfo['mime'];
+        
+        // Create source image resource based on type
+        $sourceImage = false;
+        switch ($mimeType) {
+            case 'image/jpeg':
+                $sourceImage = @imagecreatefromjpeg($sourcePath);
+                break;
+            case 'image/png':
+                $sourceImage = @imagecreatefrompng($sourcePath);
+                break;
+            case 'image/gif':
+                $sourceImage = @imagecreatefromgif($sourcePath);
+                break;
+            case 'image/webp':
+                if (function_exists('imagecreatefromwebp')) {
+                    $sourceImage = @imagecreatefromwebp($sourcePath);
+                }
+                break;
+            default:
+                error_log('Unsupported image type: ' . $mimeType . ' - falling back to simple file copy');
+                return copy($sourcePath, $targetPath);
+        }
+        
+        if (!$sourceImage) {
+            error_log('Could not create image resource - falling back to simple file copy');
+            return copy($sourcePath, $targetPath);
+        }
+        
+        // Calculate aspect ratios
+        $sourceRatio = $sourceWidth / $sourceHeight;
+        $targetRatio = $targetWidth / $targetHeight;
+        
+        // Calculate crop dimensions to maintain aspect ratio
+        if ($sourceRatio > $targetRatio) {
+            // Source is wider - crop width
+            $cropWidth = $sourceHeight * $targetRatio;
+            $cropHeight = $sourceHeight;
+            $cropX = ($sourceWidth - $cropWidth) / 2;
+            $cropY = 0;
+        } else {
+            // Source is taller - crop height
+            $cropWidth = $sourceWidth;
+            $cropHeight = $sourceWidth / $targetRatio;
+            $cropX = 0;
+            $cropY = ($sourceHeight - $cropHeight) / 2;
+        }
+        
+        // Create target image
+        $targetImage = @imagecreatetruecolor($targetWidth, $targetHeight);
+        if (!$targetImage) {
+            error_log('Could not create target image - falling back to simple file copy');
+            imagedestroy($sourceImage);
+            return copy($sourcePath, $targetPath);
+        }
+        
+        // Preserve transparency for PNG and GIF
+        if ($mimeType === 'image/png' || $mimeType === 'image/gif') {
+            @imagealphablending($targetImage, false);
+            @imagesavealpha($targetImage, true);
+            $transparent = @imagecolorallocatealpha($targetImage, 255, 255, 255, 127);
+            if ($transparent !== false) {
+                @imagefill($targetImage, 0, 0, $transparent);
+            }
+        }
+        
+        // Resize and crop image
+        $resampleResult = @imagecopyresampled(
+            $targetImage, $sourceImage,
+            0, 0, $cropX, $cropY,
+            $targetWidth, $targetHeight, $cropWidth, $cropHeight
+        );
+        
+        if (!$resampleResult) {
+            error_log('Image resampling failed - falling back to simple file copy');
+            imagedestroy($sourceImage);
+            imagedestroy($targetImage);
+            return copy($sourcePath, $targetPath);
+        }
+        
+        // Save image as JPEG for better compression
+        $success = @imagejpeg($targetImage, $targetPath, 90);
+        
+        // Clean up memory
+        imagedestroy($sourceImage);
+        imagedestroy($targetImage);
+        
+        if (!$success) {
+            error_log('JPEG save failed - falling back to simple file copy');
+            return copy($sourcePath, $targetPath);
+        }
+        
+        return true;
     }
 }
