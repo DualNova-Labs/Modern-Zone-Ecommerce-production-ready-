@@ -540,7 +540,7 @@ function clearEditImageUpload() {
             </svg>
             <div class="file-upload-text">
                 <strong>Click to upload</strong> or drag and drop<br>
-                <small>PNG, JPG, GIF up to 10MB<br>Images will be automatically resized to 1920x600px<br>(Optional - leave empty to keep current image)</small>
+                <small>PNG, JPG, GIF up to 10MB (Optional - leave empty to keep current image)</small>
             </div>
         `;
         uploadLabel.style.border = '2px dashed var(--gray-300)';
@@ -630,7 +630,7 @@ function clearEditImageUpload() {
                             </svg>
                             <div class="file-upload-text">
                                 <strong>Click to upload</strong> or drag and drop<br>
-                                <small>PNG, JPG, GIF up to 10MB<br>Images will be automatically resized to 1920x600px</small>
+                                <small>PNG, JPG, GIF up to 10MB</small>
                             </div>
                         </label>
                     </div>
@@ -745,7 +745,7 @@ function clearEditImageUpload() {
                             </svg>
                             <div class="file-upload-text">
                                 <strong>Click to upload</strong> or drag and drop<br>
-                                <small>PNG, JPG, GIF up to 10MB<br>Images will be automatically resized to 1920x600px<br>(Optional - leave empty to keep current image)</small>
+                                <small>PNG, JPG, GIF up to 10MB (Optional - leave empty to keep current image)</small>
                             </div>
                         </label>
                     </div>
