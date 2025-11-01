@@ -61,8 +61,15 @@ class AuthController
         $result = $auth->attempt($email, $password, $remember);
         
         if ($result['success']) {
-            // Redirect to intended URL or dashboard
-            $redirect = $_SESSION['intended_url'] ?? View::url('/');
+            // Check if user is admin and redirect accordingly
+            $auth = Auth::getInstance();
+            if ($auth->isAdmin()) {
+                // Redirect admin users to admin dashboard
+                $redirect = $_SESSION['intended_url'] ?? View::url('/admin');
+            } else {
+                // Redirect regular users to homepage or intended URL
+                $redirect = $_SESSION['intended_url'] ?? View::url('/');
+            }
             unset($_SESSION['intended_url']);
             header('Location: ' . $redirect);
             exit;

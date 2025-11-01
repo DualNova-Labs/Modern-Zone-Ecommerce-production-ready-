@@ -264,9 +264,14 @@ CREATE TABLE order_items (
     INDEX idx_product (product_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Insert default admin user (password: admin123)
+-- Insert default admin user (password: Admin@123)
+-- Note: Run setup_admin.php to create/update admin user with correct password hash
 INSERT INTO users (name, email, password, role, status, email_verified_at) VALUES
-('Admin', 'admin@modernzonetrading.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active', NOW());
+('Admin', 'admin@modernzonetrading.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active', NOW())
+ON DUPLICATE KEY UPDATE 
+    role = 'admin',
+    status = 'active',
+    email_verified_at = NOW();
 
 -- Insert sample categories
 INSERT INTO categories (name, slug, icon, description, sort_order) VALUES
