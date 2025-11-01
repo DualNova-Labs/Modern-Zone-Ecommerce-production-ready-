@@ -3,24 +3,22 @@
  * Admin Banner Controller
  * Manages hero slider banners from admin panel
  */
-require_once APP_PATH . '/core/Auth.php';
+require_once APP_PATH . '/middleware/AdminMiddleware.php';
+require_once APP_PATH . '/core/Database.php';
 require_once APP_PATH . '/core/View.php';
+require_once APP_PATH . '/core/Request.php';
+require_once APP_PATH . '/core/Security.php';
 require_once APP_PATH . '/models/Banner.php';
 
 class AdminBannerController
 {
     private $bannerModel;
+    private $security;
     
     public function __construct()
     {
-        // Check authentication
-        $auth = Auth::getInstance();
-        
-        if ($auth->guest() || !$auth->isAdmin()) {
-            header('Location: ' . View::url('admin/login'));
-            exit;
-        }
-        
+        AdminMiddleware::check();
+        $this->security = Security::getInstance();
         $this->bannerModel = new Banner();
     }
     

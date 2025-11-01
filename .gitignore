@@ -11,8 +11,6 @@ Thumbs.db
 vendor/
 node_modules/
 
-# Environment
-.env
 
 # Logs
 *.log
