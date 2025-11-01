@@ -93,6 +93,24 @@ $router->post('/admin/orders/{id}/payment', 'admin/AdminOrderController@updatePa
 $router->get('/admin/orders/{id}/invoice', 'admin/AdminOrderController@invoice');
 $router->get('/admin/orders/export', 'admin/AdminOrderController@export');
 
+// Admin Category Management
+$router->get('/admin/categories', 'admin/AdminCategoryController@index');
+$router->get('/admin/categories/create', 'admin/AdminCategoryController@create');
+$router->post('/admin/categories', 'admin/AdminCategoryController@store');
+$router->get('/admin/categories/{id}/edit', 'admin/AdminCategoryController@edit');
+$router->post('/admin/categories/{id}', 'admin/AdminCategoryController@update');
+$router->post('/admin/categories/{id}/delete', 'admin/AdminCategoryController@destroy');
+$router->post('/admin/categories/{id}/toggle-status', 'admin/AdminCategoryController@toggleStatus');
+
+// Admin Brand Management
+$router->get('/admin/brands', 'admin/AdminBrandController@index');
+$router->get('/admin/brands/create', 'admin/AdminBrandController@create');
+$router->post('/admin/brands', 'admin/AdminBrandController@store');
+$router->get('/admin/brands/{id}/edit', 'admin/AdminBrandController@edit');
+$router->post('/admin/brands/{id}', 'admin/AdminBrandController@update');
+$router->post('/admin/brands/{id}/delete', 'admin/AdminBrandController@destroy');
+$router->post('/admin/brands/{id}/toggle-status', 'admin/AdminBrandController@toggleStatus');
+
 // Admin Banner Management
 $router->get('/admin/banners', 'admin/AdminBannerController@index');
 $router->get('/admin/banners/create', 'admin/AdminBannerController@create');
