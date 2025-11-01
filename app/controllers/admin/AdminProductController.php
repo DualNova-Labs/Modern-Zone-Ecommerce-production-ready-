@@ -411,6 +411,58 @@ class AdminProductController
     }
     
     /**
+     * Toggle featured status
+     */
+    public function toggleFeatured($id)
+    {
+        $product = Product::find($id);
+        
+        if (!$product) {
+            $this->jsonResponse(['success' => false, 'error' => 'Product not found']);
+            return;
+        }
+        
+        // Toggle featured status
+        $product->featured = !$product->featured;
+        
+        if ($product->save()) {
+            $this->jsonResponse([
+                'success' => true, 
+                'featured' => $product->featured,
+                'message' => $product->featured ? 'Added to Featured Products' : 'Removed from Featured Products'
+            ]);
+        } else {
+            $this->jsonResponse(['success' => false, 'error' => 'Failed to update status']);
+        }
+    }
+    
+    /**
+     * Toggle best seller status
+     */
+    public function toggleBestSeller($id)
+    {
+        $product = Product::find($id);
+        
+        if (!$product) {
+            $this->jsonResponse(['success' => false, 'error' => 'Product not found']);
+            return;
+        }
+        
+        // Toggle best_seller status
+        $product->best_seller = !$product->best_seller;
+        
+        if ($product->save()) {
+            $this->jsonResponse([
+                'success' => true, 
+                'best_seller' => $product->best_seller,
+                'message' => $product->best_seller ? 'Added to Best Sellers' : 'Removed from Best Sellers'
+            ]);
+        } else {
+            $this->jsonResponse(['success' => false, 'error' => 'Failed to update status']);
+        }
+    }
+    
+    /**
      * Send JSON response
      */
     private function jsonResponse($data)

@@ -462,6 +462,42 @@ ob_start();
         text-decoration: underline;
     }
     
+    /* Toggle Badge Styles */
+    .toggle-badge {
+        padding: 0.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        background: white;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        color: #94a3b8;
+        font-size: 1.125rem;
+    }
+    
+    .toggle-badge:hover {
+        transform: scale(1.1);
+        border-color: #cbd5e1;
+    }
+    
+    .toggle-badge.active {
+        background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+        border-color: #f59e0b;
+        color: white;
+        box-shadow: 0 2px 8px rgba(245, 158, 11, 0.3);
+    }
+    
+    .toggle-badge.active:hover {
+        box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+    }
+    
+    .toggle-badge i {
+        display: block;
+    }
+    
+    .text-center {
+        text-align: center;
+    }
+    
     @keyframes fadeInUp {
         from {
             opacity: 0;
@@ -631,6 +667,8 @@ ob_start();
                         <th>Price</th>
                         <th>Stock</th>
                         <th>Status</th>
+                        <th>Featured</th>
+                        <th>Best Seller</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -671,6 +709,20 @@ ob_start();
                             <span class="badge badge-<?= $statusBadge[$product['status']] ?? 'warning' ?>">
                                 <?= ucfirst(str_replace('_', ' ', $product['status'])) ?>
                             </span>
+                        </td>
+                        <td class="text-center">
+                            <button onclick="toggleFeatured(<?= $product['id'] ?>, this)" 
+                                    class="toggle-badge <?= $product['featured'] ? 'active' : '' ?>" 
+                                    title="Click to toggle Featured status">
+                                <i class="fas fa-star"></i>
+                            </button>
+                        </td>
+                        <td class="text-center">
+                            <button onclick="toggleBestSeller(<?= $product['id'] ?>, this)" 
+                                    class="toggle-badge <?= $product['best_seller'] ? 'active' : '' ?>" 
+                                    title="Click to toggle Best Seller status">
+                                <i class="fas fa-fire"></i>
+                            </button>
                         </td>
                         <td class="actions">
                             <a href="<?= View::url('/admin/products/' . $product['id'] . '/edit') ?>" class="btn btn-primary btn-sm">Edit</a>
@@ -849,6 +901,48 @@ ob_start();
                 } else {
                     alert(data.error);
                 }
+            });
+        }
+        
+        function toggleFeatured(productId, button) {
+            fetch('<?= View::url('/admin/products/') ?>' + productId + '/toggle-featured', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.classList.toggle('active');
+                } else {
+                    alert('Failed to update featured status');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
+            });
+        }
+        
+        function toggleBestSeller(productId, button) {
+            fetch('<?= View::url('/admin/products/') ?>' + productId + '/toggle-bestseller', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    button.classList.toggle('active');
+                } else {
+                    alert('Failed to update best seller status');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred');
             });
         }
 </script>

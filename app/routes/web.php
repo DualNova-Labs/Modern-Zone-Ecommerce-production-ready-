@@ -82,6 +82,8 @@ $router->post('/admin/products', 'admin/AdminProductController@store');
 $router->get('/admin/products/{id}/edit', 'admin/AdminProductController@edit');
 $router->post('/admin/products/{id}', 'admin/AdminProductController@update');
 $router->post('/admin/products/{id}/delete', 'admin/AdminProductController@destroy');
+$router->post('/admin/products/{id}/toggle-featured', 'admin/AdminProductController@toggleFeatured');
+$router->post('/admin/products/{id}/toggle-bestseller', 'admin/AdminProductController@toggleBestSeller');
 
 // Admin Order Management
 $router->get('/admin/orders', 'admin/AdminOrderController@index');
@@ -90,3 +92,12 @@ $router->post('/admin/orders/{id}/status', 'admin/AdminOrderController@updateSta
 $router->post('/admin/orders/{id}/payment', 'admin/AdminOrderController@updatePaymentStatus');
 $router->get('/admin/orders/{id}/invoice', 'admin/AdminOrderController@invoice');
 $router->get('/admin/orders/export', 'admin/AdminOrderController@export');
+
+// Admin Banner Management
+$router->get('/admin/banners', 'admin/AdminBannerController@index');
+$router->get('/admin/banners/create', 'admin/AdminBannerController@create');
+$router->post('/admin/banners/store', 'admin/AdminBannerController@store');
+$router->get('/admin/banners/edit/{id}', 'admin/AdminBannerController@edit');
+$router->post('/admin/banners/update/{id}', 'admin/AdminBannerController@update');
+$router->get('/admin/banners/delete/{id}', 'admin/AdminBannerController@delete');
+$router->post('/admin/banners/toggle-status/{id}', 'admin/AdminBannerController@toggleStatus');
