@@ -183,6 +183,52 @@ class Product extends Model
     }
     
     /**
+     * Get featured products
+     */
+    public static function getFeaturedProducts($limit = 8)
+    {
+        $db = Database::getInstance();
+        
+        return $db->select(
+            "SELECT p.*, 
+                    c.name as category_name, 
+                    b.name as brand_name,
+                    (SELECT image_path FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image
+             FROM products p
+             LEFT JOIN categories c ON p.category_id = c.id
+             LEFT JOIN brands b ON p.brand_id = b.id
+             WHERE p.featured = 1 
+             AND p.status = 'active'
+             ORDER BY p.created_at DESC
+             LIMIT :limit",
+            ['limit' => $limit]
+        );
+    }
+    
+    /**
+     * Get best selling products
+     */
+    public static function getBestSellingProducts($limit = 8)
+    {
+        $db = Database::getInstance();
+        
+        return $db->select(
+            "SELECT p.*, 
+                    c.name as category_name, 
+                    b.name as brand_name,
+                    (SELECT image_path FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image
+             FROM products p
+             LEFT JOIN categories c ON p.category_id = c.id
+             LEFT JOIN brands b ON p.brand_id = b.id
+             WHERE p.best_seller = 1 
+             AND p.status = 'active'
+             ORDER BY p.views DESC, p.created_at DESC
+             LIMIT :limit",
+            ['limit' => $limit]
+        );
+    }
+    
+    /**
      * Search products
      */
     public static function search($query, $filters = [])

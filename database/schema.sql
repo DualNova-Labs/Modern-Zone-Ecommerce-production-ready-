@@ -9,6 +9,7 @@ DROP TABLE IF EXISTS product_reviews;
 DROP TABLE IF EXISTS product_images;
 DROP TABLE IF EXISTS products;
 DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS banners;
 DROP TABLE IF EXISTS brands;
 DROP TABLE IF EXISTS password_resets;
 DROP TABLE IF EXISTS user_sessions;
@@ -69,11 +70,34 @@ CREATE TABLE brands (
     logo VARCHAR(255),
     description TEXT,
     website VARCHAR(255),
+    country VARCHAR(100),
+    founded_year VARCHAR(10),
+    about TEXT,
+    specialties TEXT,
+    sort_order INT DEFAULT 0,
     status ENUM('active', 'inactive') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX idx_slug (slug),
-    INDEX idx_status (status)
+    INDEX idx_status (status),
+    INDEX idx_sort_order (sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Banners table (Hero Slider Management)
+CREATE TABLE banners (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    subtitle TEXT,
+    badge VARCHAR(100),
+    image VARCHAR(255) NOT NULL,
+    link_url VARCHAR(255),
+    link_text VARCHAR(100),
+    sort_order INT DEFAULT 0,
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_status (status),
+    INDEX idx_sort_order (sort_order)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Categories table

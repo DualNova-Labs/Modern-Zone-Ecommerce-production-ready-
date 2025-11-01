@@ -2,114 +2,40 @@
 ob_start();
 ?>
 
+<?php if (!empty($banners)): ?>
 <!-- Hero Banner Slider -->
 <section class="hero-slider">
     <div class="slider-container">
         <div class="slider-track" id="heroSliderTrack">
-            <!-- Banner 1: Industrial Tools & Equipment -->
-            <div class="slider-item active">
+            <?php foreach ($banners as $index => $banner): ?>
+            <div class="slider-item <?= $index === 0 ? 'active' : '' ?>">
                 <div class="banner-slide">
-                    <img src="<?= View::asset('images/banners/1.jpeg') ?>" alt="Modern Zone Trading - Industrial Tools & Equipment">
+                    <img src="<?= BASE_URL . '/' . htmlspecialchars($banner['image']) ?>" 
+                         alt="<?= htmlspecialchars($banner['title']) ?>"
+                         onerror="this.src='<?= View::asset('images/placeholder.svg') ?>'">
                     <div class="banner-overlay">
                         <div class="banner-content">
-                            <span class="banner-badge">NEW ARRIVALS</span>
-                            <h2 class="banner-title">Industrial Tools & Equipment</h2>
-                            <p class="banner-subtitle">Premium Quality Tools for Professional Use</p>
-                            <a href="<?= View::url('products') ?>" class="banner-btn">
-                                Shop Now <i class="fas fa-arrow-right"></i>
-                            </a>
+                            <?php if (!empty($banner['badge'])): ?>
+                                <span class="banner-badge"><?= htmlspecialchars($banner['badge']) ?></span>
+                            <?php endif; ?>
+                            <h2 class="banner-title"><?= htmlspecialchars($banner['title']) ?></h2>
+                            <?php if (!empty($banner['subtitle'])): ?>
+                                <p class="banner-subtitle"><?= htmlspecialchars($banner['subtitle']) ?></p>
+                            <?php endif; ?>
+                            <?php if (!empty($banner['link_url'])): ?>
+                                <a href="<?= View::url($banner['link_url']) ?>" class="banner-btn">
+                                    <?= htmlspecialchars($banner['link_text'] ?? 'Learn More') ?> <i class="fas fa-arrow-right"></i>
+                                </a>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
             </div>
-            
-            <!-- Banner 2: Cutting Tools -->
-            <div class="slider-item">
-                <div class="banner-slide">
-                    <img src="<?= View::asset('images/banners/2.jpeg') ?>" alt="Professional Cutting Tools - Modern Zone Trading">
-                    <div class="banner-overlay">
-                        <div class="banner-content">
-                            <span class="banner-badge">BEST SELLERS</span>
-                            <h2 class="banner-title">Professional Cutting Tools</h2>
-                            <p class="banner-subtitle">Precision Tools from Leading Brands</p>
-                            <a href="<?= View::url('products?category=cutting-tools') ?>" class="banner-btn">
-                                Explore Collection <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Banner 3: CNC Machine Tools -->
-            <div class="slider-item">
-                <div class="banner-slide">
-                    <img src="<?= View::asset('images/banners/3.jpeg') ?>" alt="CNC Machine Tools - Modern Zone Trading">
-                    <div class="banner-overlay">
-                        <div class="banner-content">
-                            <span class="banner-badge">FEATURED</span>
-                            <h2 class="banner-title">CNC Tool Holders</h2>
-                            <p class="banner-subtitle">High-Precision Machining Solutions</p>
-                            <a href="<?= View::url('products?category=cnc-holders') ?>" class="banner-btn">
-                                View Products <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Banner 4: Measuring Instruments -->
-            <div class="slider-item">
-                <div class="banner-slide">
-                    <img src="<?= View::asset('images/banners/4.jpeg') ?>" alt="Precision Measuring Instruments - Modern Zone Trading">
-                    <div class="banner-overlay">
-                        <div class="banner-content">
-                            <span class="banner-badge">PRECISION TOOLS</span>
-                            <h2 class="banner-title">Measuring Instruments</h2>
-                            <p class="banner-subtitle">Accurate Measurements Every Time</p>
-                            <a href="<?= View::url('products?category=measuring-tools') ?>" class="banner-btn">
-                                Discover More <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Banner 5: Power Tools -->
-            <div class="slider-item">
-                <div class="banner-slide">
-                    <img src="<?= View::asset('images/banners/5.jpeg') ?>" alt="Power Tools & Equipment - Modern Zone Trading">
-                    <div class="banner-overlay">
-                        <div class="banner-content">
-                            <span class="banner-badge">SPECIAL OFFER</span>
-                            <h2 class="banner-title">Power Tools & Equipment</h2>
-                            <p class="banner-subtitle">Heavy-Duty Tools for Every Job</p>
-                            <a href="<?= View::url('products?category=power-tools') ?>" class="banner-btn">
-                                Shop Power Tools <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Banner 6: Complete Solutions -->
-            <div class="slider-item">
-                <div class="banner-slide">
-                    <img src="<?= View::asset('images/banners/6.jpeg') ?>" alt="Industrial Solutions - Modern Zone Trading Saudi Arabia">
-                    <div class="banner-overlay">
-                        <div class="banner-content">
-                            <span class="banner-badge">AUTHORIZED DISTRIBUTOR</span>
-                            <h2 class="banner-title">Complete Industrial Solutions</h2>
-                            <p class="banner-subtitle">Trusted Partner in Saudi Arabia</p>
-                            <a href="<?= View::url('about') ?>" class="banner-btn">
-                                Learn More <i class="fas fa-arrow-right"></i>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
         
         <!-- Slider Controls -->
+        <?php if (count($banners) > 1): ?>
         <button class="slider-arrow slider-prev" id="heroPrev" aria-label="Previous slide">
             <i class="fas fa-chevron-left"></i>
         </button>
@@ -119,15 +45,16 @@ ob_start();
         
         <!-- Slider Dots -->
         <div class="slider-dots" id="heroSliderDots">
-            <button class="slider-dot active" data-slide="0" aria-label="Go to slide 1"></button>
-            <button class="slider-dot" data-slide="1" aria-label="Go to slide 2"></button>
-            <button class="slider-dot" data-slide="2" aria-label="Go to slide 3"></button>
-            <button class="slider-dot" data-slide="3" aria-label="Go to slide 4"></button>
-            <button class="slider-dot" data-slide="4" aria-label="Go to slide 5"></button>
-            <button class="slider-dot" data-slide="5" aria-label="Go to slide 6"></button>
+            <?php foreach ($banners as $index => $banner): ?>
+                <button class="slider-dot <?= $index === 0 ? 'active' : '' ?>" 
+                        data-slide="<?= $index ?>" 
+                        aria-label="Go to slide <?= $index + 1 ?>"></button>
+            <?php endforeach; ?>
         </div>
+        <?php endif; ?>
     </div>
 </section>
+<?php endif; ?>
 
 <!-- Our Brands Section -->
 <section class="brands-section">
