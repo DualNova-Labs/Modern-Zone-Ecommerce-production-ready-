@@ -97,7 +97,8 @@ class AdminProductController
             'admin_menu' => AdminMiddleware::getAdminMenu(),
             'active_menu' => 'products',
             'success' => $_SESSION['product_success'] ?? null,
-            'error' => $_SESSION['product_error'] ?? null
+            'error' => $_SESSION['product_error'] ?? null,
+            'csrf_token' => $this->security->getCsrfToken()
         ];
         
         unset($_SESSION['product_success']);
@@ -153,6 +154,23 @@ class AdminProductController
             exit;
         }
         
+        // Handle image upload
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = PUBLIC_PATH . '/assets/images/products/';
+            
+            // Create directory if it doesn't exist
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            $fileName = time() . '_' . basename($_FILES['image']['name']);
+            $targetPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+                $data['product']['image'] = 'public/assets/images/products/' . $fileName;
+            }
+        }
+        
         // Create product
         $product = new Product();
         $product->fill($data['product']);
@@ -172,35 +190,31 @@ class AdminProductController
     }
     
     /**
-     * Show edit product form
+     * Get product data for editing (AJAX endpoint)
      */
     public function edit($id)
     {
-        $product = Product::find($id);
+        header('Content-Type: application/json');
+        
+        $db = Database::getInstance();
+        $product = $db->selectOne(
+            "SELECT * FROM products WHERE id = :id",
+            ['id' => $id]
+        );
         
         if (!$product) {
-            $_SESSION['product_error'] = 'Product not found';
-            header('Location: ' . View::url('/admin/products'));
+            echo json_encode([
+                'success' => false,
+                'message' => 'Product not found'
+            ]);
             exit;
         }
         
-        $categories = Category::getActive();
-        $brands = Brand::getActive();
-        
-        $data = [
-            'title' => 'Edit Product - Admin',
-            'product' => $product,
-            'categories' => $categories,
-            'brands' => $brands,
-            'csrf_token' => $this->security->getCsrfToken(),
-            'admin_menu' => AdminMiddleware::getAdminMenu(),
-            'active_menu' => 'products',
-            'errors' => $_SESSION['product_errors'] ?? []
-        ];
-        
-        unset($_SESSION['product_errors']);
-        
-        View::render('admin/products/edit', $data);
+        echo json_encode([
+            'success' => true,
+            'product' => $product
+        ]);
+        exit;
     }
     
     /**
@@ -232,6 +246,31 @@ class AdminProductController
             exit;
         }
         
+        // Handle image upload if new image provided
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = PUBLIC_PATH . '/assets/images/products/';
+            
+            // Create directory if it doesn't exist
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0755, true);
+            }
+            
+            $fileName = time() . '_' . basename($_FILES['image']['name']);
+            $targetPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+                // Delete old image if exists
+                if ($product->image && file_exists(ROOT_PATH . '/' . $product->image)) {
+                    unlink(ROOT_PATH . '/' . $product->image);
+                }
+                
+                $data['product']['image'] = 'public/assets/images/products/' . $fileName;
+            }
+        } else {
+            // Keep existing image
+            $data['product']['image'] = $product->image;
+        }
+        
         // Update product
         $product->fill($data['product']);
         
@@ -261,28 +300,45 @@ class AdminProductController
             return;
         }
         
-        $product = Product::find($id);
+        $db = Database::getInstance();
+        $product = $db->selectOne("SELECT * FROM products WHERE id = :id", ['id' => $id]);
         
         if (!$product) {
             $this->jsonResponse(['success' => false, 'error' => 'Product not found']);
             return;
         }
         
-        // Check if product has orders
-        $db = Database::getInstance();
-        $orderCount = $db->selectOne(
-            "SELECT COUNT(*) as count FROM order_items WHERE product_id = :id",
-            ['id' => $id]
-        );
+        // Check if product has orders (table might not exist yet)
+        try {
+            $orderCount = $db->selectOne(
+                "SELECT COUNT(*) as count FROM order_items WHERE product_id = :id",
+                ['id' => $id]
+            );
+            $hasOrders = $orderCount && $orderCount['count'] > 0;
+        } catch (Exception $e) {
+            // order_items table doesn't exist yet
+            $hasOrders = false;
+        }
         
-        if ($orderCount['count'] > 0) {
+        if ($hasOrders) {
             // Soft delete - just change status
-            $product->status = 'inactive';
-            $product->save();
-            $this->jsonResponse(['success' => true, 'message' => 'Product deactivated (has orders)']);
+            $updated = $db->query(
+                "UPDATE products SET status = 'inactive' WHERE id = :id",
+                ['id' => $id]
+            );
+            if ($updated) {
+                $this->jsonResponse(['success' => true, 'message' => 'Product deactivated (has orders)']);
+            } else {
+                $this->jsonResponse(['success' => false, 'error' => 'Failed to deactivate product']);
+            }
         } else {
-            // Hard delete
-            if ($product->delete()) {
+            // Hard delete - also delete product image if exists
+            if ($product['image'] && file_exists(ROOT_PATH . '/' . $product['image'])) {
+                unlink(ROOT_PATH . '/' . $product['image']);
+            }
+            
+            $deleted = $db->query("DELETE FROM products WHERE id = :id", ['id' => $id]);
+            if ($deleted) {
                 $this->jsonResponse(['success' => true, 'message' => 'Product deleted successfully']);
             } else {
                 $this->jsonResponse(['success' => false, 'error' => 'Failed to delete product']);
@@ -415,7 +471,14 @@ class AdminProductController
      */
     public function toggleFeatured($id)
     {
-        $product = Product::find($id);
+        // Validate CSRF token
+        if (!$this->security->validateCsrfToken()) {
+            $this->jsonResponse(['success' => false, 'error' => 'Invalid security token. Please refresh the page and try again.']);
+            return;
+        }
+        
+        $db = Database::getInstance();
+        $product = $db->selectOne("SELECT * FROM products WHERE id = :id", ['id' => $id]);
         
         if (!$product) {
             $this->jsonResponse(['success' => false, 'error' => 'Product not found']);
@@ -423,13 +486,17 @@ class AdminProductController
         }
         
         // Toggle featured status
-        $product->featured = !$product->featured;
+        $newStatus = !$product['featured'];
+        $updated = $db->query(
+            "UPDATE products SET featured = :featured WHERE id = :id",
+            ['featured' => $newStatus ? 1 : 0, 'id' => $id]
+        );
         
-        if ($product->save()) {
+        if ($updated) {
             $this->jsonResponse([
                 'success' => true, 
-                'featured' => $product->featured,
-                'message' => $product->featured ? 'Added to Featured Products' : 'Removed from Featured Products'
+                'featured' => $newStatus,
+                'message' => $newStatus ? 'Added to Featured Products' : 'Removed from Featured Products'
             ]);
         } else {
             $this->jsonResponse(['success' => false, 'error' => 'Failed to update status']);
@@ -441,7 +508,14 @@ class AdminProductController
      */
     public function toggleBestSeller($id)
     {
-        $product = Product::find($id);
+        // Validate CSRF token
+        if (!$this->security->validateCsrfToken()) {
+            $this->jsonResponse(['success' => false, 'error' => 'Invalid security token. Please refresh the page and try again.']);
+            return;
+        }
+        
+        $db = Database::getInstance();
+        $product = $db->selectOne("SELECT * FROM products WHERE id = :id", ['id' => $id]);
         
         if (!$product) {
             $this->jsonResponse(['success' => false, 'error' => 'Product not found']);
@@ -449,13 +523,17 @@ class AdminProductController
         }
         
         // Toggle best_seller status
-        $product->best_seller = !$product->best_seller;
+        $newStatus = !$product['best_seller'];
+        $updated = $db->query(
+            "UPDATE products SET best_seller = :best_seller WHERE id = :id",
+            ['best_seller' => $newStatus ? 1 : 0, 'id' => $id]
+        );
         
-        if ($product->save()) {
+        if ($updated) {
             $this->jsonResponse([
                 'success' => true, 
-                'best_seller' => $product->best_seller,
-                'message' => $product->best_seller ? 'Added to Best Sellers' : 'Removed from Best Sellers'
+                'best_seller' => $newStatus,
+                'message' => $newStatus ? 'Added to Best Sellers' : 'Removed from Best Sellers'
             ]);
         } else {
             $this->jsonResponse(['success' => false, 'error' => 'Failed to update status']);

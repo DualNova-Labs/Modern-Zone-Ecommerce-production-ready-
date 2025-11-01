@@ -70,7 +70,8 @@ class Security
     {
         if ($token === null) {
             // Try to get token from POST, then headers
-            $token = $_POST[$this->csrfTokenName] ?? 
+            $token = $_POST['csrf_token'] ?? 
+                     $_POST[$this->csrfTokenName] ?? 
                      $_SERVER['HTTP_X_CSRF_TOKEN'] ?? 
                      $_SERVER['HTTP_X_XSRF_TOKEN'] ?? 
                      null;

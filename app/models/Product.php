@@ -167,7 +167,7 @@ class Product extends Model
     {
         return $this->db->select(
             "SELECT p.*, 
-                    (SELECT image_path FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image
+                    p.image as image
              FROM products p
              WHERE p.category_id = :category_id 
              AND p.id != :product_id 
@@ -193,7 +193,7 @@ class Product extends Model
             "SELECT p.*, 
                     c.name as category_name, 
                     b.name as brand_name,
-                    (SELECT image_path FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image
+                    p.image as image
              FROM products p
              LEFT JOIN categories c ON p.category_id = c.id
              LEFT JOIN brands b ON p.brand_id = b.id
@@ -216,7 +216,7 @@ class Product extends Model
             "SELECT p.*, 
                     c.name as category_name, 
                     b.name as brand_name,
-                    (SELECT image_path FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image
+                    p.image as image
              FROM products p
              LEFT JOIN categories c ON p.category_id = c.id
              LEFT JOIN brands b ON p.brand_id = b.id
@@ -236,7 +236,7 @@ class Product extends Model
         $db = Database::getInstance();
         
         $sql = "SELECT p.*, c.name as category_name, b.name as brand_name,
-                       (SELECT image_path FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image,
+                       p.image as image,
                        (SELECT AVG(rating) FROM product_reviews WHERE product_id = p.id AND status = 'approved') as avg_rating
                 FROM products p
                 LEFT JOIN categories c ON p.category_id = c.id

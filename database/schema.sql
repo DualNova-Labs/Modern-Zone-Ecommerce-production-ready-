@@ -135,9 +135,10 @@ CREATE TABLE products (
     quantity INT DEFAULT 0,
     min_quantity INT DEFAULT 1,
     weight DECIMAL(8, 3),
-    featured BOOLEAN DEFAULT FALSE,
-    best_seller BOOLEAN DEFAULT FALSE,
-    new_arrival BOOLEAN DEFAULT FALSE,
+    image VARCHAR(255) DEFAULT NULL,
+    featured TINYINT(1) DEFAULT 0,
+    best_seller TINYINT(1) DEFAULT 0,
+    new_arrival TINYINT(1) DEFAULT 0,
     status ENUM('active', 'inactive', 'out_of_stock') DEFAULT 'active',
     views INT DEFAULT 0,
     meta_title VARCHAR(255),
@@ -273,22 +274,3 @@ ON DUPLICATE KEY UPDATE
     status = 'active',
     email_verified_at = NOW();
 
--- Insert sample categories
-INSERT INTO categories (name, slug, icon, description, sort_order) VALUES
-('Cutting Tools', 'cutting-tools', 'cut', 'Precision cutting tools for all applications', 1),
-('Abrasives', 'abrasives', 'circle-notch', 'High-quality abrasive products', 2),
-('Blades and Cutters', 'blades-cutters', 'tools', 'Professional blades and cutting solutions', 3),
-('Hardware and Power Tools', 'hardware-power-tools', 'hammer', 'Complete range of hardware and power tools', 4),
-('Measuring Tools', 'measuring-tools', 'ruler', 'Precision measuring instruments', 5),
-('Hand Tools', 'hand-tools', 'wrench', 'Professional hand tools', 6);
-
--- Insert sample brands
-INSERT INTO brands (name, slug, logo, website) VALUES
-('Dormer', 'dormer', 'dormer.png', 'https://www.dormerpramet.com'),
-('Sandvik Coromant', 'sandvik-coromant', 'sandvik.png', 'https://www.sandvik.coromant.com'),
-('Seco Tools', 'seco-tools', 'seco.png', 'https://www.secotools.com'),
-('Pramet', 'pramet', 'pramet.png', 'https://www.dormerpramet.com'),
-('Kyocera', 'kyocera', 'kyocera.png', 'https://www.kyocera.com'),
-('Walter Tools', 'walter-tools', 'walter.png', 'https://www.walter-tools.com'),
-('Kennametal', 'kennametal', 'kennametal.png', 'https://www.kennametal.com'),
-('Iscar', 'iscar', 'iscar.png', 'https://www.iscar.com');

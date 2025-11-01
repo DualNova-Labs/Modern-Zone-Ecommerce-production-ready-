@@ -509,6 +509,28 @@ ob_start();
         }
     }
     
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    @keyframes slideOut {
+        from {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        to {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+    }
+    
     /* Mobile Responsive */
     @media (max-width: 1024px) {
         .toolbar {
@@ -592,6 +614,9 @@ ob_start();
 </style>
 
 <div class="section-card">
+    <!-- Hidden CSRF token for JavaScript functions -->
+    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+    
     <div class="section-header">
         <h2 class="section-title">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 20px; height: 20px; color: #6366f1;">
@@ -645,13 +670,13 @@ ob_start();
                     </select>
                     <button type="submit" class="btn btn-primary">Search</button>
                 </form>
-                <a href="<?= View::url('/admin/products/create') ?>" class="btn btn-success">
+                <button onclick="openCreateModal()" class="btn btn-success">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
                         <line x1="12" y1="5" x2="12" y2="19"></line>
                         <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                     Add Product
-                </a>
+                </button>
             </div>
 
         <?php if (!empty($products)): ?>
@@ -725,7 +750,7 @@ ob_start();
                             </button>
                         </td>
                         <td class="actions">
-                            <a href="<?= View::url('/admin/products/' . $product['id'] . '/edit') ?>" class="btn btn-primary btn-sm">Edit</a>
+                            <button onclick="openEditModal(<?= $product['id'] ?>)" class="btn btn-primary btn-sm">Edit</button>
                             <button onclick="deleteProduct(<?= $product['id'] ?>)" class="btn btn-danger btn-sm">Delete</button>
                         </td>
                     </tr>
@@ -785,7 +810,7 @@ ob_start();
                         </span>
                     </div>
                     <div class="product-card-actions">
-                        <a href="<?= View::url('/admin/products/' . $product['id'] . '/edit') ?>" class="btn btn-primary btn-sm">Edit</a>
+                        <button onclick="openEditModal(<?= $product['id'] ?>)" class="btn btn-primary btn-sm">Edit</button>
                         <button onclick="deleteProduct(<?= $product['id'] ?>)" class="btn btn-danger btn-sm">Delete</button>
                     </div>
                 </div>
@@ -886,12 +911,15 @@ ob_start();
                 return;
             }
 
+            // Get CSRF token from the page
+            const csrfToken = document.querySelector('input[name="csrf_token"]')?.value || '';
+            
             fetch('<?= View::url('/admin/products/') ?>' + id + '/delete', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
-                body: 'csrf_token=<?= $csrf_token ?? '' ?>'
+                body: 'csrf_token=' + encodeURIComponent(csrfToken)
             })
             .then(response => response.json())
             .then(data => {
@@ -899,53 +927,679 @@ ob_start();
                     alert(data.message);
                     location.reload();
                 } else {
-                    alert(data.error);
+                    alert(data.error || 'Failed to delete product');
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while deleting the product');
             });
         }
         
         function toggleFeatured(productId, button) {
+            // Get CSRF token from the page
+            const csrfToken = document.querySelector('input[name="csrf_token"]')?.value || '';
+            
             fetch('<?= View::url('/admin/products/') ?>' + productId + '/toggle-featured', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                }
+                },
+                body: 'csrf_token=' + encodeURIComponent(csrfToken)
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     button.classList.toggle('active');
+                    // Show success message briefly
+                    showNotification(data.message || 'Featured status updated', 'success');
                 } else {
-                    alert('Failed to update featured status');
+                    alert(data.error || 'Failed to update featured status');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred');
+                alert('An error occurred while updating featured status');
             });
         }
         
         function toggleBestSeller(productId, button) {
+            // Get CSRF token from the page
+            const csrfToken = document.querySelector('input[name="csrf_token"]')?.value || '';
+            
             fetch('<?= View::url('/admin/products/') ?>' + productId + '/toggle-bestseller', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
-                }
+                },
+                body: 'csrf_token=' + encodeURIComponent(csrfToken)
             })
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
                     button.classList.toggle('active');
+                    // Show success message briefly
+                    showNotification(data.message || 'Best seller status updated', 'success');
                 } else {
-                    alert('Failed to update best seller status');
+                    alert(data.error || 'Failed to update best seller status');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('An error occurred');
+                alert('An error occurred while updating best seller status');
             });
         }
+        
+        // Notification helper function
+        function showNotification(message, type = 'success') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 20px;
+                background: ${type === 'success' ? '#10b981' : '#ef4444'};
+                color: white;
+                border-radius: 8px;
+                z-index: 10000;
+                animation: slideIn 0.3s ease-out;
+            `;
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Modal Functions
+        function openCreateModal() {
+            document.getElementById('createProductModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeCreateModal() {
+            document.getElementById('createProductModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('createProductForm').reset();
+        }
+        
+        // Edit Modal Functions
+        function openEditModal(productId) {
+            // Fetch product data
+            fetch('<?= View::url('/admin/products/') ?>' + productId + '/edit')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        const product = data.product;
+                        
+                        // Populate form fields
+                        document.getElementById('edit_product_id').value = product.id;
+                        document.getElementById('edit_name').value = product.name || '';
+                        document.getElementById('edit_sku').value = product.sku || '';
+                        document.getElementById('edit_category_id').value = product.category_id || '';
+                        document.getElementById('edit_brand_id').value = product.brand_id || '';
+                        document.getElementById('edit_description').value = product.description || '';
+                        document.getElementById('edit_price').value = product.price || '';
+                        document.getElementById('edit_compare_price').value = product.compare_price || '';
+                        document.getElementById('edit_quantity').value = product.quantity || 0;
+                        document.getElementById('edit_min_quantity').value = product.min_quantity || 1;
+                        document.getElementById('edit_status').value = product.status || 'active';
+                        document.getElementById('edit_featured').checked = product.featured == 1;
+                        document.getElementById('edit_best_seller').checked = product.best_seller == 1;
+                        document.getElementById('edit_new_arrival').checked = product.new_arrival == 1;
+                        
+                        // Show current image
+                        const currentImageDiv = document.getElementById('edit_currentImage');
+                        if (product.image) {
+                            currentImageDiv.innerHTML = `
+                                <div class="form-group">
+                                    <label class="form-label">Current Image:</label>
+                                    <div style="border: 1px solid var(--gray-300); border-radius: 8px; padding: 1rem; background: var(--gray-50);">
+                                        <img src="<?= BASE_URL ?>/${product.image}" alt="Current product image" 
+                                             style="max-width: 200px; max-height: 150px; border-radius: 8px; object-fit: contain;"
+                                             onerror="this.src='<?= View::asset('images/placeholder.svg') ?>'">
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            currentImageDiv.innerHTML = '';
+                        }
+                        
+                        // Reset edit image upload area
+                        clearEditImageUpload();
+                        
+                        // Open modal
+                        document.getElementById('editProductModal').classList.add('active');
+                        document.body.style.overflow = 'hidden';
+                    } else {
+                        alert('Error loading product data');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error loading product data');
+                });
+        }
+        
+        function closeEditModal() {
+            document.getElementById('editProductModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+            document.getElementById('editProductForm').reset();
+        }
+        
+        // Handle form submission
+        document.addEventListener('DOMContentLoaded', function() {
+            // Create form submission
+            const createForm = document.getElementById('createProductForm');
+            if (createForm) {
+                createForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const submitBtn = document.getElementById('submitBtn');
+                    const originalText = submitBtn.innerHTML;
+                    
+                    submitBtn.innerHTML = 'Creating...';
+                    submitBtn.disabled = true;
+                    
+                    fetch('<?= View::url('/admin/products') ?>', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.text())
+                    .then(data => {
+                        window.location.reload();
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred. Please try again.');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    });
+                });
+            }
+            
+            // Edit form submission
+            const editForm = document.getElementById('editProductForm');
+            if (editForm) {
+                editForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(this);
+                    const submitBtn = document.getElementById('editSubmitBtn');
+                    const originalText = submitBtn.innerHTML;
+                    const productId = document.getElementById('edit_product_id').value;
+                    
+                    // Show loading state
+                    submitBtn.innerHTML = '<span class="animate-spin">⟳</span> Updating...';
+                    submitBtn.disabled = true;
+                    
+                    fetch('<?= View::url('/admin/products/') ?>' + productId, {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => {
+                        // Check if response is ok
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.text();
+                    })
+                    .then(data => {
+                        // Check if it's a redirect or success
+                        if (data.includes('product_success') || !data.includes('error')) {
+                            showNotification('Product updated successfully!', 'success');
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1000);
+                        } else {
+                            throw new Error('Update failed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('An error occurred while updating. Please try again.');
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    });
+                });
+            }
+            
+            // Image upload preview for create modal
+            const imageInput = document.getElementById('image');
+            if (imageInput) {
+                imageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    const uploadLabel = document.querySelector('#createProductModal .file-upload-label');
+                    
+                    if (file && uploadLabel) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            uploadLabel.innerHTML = `
+                                <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: contain;">
+                                <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray-600);">
+                                    <strong>${file.name}</strong><br>
+                                    <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small><br>
+                                    <button type="button" onclick="clearImageUpload()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--danger-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
+                                        Remove Image
+                                    </button>
+                                </div>
+                            `;
+                            uploadLabel.style.border = '2px solid var(--success-color)';
+                            uploadLabel.style.background = 'rgba(16, 185, 129, 0.05)';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+            
+            // Image upload preview for edit modal
+            const editImageInput = document.getElementById('edit_image');
+            if (editImageInput) {
+                editImageInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    const uploadLabel = document.querySelector('#editProductModal .file-upload-label');
+                    
+                    if (file && uploadLabel) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            uploadLabel.innerHTML = `
+                                <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: contain;">
+                                <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray-600);">
+                                    <strong>${file.name}</strong><br>
+                                    <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small><br>
+                                    <button type="button" onclick="clearEditImageUpload()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--danger-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
+                                        Remove Image
+                                    </button>
+                                </div>
+                            `;
+                            uploadLabel.style.border = '2px solid var(--success-color)';
+                            uploadLabel.style.background = 'rgba(16, 185, 129, 0.05)';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
+        
+        // Clear image upload for create modal
+        function clearImageUpload() {
+            const fileInput = document.getElementById('image');
+            const uploadLabel = document.querySelector('#createProductModal .file-upload-label');
+            
+            if (fileInput) {
+                fileInput.value = '';
+            }
+            
+            if (uploadLabel) {
+                uploadLabel.innerHTML = `
+                    <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21,15 16,10 5,21"></polyline>
+                    </svg>
+                    <div class="file-upload-text">
+                        <strong>Click to upload</strong> or drag and drop<br>
+                        <small>PNG, JPG, GIF up to 10MB (Optional)</small>
+                    </div>
+                `;
+                uploadLabel.style.border = '2px dashed var(--gray-300)';
+                uploadLabel.style.background = 'var(--gray-50)';
+            }
+        }
+        
+        // Clear image upload for edit modal
+        function clearEditImageUpload() {
+            const fileInput = document.getElementById('edit_image');
+            const uploadLabel = document.querySelector('#editProductModal .file-upload-label');
+            
+            if (fileInput) {
+                fileInput.value = '';
+            }
+            
+            if (uploadLabel) {
+                uploadLabel.innerHTML = `
+                    <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                        <polyline points="21,15 16,10 5,21"></polyline>
+                    </svg>
+                    <div class="file-upload-text">
+                        <strong>Click to upload</strong> or drag and drop<br>
+                        <small>PNG, JPG, GIF up to 10MB (Optional - leave empty to keep current image)</small>
+                    </div>
+                `;
+                uploadLabel.style.border = '2px dashed var(--gray-300)';
+                uploadLabel.style.background = 'var(--gray-50)';
+            }
+        }
 </script>
+
+<!-- Create Product Modal -->
+<div id="createProductModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
+                </svg>
+                Add New Product
+            </h2>
+            <button type="button" class="modal-close" onclick="closeCreateModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <form id="createProductForm" method="POST" enctype="multipart/form-data">
+            <?= View::csrfField() ?>
+            
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name" class="form-label required">Product Name</label>
+                        <input type="text" id="name" name="name" class="form-input" required 
+                               placeholder="Enter product name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="sku" class="form-label required">SKU</label>
+                        <input type="text" id="sku" name="sku" class="form-input" required 
+                               placeholder="e.g., PROD-001">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category_id" class="form-label required">Category</label>
+                        <select id="category_id" name="category_id" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <?php foreach ($categories as $cat): ?>
+                            <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="brand_id" class="form-label">Brand</label>
+                        <select id="brand_id" name="brand_id" class="form-select">
+                            <option value="">Select Brand (Optional)</option>
+                            <?php
+                            $db = Database::getInstance();
+                            $brands = $db->select("SELECT id, name FROM brands WHERE status = 'active' ORDER BY name");
+                            foreach ($brands as $brand): ?>
+                            <option value="<?= $brand['id'] ?>"><?= htmlspecialchars($brand['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea id="description" name="description" class="form-textarea" rows="3"
+                              placeholder="Enter product description"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price" class="form-label required">Price (SAR)</label>
+                        <input type="number" id="price" name="price" class="form-input" required 
+                               min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="compare_price" class="form-label">Compare Price</label>
+                        <input type="number" id="compare_price" name="compare_price" class="form-input" 
+                               min="0" step="0.01" placeholder="0.00">
+                        <div class="form-help">Original price (for showing discounts)</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="quantity" class="form-label required">Stock Quantity</label>
+                        <input type="number" id="quantity" name="quantity" class="form-input" required 
+                               min="0" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="min_quantity" class="form-label">Min. Order Quantity</label>
+                        <input type="number" id="min_quantity" name="min_quantity" class="form-input" 
+                               min="1" value="1">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image" class="form-label">Product Image</label>
+                    <div class="file-upload">
+                        <input type="file" id="image" name="image" class="file-upload-input" 
+                               accept="image/*">
+                        <label for="image" class="file-upload-label">
+                            <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21,15 16,10 5,21"></polyline>
+                            </svg>
+                            <div class="file-upload-text">
+                                <strong>Click to upload</strong> or drag and drop<br>
+                                <small>PNG, JPG, GIF up to 10MB (Optional)</small>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status" class="form-label">Status</label>
+                    <select id="status" name="status" class="form-select">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="out_of_stock">Out of Stock</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Product Attributes</label>
+                    <div style="display: flex; gap: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" name="featured" value="1">
+                            <span>⭐ Featured Product</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" name="best_seller" value="1">
+                            <span>🔥 Best Seller</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" name="new_arrival" value="1">
+                            <span>✨ New Arrival</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">
+                    Cancel
+                </button>
+                <button type="submit" id="submitBtn" class="btn btn-success">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Create Product
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Edit Product Modal -->
+<div id="editProductModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h2 class="modal-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Edit Product
+            </h2>
+            <button type="button" class="modal-close" onclick="closeEditModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <form id="editProductForm" method="POST" enctype="multipart/form-data">
+            <?= View::csrfField() ?>
+            <input type="hidden" id="edit_product_id" name="id">
+            
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_name" class="form-label required">Product Name</label>
+                        <input type="text" id="edit_name" name="name" class="form-input" required 
+                               placeholder="Enter product name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit_sku" class="form-label required">SKU</label>
+                        <input type="text" id="edit_sku" name="sku" class="form-input" required 
+                               placeholder="e.g., PROD-001">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_category_id" class="form-label required">Category</label>
+                        <select id="edit_category_id" name="category_id" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <?php foreach ($categories as $cat): ?>
+                            <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit_brand_id" class="form-label">Brand</label>
+                        <select id="edit_brand_id" name="brand_id" class="form-select">
+                            <option value="">Select Brand (Optional)</option>
+                            <?php foreach ($brands as $brand): ?>
+                            <option value="<?= $brand['id'] ?>"><?= htmlspecialchars($brand['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_description" class="form-label">Description</label>
+                    <textarea id="edit_description" name="description" class="form-textarea" rows="3"
+                              placeholder="Enter product description"></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_price" class="form-label required">Price (SAR)</label>
+                        <input type="number" id="edit_price" name="price" class="form-input" required 
+                               min="0" step="0.01" placeholder="0.00">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit_compare_price" class="form-label">Compare Price</label>
+                        <input type="number" id="edit_compare_price" name="compare_price" class="form-input" 
+                               min="0" step="0.01" placeholder="0.00">
+                        <div class="form-help">Original price (for showing discounts)</div>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="edit_quantity" class="form-label required">Stock Quantity</label>
+                        <input type="number" id="edit_quantity" name="quantity" class="form-input" required 
+                               min="0" value="0">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="edit_min_quantity" class="form-label">Min. Order Quantity</label>
+                        <input type="number" id="edit_min_quantity" name="min_quantity" class="form-input" 
+                               min="1" value="1">
+                    </div>
+                </div>
+                
+                <div id="edit_currentImage"></div>
+                
+                <div class="form-group">
+                    <label for="edit_image" class="form-label">New Product Image</label>
+                    <div class="file-upload">
+                        <input type="file" id="edit_image" name="image" class="file-upload-input" 
+                               accept="image/*">
+                        <label for="edit_image" class="file-upload-label">
+                            <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21,15 16,10 5,21"></polyline>
+                            </svg>
+                            <div class="file-upload-text">
+                                <strong>Click to upload</strong> or drag and drop<br>
+                                <small>PNG, JPG, GIF up to 10MB (Optional - leave empty to keep current image)</small>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_status" class="form-label">Status</label>
+                    <select id="edit_status" name="status" class="form-select">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="out_of_stock">Out of Stock</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Product Attributes</label>
+                    <div style="display: flex; gap: 1rem;">
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="edit_featured" name="featured" value="1">
+                            <span>⭐ Featured Product</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="edit_best_seller" name="best_seller" value="1">
+                            <span>🔥 Best Seller</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 0.5rem;">
+                            <input type="checkbox" id="edit_new_arrival" name="new_arrival" value="1">
+                            <span>✨ New Arrival</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                    Cancel
+                </button>
+                <button type="submit" id="editSubmitBtn" class="btn btn-primary">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                    Update Product
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
 
 <?php
 $content = ob_get_clean();
