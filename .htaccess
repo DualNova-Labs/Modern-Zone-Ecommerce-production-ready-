@@ -1,0 +1,86 @@
+# Dynamic .htaccess - Auto-detects environment
+# =============================================================================
+# RELATIVE CONFIGURATION
+# =============================================================================
+# This configuration automatically works for both local and production
+# No manual switching required - it detects the path automatically
+# =============================================================================
+
+# Enable rewrite engine
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    
+    # Auto-detect base path (works for both local and production)
+    # No RewriteBase needed - uses relative paths
+    
+    # Force HTTPS (uncomment when SSL is ready)
+    # RewriteCond %{HTTPS} off
+    # RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+    
+    # Redirect all requests to index.php
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^(.*)$ index.php [QSA,L]
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    Header always set X-Frame-Options "SAMEORIGIN"
+    Header always set X-Content-Type-Options "nosniff"
+    Header always set X-XSS-Protection "1; mode=block"
+    Header always set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Disable directory browsing
+<IfModule mod_autoindex.c>
+    Options -Indexes
+</IfModule>
+
+# Enable FollowSymLinks
+Options +FollowSymLinks
+
+# Protect sensitive files (Apache 2.4+)
+<IfModule mod_authz_core.c>
+    # Protect .env file
+    <Files ".env">
+        Require all denied
+    </Files>
+    
+    # Protect all hidden files
+    <FilesMatch "^\.">
+        Require all denied
+    </FilesMatch>
+    
+    # Protect configuration files
+    <FilesMatch "\.(ini|log|conf|md)$">
+        Require all denied
+    </FilesMatch>
+</IfModule>
+
+# Fallback for Apache 2.2
+<IfModule !mod_authz_core.c>
+    <Files ".env">
+        Order allow,deny
+        Deny from all
+    </Files>
+    
+    <FilesMatch "^\.">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+    
+    <FilesMatch "\.(ini|log|conf|md)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</IfModule>
+
+# PHP Settings (if allowed)
+<IfModule mod_php7.c>
+    php_flag display_errors Off
+    php_flag log_errors On
+    php_value error_log logs/error.log
+</IfModule>
+
+# Disable server signature
+ServerSignature Off

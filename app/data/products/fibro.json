@@ -1,0 +1,57 @@
+{
+  "brand": "fibro",
+  "products": [
+    {
+      "id": "fibro-001",
+      "title": "Fibro Gas Spring 500N",
+      "slug": "fibro-gas-spring-500n",
+      "brand": "fibro",
+      "category": "die-components",
+      "image": "public/assets/images/PRODUCTS BY BRAND/Fibro/Fibro.jpeg",
+      "price": 120.00,
+      "description": "High-quality gas spring for die and mold ejection systems with 500N force",
+      "stock": true,
+      "sku": "FIB-001",
+      "features": ["500N ejection force", "Long service life", "Maintenance-free"]
+    },
+    {
+      "id": "fibro-002",
+      "title": "Fibro Guide Pillar Set",
+      "slug": "fibro-guide-pillar-set",
+      "brand": "fibro",
+      "category": "die-components",
+      "image": "public/assets/images/PRODUCTS BY BRAND/Fibro/Fibro.jpeg",
+      "price": 185.00,
+      "description": "Precision guide pillar and bush set for accurate die alignment and long tool life",
+      "stock": true,
+      "sku": "FIB-002",
+      "features": ["Hardened and ground", "Precision fit", "Oil groove design"]
+    },
+    {
+      "id": "fibro-003",
+      "title": "Fibro Ejector Pin System",
+      "slug": "fibro-ejector-pin-system",
+      "brand": "fibro",
+      "category": "die-components",
+      "image": "public/assets/images/PRODUCTS BY BRAND/Fibro/Fibro.jpeg",
+      "price": 95.00,
+      "description": "Standard ejector pin system for plastic injection molds with various diameter options",
+      "stock": true,
+      "sku": "FIB-003",
+      "features": ["Hardened steel", "Multiple diameters", "DIN standard"]
+    },
+    {
+      "id": "fibro-004",
+      "title": "Fibro Die Spring Heavy Duty",
+      "slug": "fibro-die-spring-heavy-duty",
+      "brand": "fibro",
+      "category": "die-components",
+      "image": "public/assets/images/PRODUCTS BY BRAND/Fibro/Fibro.jpeg",
+      "price": 45.00,
+      "description": "Heavy-duty die spring for high-load applications in stamping and forming dies",
+      "stock": true,
+      "sku": "FIB-004",
+      "features": ["High load capacity", "Chrome silicon steel", "Color-coded"]
+    }
+  ]
+}

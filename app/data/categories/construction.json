@@ -1,0 +1,68 @@
+{
+  "category": "construction",
+  "name": "Construction Tools",
+  "description": "Professional construction tools and equipment",
+  "image": "public/assets/images/GENERAL CATEGORIES/Construction/Construction.jpeg",
+  "products": [
+    {
+      "id": "construction-001",
+      "title": "Spirit Level 600mm Magnetic",
+      "slug": "spirit-level-600mm-magnetic",
+      "category": "construction",
+      "image": "public/assets/images/GENERAL CATEGORIES/Construction/Construction.jpeg",
+      "price": 75.00,
+      "description": "Professional magnetic spirit level with 3 vials for precise leveling",
+      "stock": true,
+      "sku": "CST-001",
+      "features": ["600mm length", "3 bubble vials", "Magnetic base"]
+    },
+    {
+      "id": "construction-002",
+      "title": "Masonry Drill Bit Set 7-Piece",
+      "slug": "masonry-drill-bit-set-7-piece",
+      "category": "construction",
+      "image": "public/assets/images/GENERAL CATEGORIES/Construction/Construction.jpeg",
+      "price": 95.00,
+      "description": "Professional masonry drill bit set for concrete and brick drilling",
+      "stock": true,
+      "sku": "CST-002",
+      "features": ["7 piece set", "SDS-Plus shank", "Carbide tip"]
+    },
+    {
+      "id": "construction-003",
+      "title": "Concrete Mixer 140L Electric",
+      "slug": "concrete-mixer-140l-electric",
+      "category": "construction",
+      "image": "public/assets/images/GENERAL CATEGORIES/Construction/Construction.jpeg",
+      "price": 1850.00,
+      "description": "Heavy-duty electric concrete mixer for construction sites",
+      "stock": true,
+      "sku": "CST-003",
+      "features": ["140L capacity", "650W motor", "Wheel mounted"]
+    },
+    {
+      "id": "construction-004",
+      "title": "Trowel Set Professional 5-Piece",
+      "slug": "trowel-set-professional-5-piece",
+      "category": "construction",
+      "image": "public/assets/images/GENERAL CATEGORIES/Construction/Construction.jpeg",
+      "price": 125.00,
+      "description": "Professional trowel set for concrete and masonry work",
+      "stock": true,
+      "sku": "CST-004",
+      "features": ["5 piece set", "Stainless steel", "Soft grip handles"]
+    },
+    {
+      "id": "construction-005",
+      "title": "Chalk Line Reel 30m",
+      "slug": "chalk-line-reel-30m",
+      "category": "construction",
+      "image": "public/assets/images/GENERAL CATEGORIES/Construction/Construction.jpeg",
+      "price": 35.00,
+      "description": "Heavy-duty chalk line reel for marking straight lines",
+      "stock": true,
+      "sku": "CST-005",
+      "features": ["30m line", "Chalk reservoir", "Quick release"]
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="40" viewBox="0 0 120 40">
+  <rect fill="#e74c3c" width="40" height="40" rx="8"/>
+  <path fill="#fff" d="M15,10 L25,10 L30,20 L25,30 L15,30 L10,20 Z"/>
+  <text x="50" y="28" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#2c3e50">APTools</text>
+</svg>

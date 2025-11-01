@@ -1,0 +1,44 @@
+{
+  "brand": "vertex",
+  "products": [
+    {
+      "id": "vertex-001",
+      "title": "Vertex Rotary Table 6 inch",
+      "slug": "vertex-rotary-table-6-inch",
+      "brand": "vertex",
+      "category": "machine-accessories",
+      "image": "public/assets/images/PRODUCTS BY BRAND/Vertex/Vertex.jpeg",
+      "price": 850.00,
+      "description": "Precision horizontal/vertical rotary table for milling machines with graduated dial",
+      "stock": true,
+      "sku": "VTX-001",
+      "features": ["360° rotation", "Graduated dial", "Horizontal/Vertical mounting"]
+    },
+    {
+      "id": "vertex-002",
+      "title": "Vertex Machine Vice 4 inch",
+      "slug": "vertex-machine-vice-4-inch",
+      "brand": "vertex",
+      "category": "machine-accessories",
+      "image": "public/assets/images/PRODUCTS BY BRAND/Vertex/Vertex.jpeg",
+      "price": 320.00,
+      "description": "Heavy-duty milling machine vice with swivel base for angular positioning",
+      "stock": true,
+      "sku": "VTX-002",
+      "features": ["4 inch jaw width", "Swivel base", "Hardened jaws"]
+    },
+    {
+      "id": "vertex-003",
+      "title": "Vertex Dividing Head",
+      "slug": "vertex-dividing-head",
+      "brand": "vertex",
+      "category": "machine-accessories",
+      "image": "public/assets/images/PRODUCTS BY BRAND/Vertex/Vertex.jpeg",
+      "price": 1250.00,
+      "description": "Universal dividing head for precise angular indexing and gear cutting operations",
+      "stock": true,
+      "sku": "VTX-003",
+      "features": ["Universal mounting", "Precision indexing", "Includes tailstock"]
+    }
+  ]
+}

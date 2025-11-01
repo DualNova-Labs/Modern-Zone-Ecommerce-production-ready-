@@ -1,0 +1,103 @@
+{
+  "brands": [
+    {
+      "slug": "dormer",
+      "name": "Dormer",
+      "logo": "public/assets/images/brands/dormer-pramet-logo.jpg",
+      "description": "Dormer Tools is a world-leading supplier of high-performance cutting tools for the metalworking industry. With over 100 years of experience, Dormer provides innovative solutions for drilling, threading, milling, and reaming operations.",
+      "about": "Dormer has established itself as a trusted name in precision cutting tools, serving industries worldwide with products that combine German engineering excellence with cutting-edge technology. Their comprehensive range includes HSS and carbide cutting tools designed for maximum productivity and tool life.",
+      "country": "Germany",
+      "founded": "1921",
+      "website": "www.dormerpramet.com",
+      "specialties": ["HSS Cutting Tools", "Carbide Drills", "Thread Mills", "Reamers"]
+    },
+    {
+      "slug": "sandvik",
+      "name": "Sandvik Coromant",
+      "logo": "public/assets/images/brands/sandvik_coromant_logo_black_rgb.jpg",
+      "description": "Sandvik Coromant is at the forefront of manufacturing tools, machining solutions and knowledge that drive standards in the metalworking industry. With extensive investments in research and development, they continuously introduce innovations.",
+      "about": "As a global leader in metal cutting and the world's foremost supplier of tools, tooling systems and technical know-how, Sandvik Coromant partners with customers to develop and implement productivity solutions. Their comprehensive range spans from inserts and holders to sophisticated systems and technical support.",
+      "country": "Sweden",
+      "founded": "1942",
+      "website": "www.sandvik.coromant.com",
+      "specialties": ["Turning Inserts", "Milling Tools", "Drilling Systems", "Boring Tools"]
+    },
+    {
+      "slug": "seco",
+      "name": "Seco Tools",
+      "logo": "public/assets/images/brands/secologo.jpg",
+      "description": "Seco Tools is a global provider of comprehensive metal cutting solutions for turning, milling, and hole making. They deliver enhanced productivity through innovation in tooling, processes and services.",
+      "about": "With 75 years of innovation and expertise, Seco Tools serves multiple industries including aerospace, automotive, energy, and general engineering. Their mission is to deliver productivity through exceptional tools and services that help manufacturers optimize their operations.",
+      "country": "Sweden",
+      "founded": "1932",
+      "website": "www.secotools.com",
+      "specialties": ["Turning Solutions", "Milling Cutters", "Drilling Tools", "Threading Systems"]
+    },
+    {
+      "slug": "pramet",
+      "name": "Pramet Tools",
+      "logo": "public/assets/images/brands/dormer-pramet-logo.jpg",
+      "description": "Pramet is a leading manufacturer of carbide cutting tools for the metalworking industry. Combining tradition with innovation, Pramet delivers high-quality, cost-effective solutions for modern machining.",
+      "about": "With production facilities in the Czech Republic, Pramet has grown into a global supplier of indexable cutting tools. Their product portfolio includes turning, milling, and drilling tools designed to meet the demanding requirements of modern manufacturing.",
+      "country": "Czech Republic",
+      "founded": "1991",
+      "website": "www.pramet.com",
+      "specialties": ["Indexable Inserts", "Tool Holders", "Solid Carbide Tools", "Grooving Systems"]
+    },
+    {
+      "slug": "kyocera",
+      "name": "Kyocera",
+      "logo": "public/assets/images/brands/kyocera-logo.jpg",
+      "description": "Kyocera Corporation is a leading manufacturer of industrial ceramic cutting tools. Their advanced materials technology and precision engineering deliver superior performance in demanding applications.",
+      "about": "Kyocera's cutting tool division specializes in advanced ceramic and carbide materials. Their innovative approach to material science has resulted in cutting tools that offer exceptional wear resistance, thermal stability, and cutting performance in the most challenging machining operations.",
+      "country": "Japan",
+      "founded": "1959",
+      "website": "www.kyocera.com",
+      "specialties": ["Ceramic Inserts", "Carbide Tools", "PCD Tools", "CBN Tools"]
+    },
+    {
+      "slug": "yg-1",
+      "name": "YG-1",
+      "logo": "public/assets/images/brands/yg-red-logo-pc.jpg",
+      "description": "YG-1 is a global manufacturer of cutting tools, offering a complete range of high-performance products for drilling, milling, threading, and precision machining operations.",
+      "about": "Since 1981, YG-1 has been dedicated to producing world-class cutting tools. With state-of-the-art manufacturing facilities and a commitment to innovation, YG-1 serves customers worldwide with solutions that improve productivity and reduce costs.",
+      "country": "South Korea",
+      "founded": "1981",
+      "website": "www.yg1.kr",
+      "specialties": ["HSS Drills", "Solid Carbide End Mills", "Taps", "Reamers"]
+    },
+    {
+      "slug": "pafana",
+      "name": "Pafana",
+      "logo": "public/assets/images/brands/pafana.jpg",
+      "description": "Pafana specializes in precision cutting tools and measuring instruments for professional workshops and industrial applications. Quality and precision are at the core of every product.",
+      "about": "Pafana has built a reputation for delivering reliable, high-precision tools that meet the exacting standards of modern manufacturing. Their product range includes measuring instruments, cutting tools, and workshop equipment designed for professionals who demand the best.",
+      "country": "Germany",
+      "founded": "1968",
+      "website": "www.pafana.com",
+      "specialties": ["Precision Measuring Tools", "Cutting Tools", "Workshop Equipment", "Quality Control Instruments"]
+    },
+    {
+      "slug": "mitutoyo",
+      "name": "Mitutoyo",
+      "logo": "public/assets/images/brands/mitutoyo.jpg",
+      "description": "Mitutoyo is the world's leading manufacturer of precision measuring instruments. Their comprehensive range of products sets the standard for accuracy, reliability, and innovation in metrology.",
+      "about": "Founded in 1934, Mitutoyo has grown to become synonymous with precision measurement. From basic calipers to advanced coordinate measuring machines, Mitutoyo's products are used in industries worldwide where accuracy is critical. Their commitment to quality and innovation has made them the preferred choice for precision measurement solutions.",
+      "country": "Japan",
+      "founded": "1934",
+      "website": "www.mitutoyo.com",
+      "specialties": ["Digital Calipers", "Micrometers", "Height Gauges", "CMM Systems"]
+    },
+    {
+      "slug": "fibro",
+      "name": "Fibro",
+      "logo": "public/assets/images/brands/fibro.jpg",
+      "description": "Fibro is a leading manufacturer of standard parts for dies and molds, offering comprehensive solutions for tool and die making. Their products ensure precision, reliability, and efficiency in mold construction.",
+      "about": "With over 60 years of expertise, Fibro provides a complete range of standard parts including gas springs, guide elements, ejector systems, and mounting systems. Their products are engineered to meet the demanding requirements of modern tool and die applications, ensuring optimal performance and longevity.",
+      "country": "Germany",
+      "founded": "1957",
+      "website": "www.fibro.de",
+      "specialties": ["Gas Springs", "Guide Elements", "Ejector Pins", "Die Components"]
+    }
+  ]
+}

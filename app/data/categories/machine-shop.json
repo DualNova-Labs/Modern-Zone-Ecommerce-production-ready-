@@ -1,0 +1,68 @@
+{
+  "category": "machine-shop",
+  "name": "Machine Shop",
+  "description": "Complete range of machine shop equipment and accessories",
+  "image": "public/assets/images/GENERAL CATEGORIES/Machine Shop/Machine_Shop.jpeg",
+  "products": [
+    {
+      "id": "machine-001",
+      "title": "Precision Machine Vice 6 inch",
+      "slug": "precision-machine-vice-6-inch",
+      "category": "machine-shop",
+      "image": "public/assets/images/GENERAL CATEGORIES/Machine Shop/Machine_Shop.jpeg",
+      "price": 450.00,
+      "description": "Heavy-duty precision machine vice with hardened jaws and swivel base",
+      "stock": true,
+      "sku": "MCH-001",
+      "features": ["6 inch jaw width", "Hardened steel jaws", "360° swivel base"]
+    },
+    {
+      "id": "machine-002",
+      "title": "Drill Press Table 12x16 inch",
+      "slug": "drill-press-table-12x16-inch",
+      "category": "machine-shop",
+      "image": "public/assets/images/GENERAL CATEGORIES/Machine Shop/Machine_Shop.jpeg",
+      "price": 285.00,
+      "description": "Adjustable drill press table with T-slots for mounting work pieces",
+      "stock": true,
+      "sku": "MCH-002",
+      "features": ["12x16 inch surface", "T-slot design", "Tilt adjustment"]
+    },
+    {
+      "id": "machine-003",
+      "title": "Magnetic Base Drill Stand",
+      "slug": "magnetic-base-drill-stand",
+      "category": "machine-shop",
+      "image": "public/assets/images/GENERAL CATEGORIES/Machine Shop/Machine_Shop.jpeg",
+      "price": 750.00,
+      "description": "Portable magnetic drill stand with powerful holding force",
+      "stock": true,
+      "sku": "MCH-003",
+      "features": ["1500kg holding force", "Coolant system", "Quick release"]
+    },
+    {
+      "id": "machine-004",
+      "title": "Tool Holder Rack 40-Position",
+      "slug": "tool-holder-rack-40-position",
+      "category": "machine-shop",
+      "image": "public/assets/images/GENERAL CATEGORIES/Machine Shop/Machine_Shop.jpeg",
+      "price": 195.00,
+      "description": "Wall-mounted tool holder rack for CNC tool storage",
+      "stock": true,
+      "sku": "MCH-004",
+      "features": ["40 positions", "CAT/BT compatible", "Wall mountable"]
+    },
+    {
+      "id": "machine-005",
+      "title": "Coolant Pump System 20L",
+      "slug": "coolant-pump-system-20l",
+      "category": "machine-shop",
+      "image": "public/assets/images/GENERAL CATEGORIES/Machine Shop/Machine_Shop.jpeg",
+      "price": 380.00,
+      "description": "High-flow coolant pump system with adjustable flow control",
+      "stock": true,
+      "sku": "MCH-005",
+      "features": ["20L capacity", "Adjustable flow", "Magnetic filter"]
+    }
+  ]
+}

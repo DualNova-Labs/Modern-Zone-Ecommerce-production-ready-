@@ -1,0 +1,80 @@
+{
+  "category": "safety",
+  "name": "Safety Equipment",
+  "description": "Professional safety equipment and personal protective equipment (PPE)",
+  "image": "public/assets/images/GENERAL CATEGORIES/Safety/Safety.jpeg",
+  "products": [
+    {
+      "id": "safety-001",
+      "title": "Safety Glasses Clear Lens",
+      "slug": "safety-glasses-clear-lens",
+      "category": "safety",
+      "image": "public/assets/images/GENERAL CATEGORIES/Safety/Safety.jpeg",
+      "price": 45.00,
+      "description": "Professional safety glasses with anti-fog and scratch-resistant coating",
+      "stock": true,
+      "sku": "SAF-001",
+      "features": ["ANSI Z87.1 certified", "Anti-fog coating", "Adjustable temples"]
+    },
+    {
+      "id": "safety-002",
+      "title": "Industrial Safety Helmet",
+      "slug": "industrial-safety-helmet",
+      "category": "safety",
+      "image": "public/assets/images/GENERAL CATEGORIES/Safety/Safety.jpeg",
+      "price": 85.00,
+      "description": "Heavy-duty safety helmet with adjustable suspension system",
+      "stock": true,
+      "sku": "SAF-002",
+      "features": ["EN 397 certified", "Adjustable suspension", "Ventilation slots"]
+    },
+    {
+      "id": "safety-003",
+      "title": "Cut-Resistant Gloves Level 5",
+      "slug": "cut-resistant-gloves-level-5",
+      "category": "safety",
+      "image": "public/assets/images/GENERAL CATEGORIES/Safety/Safety.jpeg",
+      "price": 65.00,
+      "description": "Level 5 cut-resistant gloves for handling sharp materials",
+      "stock": true,
+      "sku": "SAF-003",
+      "features": ["Level 5 cut resistance", "PU coated palm", "Touchscreen compatible"]
+    },
+    {
+      "id": "safety-004",
+      "title": "Safety Boots Steel Toe",
+      "slug": "safety-boots-steel-toe",
+      "category": "safety",
+      "image": "public/assets/images/GENERAL CATEGORIES/Safety/Safety.jpeg",
+      "price": 295.00,
+      "description": "Professional safety boots with steel toe cap and anti-slip sole",
+      "stock": true,
+      "sku": "SAF-004",
+      "features": ["Steel toe cap", "Anti-slip sole", "Water resistant"]
+    },
+    {
+      "id": "safety-005",
+      "title": "Ear Protection Earmuffs",
+      "slug": "ear-protection-earmuffs",
+      "category": "safety",
+      "image": "public/assets/images/GENERAL CATEGORIES/Safety/Safety.jpeg",
+      "price": 75.00,
+      "description": "Professional ear protection earmuffs with 30dB noise reduction",
+      "stock": true,
+      "sku": "SAF-005",
+      "features": ["30dB NRR", "Adjustable headband", "Cushioned ear cups"]
+    },
+    {
+      "id": "safety-006",
+      "title": "Welding Mask Auto-Darkening",
+      "slug": "welding-mask-auto-darkening",
+      "category": "safety",
+      "image": "public/assets/images/GENERAL CATEGORIES/Safety/Safety.jpeg",
+      "price": 185.00,
+      "description": "Auto-darkening welding helmet with adjustable shade levels",
+      "stock": true,
+      "sku": "SAF-006",
+      "features": ["Auto-darkening", "Adjustable shade", "Solar powered"]
+    }
+  ]
+}

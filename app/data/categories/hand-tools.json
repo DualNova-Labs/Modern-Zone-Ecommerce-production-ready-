@@ -1,0 +1,80 @@
+{
+  "category": "hand-tools",
+  "name": "Hand Tools",
+  "description": "Professional hand tools for industrial and workshop applications",
+  "image": "public/assets/images/GENERAL CATEGORIES/Hand Tools/Hand_Tools.jpeg",
+  "products": [
+    {
+      "id": "hand-tool-001",
+      "title": "Professional Wrench Set 22-Piece",
+      "slug": "professional-wrench-set-22-piece",
+      "category": "hand-tools",
+      "image": "public/assets/images/GENERAL CATEGORIES/Hand Tools/Hand_Tools.jpeg",
+      "price": 285.00,
+      "description": "Complete wrench set with combination and ratcheting wrenches in metric and SAE sizes",
+      "stock": true,
+      "sku": "HND-001",
+      "features": ["Chrome vanadium steel", "22 pieces", "Storage case included"]
+    },
+    {
+      "id": "hand-tool-002",
+      "title": "Precision Screwdriver Set 30-Piece",
+      "slug": "precision-screwdriver-set-30-piece",
+      "category": "hand-tools",
+      "image": "public/assets/images/GENERAL CATEGORIES/Hand Tools/Hand_Tools.jpeg",
+      "price": 95.00,
+      "description": "Professional precision screwdriver set for electronics and fine mechanical work",
+      "stock": true,
+      "sku": "HND-002",
+      "features": ["30 pieces", "Phillips, flathead, Torx", "Magnetic tips"]
+    },
+    {
+      "id": "hand-tool-003",
+      "title": "Heavy Duty Hammer 1000g",
+      "slug": "heavy-duty-hammer-1000g",
+      "category": "hand-tools",
+      "image": "public/assets/images/GENERAL CATEGORIES/Hand Tools/Hand_Tools.jpeg",
+      "price": 75.00,
+      "description": "Professional claw hammer with fiberglass handle for reduced vibration",
+      "stock": true,
+      "sku": "HND-003",
+      "features": ["1000g head", "Fiberglass handle", "Anti-slip grip"]
+    },
+    {
+      "id": "hand-tool-004",
+      "title": "Pliers Set 4-Piece",
+      "slug": "pliers-set-4-piece",
+      "category": "hand-tools",
+      "image": "public/assets/images/GENERAL CATEGORIES/Hand Tools/Hand_Tools.jpeg",
+      "price": 145.00,
+      "description": "Professional pliers set including long nose, cutting, and slip-joint pliers",
+      "stock": true,
+      "sku": "HND-004",
+      "features": ["4 piece set", "Hardened cutting edges", "Ergonomic handles"]
+    },
+    {
+      "id": "hand-tool-005",
+      "title": "Adjustable Wrench 12 inch",
+      "slug": "adjustable-wrench-12-inch",
+      "category": "hand-tools",
+      "image": "public/assets/images/GENERAL CATEGORIES/Hand Tools/Hand_Tools.jpeg",
+      "price": 65.00,
+      "description": "Professional 12-inch adjustable wrench with wide jaw opening",
+      "stock": true,
+      "sku": "HND-005",
+      "features": ["12 inch length", "Wide jaw opening", "Chrome finish"]
+    },
+    {
+      "id": "hand-tool-006",
+      "title": "Hex Key Set SAE & Metric",
+      "slug": "hex-key-set-sae-metric",
+      "category": "hand-tools",
+      "image": "public/assets/images/GENERAL CATEGORIES/Hand Tools/Hand_Tools.jpeg",
+      "price": 55.00,
+      "description": "Complete hex key set in both SAE and metric sizes with ball end design",
+      "stock": true,
+      "sku": "HND-006",
+      "features": ["SAE & Metric", "Ball end design", "Fold-up holder"]
+    }
+  ]
+}

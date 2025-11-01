@@ -1,0 +1,89 @@
+{
+  "brand": "yg-1",
+  "categories": {
+    "turning": [
+      {
+        "id": "yg1-turning-001",
+        "title": "YG-1 Turning Insert CNMG",
+        "slug": "yg1-turning-insert-cnmg",
+        "brand": "yg-1",
+        "category": "turning",
+        "image": "public/assets/images/PRODUCTS BY BRAND/YG-1/Turning/YG1_Turning.jpeg",
+        "price": 35.00,
+        "description": "Economical carbide turning insert for general purpose machining operations",
+        "stock": true,
+        "sku": "YG1-TRN-001"
+      }
+    ],
+    "indexable-milling": [
+      {
+        "id": "yg1-mill-001",
+        "title": "YG-1 Indexable Face Mill",
+        "slug": "yg1-indexable-face-mill",
+        "brand": "yg-1",
+        "category": "indexable-milling",
+        "image": "public/assets/images/PRODUCTS BY BRAND/YG-1/Indexable Milling/YG1_Indexable_Milling.jpeg",
+        "price": 365.00,
+        "description": "Cost-effective face mill for general milling operations with reliable performance",
+        "stock": true,
+        "sku": "YG1-MIL-001"
+      }
+    ],
+    "solid-milling": [
+      {
+        "id": "yg1-solid-001",
+        "title": "YG-1 Dream Drill End Mill",
+        "slug": "yg1-dream-drill-end-mill",
+        "brand": "yg-1",
+        "category": "solid-milling",
+        "image": "public/assets/images/PRODUCTS BY BRAND/YG-1/Solid Milling/YG1_Solid_Milling.jpeg",
+        "price": 95.00,
+        "description": "Solid carbide end mill with unique flute geometry for efficient chip evacuation",
+        "stock": true,
+        "sku": "YG1-SML-001"
+      }
+    ],
+    "hole-making": [
+      {
+        "id": "yg1-drill-001",
+        "title": "YG-1 X-treme Carbide Drill",
+        "slug": "yg1-x-treme-carbide-drill",
+        "brand": "yg-1",
+        "category": "hole-making",
+        "image": "public/assets/images/PRODUCTS BY BRAND/YG-1/Hole Making/YG1_Hole_Making.jpeg",
+        "price": 125.00,
+        "description": "High-performance carbide drill for steel and cast iron drilling applications",
+        "stock": true,
+        "sku": "YG1-DRL-001"
+      }
+    ],
+    "threading": [
+      {
+        "id": "yg1-thread-001",
+        "title": "YG-1 Spiral Point Tap",
+        "slug": "yg1-spiral-point-tap",
+        "brand": "yg-1",
+        "category": "threading",
+        "image": "public/assets/images/PRODUCTS BY BRAND/YG-1/Threading/YG1_Threading.jpeg",
+        "price": 48.00,
+        "description": "HSS spiral point tap for through-hole threading with excellent chip control",
+        "stock": true,
+        "sku": "YG1-THD-001"
+      }
+    ],
+    "tooling-systems": [
+      {
+        "id": "yg1-holder-001",
+        "title": "YG-1 Collet Chuck ER System",
+        "slug": "yg1-collet-chuck-er-system",
+        "brand": "yg-1",
+        "category": "tooling-systems",
+        "image": "public/assets/images/PRODUCTS BY BRAND/YG-1/Tooling Systems/YG1_Tooling_Systems.jpeg",
+        "price": 185.00,
+        "description": "Precision ER collet chuck system for CNC machines with high clamping force",
+        "stock": true,
+        "sku": "YG1-TLS-001"
+      }
+    ]
+  }
+}

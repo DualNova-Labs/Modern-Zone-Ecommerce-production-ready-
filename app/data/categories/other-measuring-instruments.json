@@ -1,0 +1,56 @@
+{
+  "category": "other-measuring-instruments",
+  "name": "Other Measuring Instruments",
+  "description": "Precision measuring instruments for quality control and inspection",
+  "image": "public/assets/images/GENERAL CATEGORIES/Other Measuring Instruments/Other_Measuring_Instruments.jpeg",
+  "products": [
+    {
+      "id": "measure-001",
+      "title": "Digital Thickness Gauge 0-25mm",
+      "slug": "digital-thickness-gauge-0-25mm",
+      "category": "other-measuring-instruments",
+      "image": "public/assets/images/GENERAL CATEGORIES/Other Measuring Instruments/Other_Measuring_Instruments.jpeg",
+      "price": 195.00,
+      "description": "Digital thickness gauge for precise material thickness measurement",
+      "stock": true,
+      "sku": "MSR-001",
+      "features": ["0-25mm range", "0.01mm resolution", "Data output"]
+    },
+    {
+      "id": "measure-002",
+      "title": "Digital Angle Finder",
+      "slug": "digital-angle-finder",
+      "category": "other-measuring-instruments",
+      "image": "public/assets/images/GENERAL CATEGORIES/Other Measuring Instruments/Other_Measuring_Instruments.jpeg",
+      "price": 125.00,
+      "description": "Digital angle finder for accurate angle measurement up to 360 degrees",
+      "stock": true,
+      "sku": "MSR-002",
+      "features": ["360° range", "0.1° accuracy", "Magnetic base"]
+    },
+    {
+      "id": "measure-003",
+      "title": "Laser Distance Meter 60m",
+      "slug": "laser-distance-meter-60m",
+      "category": "other-measuring-instruments",
+      "image": "public/assets/images/GENERAL CATEGORIES/Other Measuring Instruments/Other_Measuring_Instruments.jpeg",
+      "price": 285.00,
+      "description": "Professional laser distance meter with area and volume calculation",
+      "stock": true,
+      "sku": "MSR-003",
+      "features": ["60m range", "±1.5mm accuracy", "Bluetooth connectivity"]
+    },
+    {
+      "id": "measure-004",
+      "title": "Surface Roughness Tester",
+      "slug": "surface-roughness-tester",
+      "category": "other-measuring-instruments",
+      "image": "public/assets/images/GENERAL CATEGORIES/Other Measuring Instruments/Other_Measuring_Instruments.jpeg",
+      "price": 1450.00,
+      "description": "Portable surface roughness tester for quality control applications",
+      "stock": true,
+      "sku": "MSR-004",
+      "features": ["Multiple parameters", "Data storage", "USB connectivity"]
+    }
+  ]
+}

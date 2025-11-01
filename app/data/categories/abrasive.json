@@ -1,0 +1,80 @@
+{
+  "category": "abrasive",
+  "name": "Abrasive Products",
+  "description": "Professional abrasive products for grinding, cutting and finishing",
+  "image": "public/assets/images/GENERAL CATEGORIES/Abrasive/Abrasive.jpeg",
+  "products": [
+    {
+      "id": "abrasive-001",
+      "title": "Grinding Wheel 200x25mm A60",
+      "slug": "grinding-wheel-200x25mm-a60",
+      "category": "abrasive",
+      "image": "public/assets/images/GENERAL CATEGORIES/Abrasive/Abrasive.jpeg",
+      "price": 65.00,
+      "description": "Aluminum oxide grinding wheel for general purpose grinding operations",
+      "stock": true,
+      "sku": "ABR-001",
+      "features": ["200x25mm size", "A60 grade", "3200 RPM max"]
+    },
+    {
+      "id": "abrasive-002",
+      "title": "Cut-Off Disc 125mm Metal",
+      "slug": "cut-off-disc-125mm-metal",
+      "category": "abrasive",
+      "image": "public/assets/images/GENERAL CATEGORIES/Abrasive/Abrasive.jpeg",
+      "price": 8.50,
+      "description": "Thin cut-off disc for angle grinders, suitable for steel and metal cutting",
+      "stock": true,
+      "sku": "ABR-002",
+      "features": ["125mm diameter", "1mm thickness", "12,000 RPM max"]
+    },
+    {
+      "id": "abrasive-003",
+      "title": "Flap Disc 115mm Grit 80",
+      "slug": "flap-disc-115mm-grit-80",
+      "category": "abrasive",
+      "image": "public/assets/images/GENERAL CATEGORIES/Abrasive/Abrasive.jpeg",
+      "price": 12.00,
+      "description": "Zirconia flap disc for stock removal and surface finishing",
+      "stock": true,
+      "sku": "ABR-003",
+      "features": ["115mm diameter", "Grit 80", "Zirconia abrasive"]
+    },
+    {
+      "id": "abrasive-004",
+      "title": "Sanding Belt 100x915mm Grit 120",
+      "slug": "sanding-belt-100x915mm-grit-120",
+      "category": "abrasive",
+      "image": "public/assets/images/GENERAL CATEGORIES/Abrasive/Abrasive.jpeg",
+      "price": 15.00,
+      "description": "Aluminum oxide sanding belt for belt sanders and linishers",
+      "stock": true,
+      "sku": "ABR-004",
+      "features": ["100x915mm size", "Grit 120", "Cloth backed"]
+    },
+    {
+      "id": "abrasive-005",
+      "title": "Wire Wheel Brush 150mm",
+      "slug": "wire-wheel-brush-150mm",
+      "category": "abrasive",
+      "image": "public/assets/images/GENERAL CATEGORIES/Abrasive/Abrasive.jpeg",
+      "price": 35.00,
+      "description": "Steel wire wheel brush for deburring and cleaning operations",
+      "stock": true,
+      "sku": "ABR-005",
+      "features": ["150mm diameter", "Steel wire", "Crimped style"]
+    },
+    {
+      "id": "abrasive-006",
+      "title": "Sandpaper Assortment Pack",
+      "slug": "sandpaper-assortment-pack",
+      "category": "abrasive",
+      "image": "public/assets/images/GENERAL CATEGORIES/Abrasive/Abrasive.jpeg",
+      "price": 25.00,
+      "description": "Mixed grit sandpaper assortment pack for various finishing applications",
+      "stock": true,
+      "sku": "ABR-006",
+      "features": ["50 sheets", "Grits 80-400", "230x280mm size"]
+    }
+  ]
+}

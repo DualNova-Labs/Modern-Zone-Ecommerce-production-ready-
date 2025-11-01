@@ -1,0 +1,89 @@
+{
+  "brand": "seco",
+  "categories": {
+    "turning": [
+      {
+        "id": "seco-turning-001",
+        "title": "Seco Turbo 10 Turning Insert",
+        "slug": "seco-turbo-10-insert",
+        "brand": "seco",
+        "category": "turning",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Seco/Turning/Seco_Turning.jpeg",
+        "price": 48.00,
+        "description": "Advanced turning insert with innovative chip control technology for enhanced productivity",
+        "stock": true,
+        "sku": "SEC-TRN-001"
+      }
+    ],
+    "indexable-milling": [
+      {
+        "id": "seco-mill-001",
+        "title": "Seco Square 6 Face Mill",
+        "slug": "seco-square-6-face-mill",
+        "brand": "seco",
+        "category": "indexable-milling",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Seco/Indexable Milling/Seco_Indexable_Milling.jpeg",
+        "price": 480.00,
+        "description": "Six-edged indexable face milling cutter for cost-effective and productive machining",
+        "stock": true,
+        "sku": "SEC-MIL-001"
+      }
+    ],
+    "solid-milling": [
+      {
+        "id": "seco-solid-001",
+        "title": "Seco Solid Carbide Minimaster",
+        "slug": "seco-solid-carbide-minimaster",
+        "brand": "seco",
+        "category": "solid-milling",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Seco/Solid Milling/Seco_Solid_Milling.jpeg",
+        "price": 138.00,
+        "description": "Solid carbide end mill designed for high-speed milling with excellent performance",
+        "stock": true,
+        "sku": "SEC-SML-001"
+      }
+    ],
+    "hole-making": [
+      {
+        "id": "seco-drill-001",
+        "title": "Seco SD205A Feedmax Drill",
+        "slug": "seco-sd205a-feedmax-drill",
+        "brand": "seco",
+        "category": "hole-making",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Seco/Hole Making/Seco_Hole_Making.jpeg",
+        "price": 175.00,
+        "description": "Indexable drilling system for high-productivity hole making with replaceable inserts",
+        "stock": true,
+        "sku": "SEC-DRL-001"
+      }
+    ],
+    "threading": [
+      {
+        "id": "seco-thread-001",
+        "title": "Seco Threading Insert System",
+        "slug": "seco-threading-insert",
+        "brand": "seco",
+        "category": "threading",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Seco/Threading/Seco_Threading.jpeg",
+        "price": 42.00,
+        "description": "Precision threading insert for ISO metric threads with excellent edge strength",
+        "stock": true,
+        "sku": "SEC-THD-001"
+      }
+    ],
+    "tooling-systems": [
+      {
+        "id": "seco-holder-001",
+        "title": "Seco Capto Tool Holder",
+        "slug": "seco-capto-tool-holder",
+        "brand": "seco",
+        "category": "tooling-systems",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Seco/Tooling Systems/Seco_Tooling_Systems.jpeg",
+        "price": 395.00,
+        "description": "Modular Capto tool holding system for CNC turning centers with quick-change interface",
+        "stock": true,
+        "sku": "SEC-TLS-001"
+      }
+    ]
+  }
+}

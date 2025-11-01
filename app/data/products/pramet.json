@@ -1,0 +1,89 @@
+{
+  "brand": "pramet",
+  "categories": {
+    "turning": [
+      {
+        "id": "pramet-turning-001",
+        "title": "Pramet 6630 Turning Insert",
+        "slug": "pramet-6630-turning-insert",
+        "brand": "pramet",
+        "category": "turning",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Pramet/Turning/Pramet_Turning.jpeg",
+        "price": 38.00,
+        "description": "Cost-effective carbide turning insert for steel machining with reliable performance",
+        "stock": true,
+        "sku": "PRM-TRN-001"
+      }
+    ],
+    "indexable-milling": [
+      {
+        "id": "pramet-mill-001",
+        "title": "Pramet High Feed Mill",
+        "slug": "pramet-high-feed-mill",
+        "brand": "pramet",
+        "category": "indexable-milling",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Pramet/Indexable Milling/Pramet_Indexable_Milling.jpeg",
+        "price": 410.00,
+        "description": "High-feed milling cutter for rapid material removal in face milling operations",
+        "stock": true,
+        "sku": "PRM-MIL-001"
+      }
+    ],
+    "solid-milling": [
+      {
+        "id": "pramet-solid-001",
+        "title": "Pramet Solid Carbide End Mill",
+        "slug": "pramet-solid-carbide-end-mill",
+        "brand": "pramet",
+        "category": "solid-milling",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Pramet/Solid Milling/Pramet_Solid_Milling.jpeg",
+        "price": 115.00,
+        "description": "4-flute solid carbide end mill with AlTiN coating for extended tool life",
+        "stock": true,
+        "sku": "PRM-SML-001"
+      }
+    ],
+    "hole-making": [
+      {
+        "id": "pramet-drill-001",
+        "title": "Pramet Indexable Drill",
+        "slug": "pramet-indexable-drill",
+        "brand": "pramet",
+        "category": "hole-making",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Pramet/Hole Making/Pramet_Hole_Making.jpeg",
+        "price": 165.00,
+        "description": "Indexable drilling tool with replaceable carbide inserts for efficient hole making",
+        "stock": true,
+        "sku": "PRM-DRL-001"
+      }
+    ],
+    "threading": [
+      {
+        "id": "pramet-thread-001",
+        "title": "Pramet Threading Tool",
+        "slug": "pramet-threading-tool",
+        "brand": "pramet",
+        "category": "threading",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Pramet/Threading/Pramet_Threading.jpeg",
+        "price": 155.00,
+        "description": "External and internal threading tool with indexable inserts for versatile threading",
+        "stock": true,
+        "sku": "PRM-THD-001"
+      }
+    ],
+    "tooling-systems": [
+      {
+        "id": "pramet-holder-001",
+        "title": "Pramet Tool Holder System",
+        "slug": "pramet-tool-holder-system",
+        "brand": "pramet",
+        "category": "tooling-systems",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Pramet/Tooling Systems/Pramet_Tooling_Systems.jpeg",
+        "price": 285.00,
+        "description": "Modular tool holding system for turning operations with secure clamping",
+        "stock": true,
+        "sku": "PRM-TLS-001"
+      }
+    ]
+  }
+}

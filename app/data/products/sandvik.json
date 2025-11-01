@@ -1,0 +1,101 @@
+{
+  "brand": "sandvik",
+  "categories": {
+    "turning": [
+      {
+        "id": "sandvik-turning-001",
+        "title": "Sandvik Coromant CNMG Insert",
+        "slug": "sandvik-cnmg-insert",
+        "brand": "sandvik",
+        "category": "turning",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Sandvik Coromant/Turning/Sandvik_Turning.jpeg",
+        "price": 52.00,
+        "description": "Premium grade carbide turning insert with advanced chip breaker geometry for superior productivity",
+        "stock": true,
+        "sku": "SND-TRN-001"
+      },
+      {
+        "id": "sandvik-turning-002",
+        "title": "Sandvik CoroTurn 107 Tool Holder",
+        "slug": "sandvik-coroturn-107-holder",
+        "brand": "sandvik",
+        "category": "turning",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Sandvik Coromant/Turning/Sandvik_Turning.jpeg",
+        "price": 290.00,
+        "description": "Precision external turning tool holder with iLock interface for maximum stability",
+        "stock": true,
+        "sku": "SND-TRN-002"
+      }
+    ],
+    "indexable-milling": [
+      {
+        "id": "sandvik-mill-001",
+        "title": "Sandvik CoroMill 365 Face Mill",
+        "slug": "sandvik-coromill-365",
+        "brand": "sandvik",
+        "category": "indexable-milling",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Sandvik Coromant/Indexable Milling/Sandvik_Indexable_Milling.jpeg",
+        "price": 520.00,
+        "description": "High-feed face milling cutter for efficient material removal and excellent surface finish",
+        "stock": true,
+        "sku": "SND-MIL-001"
+      }
+    ],
+    "solid-milling": [
+      {
+        "id": "sandvik-solid-001",
+        "title": "Sandvik Solid Carbide End Mill",
+        "slug": "sandvik-solid-carbide-end-mill",
+        "brand": "sandvik",
+        "category": "solid-milling",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Sandvik Coromant/Solid Milling/Sandvik_Solid_Milling.jpeg",
+        "price": 145.00,
+        "description": "Solid carbide end mill with advanced coating technology for steel machining applications",
+        "stock": true,
+        "sku": "SND-SML-001"
+      }
+    ],
+    "hole-making": [
+      {
+        "id": "sandvik-drill-001",
+        "title": "Sandvik CoroDrill 860 Carbide Drill",
+        "slug": "sandvik-corodrill-860",
+        "brand": "sandvik",
+        "category": "hole-making",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Sandvik Coromant/Hole Making/Sandvik_Hole_Making.jpeg",
+        "price": 185.00,
+        "description": "High-performance solid carbide drill with internal coolant for demanding applications",
+        "stock": true,
+        "sku": "SND-DRL-001"
+      }
+    ],
+    "threading": [
+      {
+        "id": "sandvik-thread-001",
+        "title": "Sandvik CoroThread 266 Threading Tool",
+        "slug": "sandvik-corothread-266",
+        "brand": "sandvik",
+        "category": "threading",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Sandvik Coromant/Threading/Sandvik_Threading.jpeg",
+        "price": 195.00,
+        "description": "Precision internal threading tool with indexable insert for reliable performance",
+        "stock": true,
+        "sku": "SND-THD-001"
+      }
+    ],
+    "tooling-systems": [
+      {
+        "id": "sandvik-holder-001",
+        "title": "Sandvik Coromant Capto C6 Adapter",
+        "slug": "sandvik-capto-c6-adapter",
+        "brand": "sandvik",
+        "category": "tooling-systems",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Sandvik Coromant/Tooling Systems/Sandvik_Tooling_Systems.jpeg",
+        "price": 420.00,
+        "description": "Capto modular tool holding system adapter for CNC machines with quick-change capability",
+        "stock": true,
+        "sku": "SND-TLS-001"
+      }
+    ]
+  }
+}

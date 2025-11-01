@@ -1,0 +1,68 @@
+{
+  "category": "welding",
+  "name": "Welding Equipment",
+  "description": "Professional welding equipment and accessories",
+  "image": "public/assets/images/GENERAL CATEGORIES/Welding/Welding.jpeg",
+  "products": [
+    {
+      "id": "welding-001",
+      "title": "MIG Welding Wire 1.0mm 5kg",
+      "slug": "mig-welding-wire-1-0mm-5kg",
+      "category": "welding",
+      "image": "public/assets/images/GENERAL CATEGORIES/Welding/Welding.jpeg",
+      "price": 95.00,
+      "description": "ER70S-6 MIG welding wire for general purpose steel welding",
+      "stock": true,
+      "sku": "WLD-001",
+      "features": ["1.0mm diameter", "5kg spool", "ER70S-6 grade"]
+    },
+    {
+      "id": "welding-002",
+      "title": "Welding Electrodes E7018 3.2mm",
+      "slug": "welding-electrodes-e7018-3-2mm",
+      "category": "welding",
+      "image": "public/assets/images/GENERAL CATEGORIES/Welding/Welding.jpeg",
+      "price": 45.00,
+      "description": "Low hydrogen welding electrodes for high-strength welds",
+      "stock": true,
+      "sku": "WLD-002",
+      "features": ["E7018 type", "3.2mm diameter", "5kg pack"]
+    },
+    {
+      "id": "welding-003",
+      "title": "Welding Gloves Leather Heavy-Duty",
+      "slug": "welding-gloves-leather-heavy-duty",
+      "category": "welding",
+      "image": "public/assets/images/GENERAL CATEGORIES/Welding/Welding.jpeg",
+      "price": 55.00,
+      "description": "Heat-resistant leather welding gloves with reinforced palm",
+      "stock": true,
+      "sku": "WLD-003",
+      "features": ["Split leather", "Heat resistant", "16 inch length"]
+    },
+    {
+      "id": "welding-004",
+      "title": "Welding Torch MIG 3m Euro Connector",
+      "slug": "welding-torch-mig-3m-euro-connector",
+      "category": "welding",
+      "image": "public/assets/images/GENERAL CATEGORIES/Welding/Welding.jpeg",
+      "price": 185.00,
+      "description": "Professional MIG welding torch with Euro connector and 3m cable",
+      "stock": true,
+      "sku": "WLD-004",
+      "features": ["3m cable", "Euro connector", "300A rated"]
+    },
+    {
+      "id": "welding-005",
+      "title": "Welding Clamps Set 6-Piece",
+      "slug": "welding-clamps-set-6-piece",
+      "category": "welding",
+      "image": "public/assets/images/GENERAL CATEGORIES/Welding/Welding.jpeg",
+      "price": 75.00,
+      "description": "Magnetic welding clamps set for positioning and holding workpieces",
+      "stock": true,
+      "sku": "WLD-005",
+      "features": ["6 piece set", "Magnetic", "Various angles"]
+    }
+  ]
+}

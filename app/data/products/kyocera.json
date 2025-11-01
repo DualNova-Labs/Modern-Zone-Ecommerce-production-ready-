@@ -1,0 +1,89 @@
+{
+  "brand": "kyocera",
+  "categories": {
+    "turning": [
+      {
+        "id": "kyocera-turning-001",
+        "title": "Kyocera Ceramic Turning Insert",
+        "slug": "kyocera-ceramic-turning-insert",
+        "brand": "kyocera",
+        "category": "turning",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Kyocera/Turning/Kyocera_Turning.jpeg",
+        "price": 65.00,
+        "description": "Advanced ceramic insert for high-speed machining of hardened materials",
+        "stock": true,
+        "sku": "KYO-TRN-001"
+      }
+    ],
+    "indexable-milling": [
+      {
+        "id": "kyocera-mill-001",
+        "title": "Kyocera Milling Cutter",
+        "slug": "kyocera-milling-cutter",
+        "brand": "kyocera",
+        "category": "indexable-milling",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Kyocera/Indexable Milling/Kyocera_Indexable_Milling.jpeg",
+        "price": 495.00,
+        "description": "High-performance indexable milling cutter with ceramic inserts for superior surface finish",
+        "stock": true,
+        "sku": "KYO-MIL-001"
+      }
+    ],
+    "solid-milling": [
+      {
+        "id": "kyocera-solid-001",
+        "title": "Kyocera MFH End Mill",
+        "slug": "kyocera-mfh-end-mill",
+        "brand": "kyocera",
+        "category": "solid-milling",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Kyocera/Solid Milling/Kyocera_Solid_Milling.jpeg",
+        "price": 155.00,
+        "description": "Micro-grain carbide end mill for hard material machining and finishing operations",
+        "stock": true,
+        "sku": "KYO-SML-001"
+      }
+    ],
+    "hole-making": [
+      {
+        "id": "kyocera-drill-001",
+        "title": "Kyocera DLC Coated Drill",
+        "slug": "kyocera-dlc-coated-drill",
+        "brand": "kyocera",
+        "category": "hole-making",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Kyocera/Hole Making/Kyocera_Hole_Making.jpeg",
+        "price": 195.00,
+        "description": "Diamond-like carbon coated drill for aluminum and non-ferrous metal machining",
+        "stock": true,
+        "sku": "KYO-DRL-001"
+      }
+    ],
+    "threading": [
+      {
+        "id": "kyocera-thread-001",
+        "title": "Kyocera Threading System",
+        "slug": "kyocera-threading-system",
+        "brand": "kyocera",
+        "category": "threading",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Kyocera/Threading/Kyocera_Threading.jpeg",
+        "price": 210.00,
+        "description": "Precision threading tool with carbide inserts for reliable thread cutting",
+        "stock": true,
+        "sku": "KYO-THD-001"
+      }
+    ],
+    "tooling-systems": [
+      {
+        "id": "kyocera-holder-001",
+        "title": "Kyocera MAG-FORCE Chuck",
+        "slug": "kyocera-mag-force-chuck",
+        "brand": "kyocera",
+        "category": "tooling-systems",
+        "image": "public/assets/images/PRODUCTS BY BRAND/Kyocera/Tooling Systems/Kyocera_Tooling_Systems.jpeg",
+        "price": 450.00,
+        "description": "Magnetic force tool holding system for vibration-free high-precision machining",
+        "stock": true,
+        "sku": "KYO-TLS-001"
+      }
+    ]
+  }
+}
