@@ -154,7 +154,9 @@ class AdminProductController
             exit;
         }
         
-        // Handle image upload
+        $db = Database::getInstance();
+        
+        // Handle main image upload
         if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
             $uploadDir = PUBLIC_PATH . '/assets/images/products/';
             
@@ -179,6 +181,31 @@ class AdminProductController
         $product->slug = $this->generateSlug($product->name);
         
         if ($product->save()) {
+            $productId = $db->getConnection()->lastInsertId();
+            
+            // Handle additional images
+            if (isset($_FILES['additional_images']) && is_array($_FILES['additional_images']['name'])) {
+                $uploadDir = PUBLIC_PATH . '/assets/images/products/';
+                
+                for ($i = 0; $i < count($_FILES['additional_images']['name']); $i++) {
+                    if ($_FILES['additional_images']['error'][$i] === UPLOAD_ERR_OK) {
+                        $fileName = time() . '_' . $i . '_' . basename($_FILES['additional_images']['name'][$i]);
+                        $targetPath = $uploadDir . $fileName;
+                        
+                        if (move_uploaded_file($_FILES['additional_images']['tmp_name'][$i], $targetPath)) {
+                            // Insert into product_images table
+                            $db->insert('product_images', [
+                                'product_id' => $productId,
+                                'image_path' => 'public/assets/images/products/' . $fileName,
+                                'alt_text' => $product->name . ' - Image ' . ($i + 1),
+                                'is_primary' => 0,
+                                'sort_order' => $i + 1
+                            ]);
+                        }
+                    }
+                }
+            }
+            
             $_SESSION['product_success'] = 'Product created successfully';
             header('Location: ' . View::url('/admin/products'));
         } else {

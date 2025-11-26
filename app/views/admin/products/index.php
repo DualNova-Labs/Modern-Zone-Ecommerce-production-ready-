@@ -1394,8 +1394,184 @@ ob_start();
                                 <small>PNG, JPG, GIF up to 10MB (Optional)</small>
                             </div>
                         </label>
+                </div>
+                
+                <!-- Additional Images Section -->
+                <div class="form-group">
+                    <label class="form-label">Additional Images (Optional - Up to 4 images)</label>
+                    <div class="additional-images-grid">
+                        <div class="additional-image-slot" id="add-slot-1">
+                            <input type="file" id="additional-image-1" name="additional_images[]" class="file-upload-input" accept="image/*" style="display: none;">
+                            <label for="additional-image-1" class="add-image-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 32px; height: 32px;">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                <span style="font-size: 12px; color: #64748b;">Add Image</span>
+                            </label>
+                           </div>
+                        <div class="additional-image-slot" id="add-slot-2">
+                            <input type="file" id="additional-image-2" name="additional_images[]" class="file-upload-input" accept="image/*" style="display: none;">
+                            <label for="additional-image-2" class="add-image-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 32px; height: 32px;">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                <span style="font-size: 12px; color: #64748b;">Add Image</span>
+                            </label>
+                        </div>
+                        <div class="additional-image-slot" id="add-slot-3">
+                            <input type="file" id="additional-image-3" name="additional_images[]" class="file-upload-input" accept="image/*" style="display: none;">
+                            <label for="additional-image-3" class="add-image-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 32px; height: 32px;">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                <span style="font-size: 12px; color: #64748b;">Add Image</span>
+                            </label>
+                        </div>
+                        <div class="additional-image-slot" id="add-slot-4">
+                            <input type="file" id="additional-image-4" name="additional_images[]" class="file-upload-input" accept="image/*" style="display: none;">
+                            <label for="additional-image-4" class="add-image-label">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 32px; height: 32px;">
+                                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                                </svg>
+                                <span style="font-size: 12px; color: #64748b;">Add Image</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
+                
+                <style>
+                    .additional-images-grid {
+                        display: grid;
+                        grid-template-columns: repeat(4, 1fr);
+                        gap: 12px;
+                        margin-top: 10px;
+                    }
+                    .additional-image-slot {
+                        aspect-ratio: 1;
+                        border: 2px dashed #cbd5e0;
+                        border-radius: 8px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        cursor: pointer;
+                        transition: all 0.3s;
+                        background: #f8fafc;
+                        position: relative;
+                        overflow: hidden;
+                    }
+                    .additional-image-slot:hover {
+                        border-color: #3498db;
+                        background: #ebf8ff;
+                    }
+                    .add-image-label {
+                        display: flex;
+                        flex-direction: column;
+                        align-items: center;
+                        justify-content: center;
+                        width: 100%;
+                        height: 100%;
+                        cursor: pointer;
+                    }
+                   .additional-image-slot.has-image {
+                        border-color: #10b981;
+                        border-style: solid;
+                    }
+                    .additional-image-slot img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                        display: block;
+                    }
+                    .remove-additional-image {
+                        position: absolute;
+                        top: 5px;
+                        right: 5px;
+                        width: 24px;
+                        height: 24px;
+                        border-radius: 50%;
+                        background: #ef4444;
+                        color: white;
+                        border: none;
+                        font-size: 16px;
+                        cursor: pointer;
+                        line-height: 20px;
+                        display: none;
+                    }
+                    .additional-image-slot.has-image .remove-additional-image {
+                        display: block;
+                    }
+                    .remove-additional-image:hover {
+                        background: #dc2626;
+                    }
+                </style>
+                
+                <script>
+                    // Additional images upload preview
+                    for (let i = 1; i <= 4; i++) {
+                        const input = document.getElementById(`additional-image-${i}`);
+                        if (input) {
+                            input.addEventListener('change', function(e) {
+                                const file = e.target.files[0];
+                                if (file) {
+                                    const reader = new FileReader();
+                                    reader.onload = function(event) {
+                                        const slot = document.getElementById(`add-slot-${i}`);
+                                        slot.innerHTML = `
+                                            <img src="${event.target.result}" alt="Additional Image ${i}">
+                                            <button type="button" class="remove-additional-image" onclick="removeAdditionalImageModal(${i})">×</button>
+                                        `;
+                                        slot.classList.add('has-image');
+                                    };
+                                    reader.readAsDataURL(file);
+                                }
+                            });
+                        }
+                    }
+                    
+                    function removeAdditionalImageModal(index) {
+                        const input = document.getElementById(`additional-image-${index}`);
+                        const slot = document.getElementById(`add-slot-${index}`);
+                        
+                        if (input) input.value = '';
+                        
+                        if (slot) {
+                            slot.classList.remove('has-image');
+                            slot.innerHTML = `
+                                <input type="file" id="additional-image-${index}" name="additional_images[]" class="file-upload-input" accept="image/*" style="display: none;">
+                                <label for="additional-image-${index}" class="add-image-label">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 32px; height: 32px;">
+                                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                                    </svg>
+                                    <span style="font-size: 12px; color: #64748b;">Add Image</span>
+                                </label>
+                            `;
+                            
+                            // Re-attach event listener
+                            const newInput = document.getElementById(`additional-image-${index}`);
+                            if (newInput) {
+                                newInput.addEventListener('change', function(e) {
+                                    const file = e.target.files[0];
+                                    if (file) {
+                                        const reader = new FileReader();
+                                        reader.onload = function(event) {
+                                            slot.innerHTML = `
+                                                <img src="${event.target.result}" alt="Additional Image ${index}">
+                                                <button type="button" class="remove-additional-image" onclick="removeAdditionalImageModal(${index})">×</button>
+                                            `;
+                                            slot.classList.add('has-image');
+                                        };
+                                        reader.readAsDataURL(file);
+                                    }
+                                });
+                            }
+                        }
+                    }
+                </script>
                 
                 <div class="form-group">
                     <label for="status" class="form-label">Status</label>

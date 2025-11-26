@@ -322,11 +322,39 @@ class ProductController
                     ];
                 }
                 
-                $product['images'] = [
-                    $product['image'],
-                    $product['image'],
-                    $product['image'],
-                ];
+                // Fetch product gallery images from product_images table
+                $db = Database::getInstance();
+                $galleryImages = $db->select(
+                    "SELECT image_path FROM product_images 
+                     WHERE product_id = :product_id 
+                     ORDER BY is_primary DESC, sort_order ASC",
+                    ['product_id' => $product['id']]
+                );
+                
+                // Build images array
+                $product['images'] = [];
+                
+                // Add main image first
+                if (!empty($product['image'])) {
+                    $product['images'][] = $product['image'];
+                }
+                
+                // Add gallery images
+                foreach ($galleryImages as $img) {
+                    $imagePath = '';
+                    if (strpos($img['image_path'], 'public/') === 0) {
+                        $imagePath = BASE_URL . '/' . $img['image_path'];
+                    } else {
+                        $imagePath = View::asset('images/products/' . $img['image_path']);
+                    }
+                    $product['images'][] = $imagePath;
+                }
+                
+                // If no images at all, use placeholder
+                if (empty($product['images'])) {
+                    $product['images'][] = View::asset('images/placeholder.svg');
+                }
+                
                 return $product;
             }
         }

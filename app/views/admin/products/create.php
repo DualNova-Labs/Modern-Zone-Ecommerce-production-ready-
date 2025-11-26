@@ -24,7 +24,7 @@ ob_start();
 <div class="section">
     <h2 style="font-size: 20px; margin-bottom: 25px; font-weight: 700; color: #1e293b;">➕ Add New Product</h2>
 
-            <form method="POST" action="<?= View::url('/admin/products') ?>">
+            <form method="POST" action="<?= View::url('/admin/products') ?>" enctype="multipart/form-data">
                 <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
 
                 <div class="form-row">
@@ -125,6 +125,134 @@ ob_start();
                     <label for="specifications">Specifications</label>
                     <textarea id="specifications" name="specifications"><?= htmlspecialchars($old['specifications'] ?? '') ?></textarea>
                 </div>
+
+                <!-- Image Upload Section -->
+                <div class="form-group">
+                    <label>Product Images (Upload up to 5 images)</label>
+                    <div class="image-upload-container">
+                        <div class="primary-image-upload">
+                            <label for="main-image" class="upload-label">
+                                <i class="fas fa-image"></i>
+                                <span>Main Product Image</span>
+                                <input type="file" id="main-image" name="image" accept="image/*" style="display: none;">
+                            </label>
+                            <div id="main-image-preview" style="display: none;">
+                                <img src="" alt="Main Image Preview">
+                                <button type="button" class="remove-image" onclick="removeMainImage()">×</button>
+                            </div>
+                        </div>
+                        
+                        <div class="additional-images-upload">
+                            <label class="section-label">Additional Images (Optional)</label>
+                            <div class="upload-grid" id="additional-images-grid">
+                                <div class="upload-slot" onclick="document.getElementById('additional-image-1').click()">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Image</span>
+                                    <input type="file" id="additional-image-1" name="additional_images[]" accept="image/*" style="display: none;">
+                                </div>
+                                <div class="upload-slot" onclick="document.getElementById('additional-image-2').click()">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Image</span>
+                                    <input type="file" id="additional-image-2" name="additional_images[]" accept="image/*" style="display: none;">
+                                </div>
+                                <div class="upload-slot" onclick="document.getElementById('additional-image-3').click()">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Image</span>
+                                    <input type="file" id="additional-image-3" name="additional_images[]" accept="image/*" style="display: none;">
+                                </div>
+                                <div class="upload-slot" onclick="document.getElementById('additional-image-4').click()">
+                                    <i class="fas fa-plus"></i>
+                                    <span>Add Image</span>
+                                    <input type="file" id="additional-image-4" name="additional_images[]" accept="image/*" style="display: none;">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <style>
+                    .image-upload-container { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 10px; }
+                    .primary-image-upload { position: relative; }
+                    .upload-label { display: flex; flex-direction: column; align-items: center; justify-content: center; 
+                                   border: 2px dashed #cbd5e0; border-radius: 12px; padding: 40px; cursor: pointer; 
+                                   transition: all 0.3s; background: #f8fafc; }
+                    .upload-label:hover { border-color: #3498db; background: #ebf8ff; }
+                    .upload-label i { font-size: 48px; color: #94a3b8; margin-bottom: 10px; }
+                    .upload-label span { color: #475569; font-size: 14px; font-weight: 500; }
+                    #main-image-preview { position: relative; border-radius: 12px; overflow: hidden; }
+                    #main-image-preview img { width: 100%; max-height: 300px; object-fit: contain; display: block; 
+                                              background: #f1f5f9; padding: 10px; border-radius: 12px; }
+                    .remove-image { position: absolute; top: 10px; right: 10px; width: 32px; height: 32px; 
+                                   border-radius: 50%; background: #ef4444; color: white; border: none; 
+                                   font-size: 20px; cursor: pointer; line-height: 28px; }
+                    .remove-image:hover { background: #dc2626; }
+                    .section-label { display: block; margin-bottom: 10px; font-weight: 500; color: #334155; }
+                    .upload-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+                    .upload-slot { aspect-ratio: 1; border: 2px dashed #cbd5e0; border-radius: 8px; display: flex; 
+                                  flex-direction: column; align-items: center; justify-content: center; cursor: pointer; 
+                                  transition: all 0.3s; background: #f8fafc; position: relative; }
+                    .upload-slot:hover { border-color: #3498db; background: #ebf8ff; }
+                    .upload-slot i { font-size: 24px; color: #94a3b8; margin-bottom: 5px; }
+                    .upload-slot span { color: #64748b; font-size: 12px; }
+                    .upload-slot img { width: 100%; height: 100%; object-fit: cover; display: block; }
+                    .upload-slot.has-image { border-style: solid; border-color: #10b981; }
+                </style>
+
+                <script>
+                    // Main image preview
+                    document.getElementById('main-image').addEventListener('change', function(e) {
+                        const file = e.target.files[0];
+                        if (file) {
+                            const reader = new FileReader();
+                            reader.onload = function(event) {
+                                const preview = document.getElementById('main-image-preview');
+                                const img = preview.querySelector('img');
+                                img.src = event.target.result;
+                                preview.style.display = 'block';
+                                document.querySelector('.upload-label').style.display = 'none';
+                            };
+                            reader.readAsDataURL(file);
+                        }
+                    });
+
+                    function removeMainImage() {
+                        document.getElementById('main-image').value = '';
+                        document.getElementById('main-image-preview').style.display = 'none';
+                        document.querySelector('.upload-label').style.display = 'flex';
+                    }
+
+                    // Additional images preview
+                    for (let i = 1; i <= 4; i++) {
+                        document.getElementById(`additional-image-${i}`).addEventListener('change', function(e) {
+                            const file = e.target.files[0];
+                            if (file) {
+                                const slot = this.parentElement;
+                                const reader = new FileReader();
+                                reader.onload = function(event) {
+                                    slot.innerHTML = `
+                                        <img src="${event.target.result}" alt="Preview">
+                                        <button type="button" class="remove-image" onclick="removeAdditionalImage(${i})" style="position: absolute; top: 5px; right: 5px; width: 24px; height: 24px; font-size: 16px; line-height: 20px;">×</button>
+                                    `;
+                                    slot.classList.add('has-image');
+                                    slot.onclick = null;
+                                };
+                                reader.readAsDataURL(file);
+                            }
+                        });
+                    }
+
+                    function removeAdditionalImage(index) {
+                        const input = document.getElementById(`additional-image-${index}`);
+                        const slot = input.parentElement;
+                        input.value = '';
+                        slot.classList.remove('has-image');
+                        slot.innerHTML = `
+                            <i class="fas fa-plus"></i>
+                            <span>Add Image</span>
+                        `;
+                        slot.onclick = () => input.click();
+                    }
+                </script>
 
                 <div class="form-row">
                     <div class="form-group">

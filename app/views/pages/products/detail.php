@@ -25,6 +25,7 @@ ob_start();
                         <i class="far fa-heart"></i>
                     </button>
                 </div>
+                <?php if (count($product['images']) > 1): ?>
                 <div class="gallery-thumbs">
                     <?php foreach ($product['images'] as $index => $image): ?>
                         <button class="gallery-thumb <?= ($index === 0) ? 'active' : '' ?>" 
@@ -33,6 +34,7 @@ ob_start();
                         </button>
                     <?php endforeach; ?>
                 </div>
+                <?php endif; ?>
             </div>
             
             <!-- Product Info -->
