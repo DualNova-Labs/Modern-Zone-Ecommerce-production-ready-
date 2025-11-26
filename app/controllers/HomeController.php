@@ -2,6 +2,7 @@
 /**
  * Home Controller
  */
+require_once APP_PATH . '/core/Database.php';
 require_once APP_PATH . '/models/Banner.php';
 require_once APP_PATH . '/models/Product.php';
 
@@ -143,12 +144,36 @@ class HomeController
     
     private function getBrands()
     {
-        $brandsFile = __DIR__ . '/../data/brands.json';
-        if (file_exists($brandsFile)) {
-            $brandsData = json_decode(file_get_contents($brandsFile), true);
-            return $brandsData['brands'] ?? [];
-        }
-        return [];
+        $db = Database::getInstance();
+        $brands = $db->select(
+            "SELECT id, name, slug, logo, description 
+             FROM brands 
+             WHERE status = 'active' 
+             ORDER BY sort_order ASC, name ASC"
+        );
+        
+        // Format brands for display
+        return array_map(function($brand) {
+            // Handle logo path
+            $logoPath = '';
+            if (!empty($brand['logo'])) {
+                if (strpos($brand['logo'], 'public/') === 0) {
+                    $logoPath = BASE_URL . '/' . $brand['logo'];
+                } else {
+                    $logoPath = View::asset('images/brands/' . $brand['logo']);
+                }
+            } else {
+                $logoPath = View::asset('images/placeholder.svg');
+            }
+            
+            return [
+                'id' => $brand['id'],
+                'name' => $brand['name'],
+                'slug' => $brand['slug'],
+                'logo' => $logoPath,
+                'description' => $brand['description'] ?? ''
+            ];
+        }, $brands);
     }
     
     private function getProducts()

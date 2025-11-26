@@ -115,6 +115,24 @@ class AdminBrandController
             exit;
         }
         
+        // Handle logo upload
+        if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = PUBLIC_PATH . '/assets/images/brands/';
+            
+            // Create directory if it doesn't exist
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            $fileExt = strtolower(pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION));
+            $fileName = time() . '_' . uniqid() . '.' . $fileExt;
+            $targetPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['logo']['tmp_name'], $targetPath)) {
+                $data['logo'] = 'public/assets/images/brands/' . $fileName;
+            }
+        }
+        
         // Create brand
         try {
             $db = Database::getInstance();
@@ -212,6 +230,31 @@ class AdminBrandController
             $_SESSION['brand_old'] = $data;
             header('Location: ' . View::url("/admin/brands/{$id}/edit"));
             exit;
+        }
+        
+        // Handle logo upload
+        if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = PUBLIC_PATH . '/assets/images/brands/';
+            
+            // Create directory if it doesn't exist
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            $fileExt = strtolower(pathinfo($_FILES['logo']['name'], PATHINFO_EXTENSION));
+            $fileName = time() . '_' . uniqid() . '.' . $fileExt;
+            $targetPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['logo']['tmp_name'], $targetPath)) {
+                // Delete old logo if exists
+                if (!empty($brand['logo']) && file_exists(ROOT_PATH . '/' . $brand['logo'])) {
+                    unlink(ROOT_PATH . '/' . $brand['logo']);
+                }
+                $data['logo'] = 'public/assets/images/brands/' . $fileName;
+            }
+        } else {
+            // Keep existing logo
+            $data['logo'] = $brand['logo'];
         }
         
         // Update brand
