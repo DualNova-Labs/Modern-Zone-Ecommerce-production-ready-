@@ -43,6 +43,7 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="<?= View::asset('css/main.css') ?>?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= View::asset('css/responsive.css') ?>?v=<?= time() ?>">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

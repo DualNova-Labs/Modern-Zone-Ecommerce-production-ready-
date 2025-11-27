@@ -2,7 +2,7 @@
 @import url('products.css');
 @import url('contact.css');
 @import url('cart.css');
-@import url('responsive.css');
+
 
 /* Base Responsive Fixes */
 * {
@@ -81,6 +81,7 @@ section {
 .logo {
     flex-shrink: 0
 }
+
 .logo a {
     display: flex;
     align-items: center
@@ -714,7 +715,7 @@ section {
     padding-left: 0
 }
 
-.has-submenu > span {
+.has-submenu>span {
     width: 100%;
     display: flex;
     align-items: center;
@@ -725,7 +726,7 @@ section {
     transition: all var(--transition-base)
 }
 
-.has-submenu:hover > span {
+.has-submenu:hover>span {
     background: var(--primary-color);
     color: #fff;
     padding-left: calc(var(--spacing-lg) + 5px)
@@ -748,7 +749,7 @@ section {
     background: #fff;
     border: 1px solid var(--gray-200);
     border-radius: var(--border-radius);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     min-width: 200px;
     max-height: 400px;
     overflow-y: auto;
@@ -758,7 +759,7 @@ section {
     z-index: 1010
 }
 
-.has-submenu:hover > .main-nav-submenu {
+.has-submenu:hover>.main-nav-submenu {
     opacity: 1;
     visibility: visible
 }
@@ -1008,6 +1009,7 @@ section {
         opacity: 0;
         transform: translateX(-50px)
     }
+
     to {
         opacity: 1;
         transform: translateX(0)
@@ -1223,6 +1225,7 @@ section {
     0% {
         transform: translateX(0)
     }
+
     100% {
         transform: translateX(-50%)
     }
@@ -1242,7 +1245,7 @@ section {
     cursor: pointer;
     text-decoration: none;
     position: relative;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     overflow: hidden;
 }
 
@@ -2081,7 +2084,7 @@ section {
     line-height: 1.6
 }
 
-.contact-details-modern p + p {
+.contact-details-modern p+p {
     margin-top: var(--spacing-xs)
 }
 
@@ -2447,8 +2450,15 @@ section {
 }
 
 @keyframes gradientShift {
-    0%, 100% { background-position: 0% 50% }
-    50% { background-position: 100% 50% }
+
+    0%,
+    100% {
+        background-position: 0% 50%
+    }
+
+    50% {
+        background-position: 100% 50%
+    }
 }
 
 .footer-main {
@@ -2467,16 +2477,28 @@ section {
     opacity: 0
 }
 
-.footer-col-modern:nth-child(1) { animation-delay: 0.1s }
-.footer-col-modern:nth-child(2) { animation-delay: 0.2s }
-.footer-col-modern:nth-child(3) { animation-delay: 0.3s }
-.footer-col-modern:nth-child(4) { animation-delay: 0.4s }
+.footer-col-modern:nth-child(1) {
+    animation-delay: 0.1s
+}
+
+.footer-col-modern:nth-child(2) {
+    animation-delay: 0.2s
+}
+
+.footer-col-modern:nth-child(3) {
+    animation-delay: 0.3s
+}
+
+.footer-col-modern:nth-child(4) {
+    animation-delay: 0.4s
+}
 
 @keyframes fadeInUp {
     to {
         opacity: 1;
         transform: translateY(0)
     }
+
     from {
         opacity: 0;
         transform: translateY(20px)
