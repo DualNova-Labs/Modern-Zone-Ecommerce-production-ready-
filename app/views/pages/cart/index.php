@@ -6,7 +6,7 @@ ob_start();
 <section class="breadcrumb">
     <div class="container">
         <ul class="breadcrumb-list">
-            <li><a href="<?= View::url('') ?>">Home</a></li>
+            <li><a href="/host/mod/">Home</a></li>
             <li>Shopping Cart</li>
         </ul>
     </div>
@@ -21,7 +21,7 @@ ob_start();
                 <i class="fas fa-shopping-cart"></i>
                 <h2>Your Cart is Empty</h2>
                 <p>Looks like you haven't added any items to your cart yet.</p>
-                <a href="<?= View::url('products') ?>" class="btn btn-primary btn-lg">
+                <a href="/host/mod/products" class="btn btn-primary btn-lg">
                     <i class="fas fa-shopping-bag"></i>
                     Continue Shopping
                 </a>
@@ -44,7 +44,7 @@ ob_start();
                                 
                                 <div class="cart-item-details">
                                     <h3 class="cart-item-title">
-                                        <a href="<?= View::url('products/' . ($item['slug'] ?? '#')) ?>">
+                                        <a href="/host/mod/products/<?= $item['slug'] ?? '#' ?>">
                                             <?= htmlspecialchars($item['name']) ?>
                                         </a>
                                     </h3>
@@ -102,7 +102,7 @@ ob_start();
                     
                     <!-- Cart Actions -->
                     <div class="cart-actions">
-                        <a href="<?= View::url('products') ?>" class="btn btn-secondary">
+                        <a href="/host/mod/products" class="btn btn-secondary">
                             <i class="fas fa-arrow-left"></i>
                             Continue Shopping
                         </a>
@@ -171,7 +171,7 @@ ob_start();
                     </div>
                     
                     <!-- Checkout Button -->
-                    <a href="<?= View::url('checkout') ?>" class="btn btn-primary btn-lg btn-block">
+                    <a href="/host/mod/checkout" class="btn btn-primary btn-lg btn-block">
                         <i class="fas fa-lock"></i>
                         Proceed to Checkout
                     </a>
@@ -261,7 +261,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Update cart item
     function updateCartItem(productId, quantity) {
-        fetch('<?= View::url('cart/update') ?>', {
+        fetch('/host/mod/cart/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -292,7 +292,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Remove cart item
     function removeCartItem(productId) {
-        fetch('<?= View::url('cart/remove') ?>', {
+        fetch('/host/mod/cart/remove', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Clear cart
     function clearCart() {
-        fetch('<?= View::url('cart/clear') ?>', {
+        fetch('/host/mod/cart/clear', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',

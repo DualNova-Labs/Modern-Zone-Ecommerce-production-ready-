@@ -2,7 +2,7 @@
 @import url('products.css');
 @import url('contact.css');
 @import url('cart.css');
-
+@import url('responsive.css');
 
 /* Base Responsive Fixes */
 * {
