@@ -28,21 +28,21 @@ ob_start();
                     <i class="fas fa-phone"></i>
                 </div>
                 <h4>Call Us</h4>
-                <p><?= $config['contact']['phone'] ?></p>
+                <p>+966 50 061 5631 / +966 590717769</p>
             </div>
             <div class="quick-contact-card">
                 <div class="quick-contact-icon">
                     <i class="fas fa-envelope"></i>
                 </div>
                 <h4>Email Us</h4>
-                <p><?= $config['contact']['email'] ?></p>
+                <p>info@modernzonetrading.com</p>
             </div>
             <div class="quick-contact-card">
                 <div class="quick-contact-icon">
                     <i class="fas fa-map-marker-alt"></i>
                 </div>
                 <h4>Visit Us</h4>
-                <p>Jeddah, Saudi Arabia</p>
+                <p>Riyadh & Dammam, KSA</p>
             </div>
         </div>
         
@@ -142,13 +142,14 @@ ob_start();
                     </div>
                     
                     <div class="contact-items-modern">
+                        <h4 style="color: #e74c3c; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">RIYADH BRANCH</h4>
                         <div class="contact-item-modern">
                             <div class="contact-icon-modern">
                                 <i class="fas fa-map-marker-alt"></i>
                             </div>
                             <div class="contact-details-modern">
-                                <h4>Our Address</h4>
-                                <p><?= $config['contact']['address'] ?></p>
+                                <h4>Address</h4>
+                                <p>Building #12, Al Kadid Street, Al Rawdah Dt., Riyadh</p>
                             </div>
                         </div>
                         
@@ -158,7 +159,7 @@ ob_start();
                             </div>
                             <div class="contact-details-modern">
                                 <h4>Phone Number</h4>
-                                <p><a href="tel:<?= str_replace(' ', '', $config['contact']['phone']) ?>"><?= $config['contact']['phone'] ?></a></p>
+                                <p><a href="tel:+966500615631">+966 50 061 5631</a></p>
                             </div>
                         </div>
                         
@@ -168,19 +169,48 @@ ob_start();
                             </div>
                             <div class="contact-details-modern">
                                 <h4>Email Address</h4>
-                                <p><a href="mailto:<?= $config['contact']['email'] ?>"><?= $config['contact']['email'] ?></a></p>
-                                <?php if (isset($config['contact']['email_secondary'])): ?>
-                                <p><a href="mailto:<?= $config['contact']['email_secondary'] ?>"><?= $config['contact']['email_secondary'] ?></a></p>
-                                <?php endif; ?>
+                                <p><a href="mailto:riyadh.br@modernzonetrading.com">riyadh.br@modernzonetrading.com</a></p>
+                            </div>
+                        </div>
+
+                        <h4 style="color: #e74c3c; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">DAMMAM BRANCH</h4>
+                        <div class="contact-item-modern">
+                            <div class="contact-icon-modern">
+                                <i class="fas fa-map-marker-alt"></i>
+                            </div>
+                            <div class="contact-details-modern">
+                                <h4>Address</h4>
+                                <p>Building #3731, 6th Street, Al Amamrah Dt. Dammam</p>
                             </div>
                         </div>
                         
                         <div class="contact-item-modern">
                             <div class="contact-icon-modern">
+                                <i class="fas fa-phone"></i>
+                            </div>
+                            <div class="contact-details-modern">
+                                <h4>Phone Number</h4>
+                                <p><a href="tel:+966590717769">+966 590717769</a></p>
+                            </div>
+                        </div>
+                        
+                        <div class="contact-item-modern">
+                            <div class="contact-icon-modern">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="contact-details-modern">
+                                <h4>Email Address</h4>
+                                <p><a href="mailto:info@modernzonetrading.com">info@modernzonetrading.com</a></p>
+                            </div>
+                        </div>
+
+                        <h4 style="color: #e74c3c; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;">WORKING HOURS</h4>
+                        <div class="contact-item-modern">
+                            <div class="contact-icon-modern">
                                 <i class="fas fa-clock"></i>
                             </div>
                             <div class="contact-details-modern">
-                                <h4>Working Hours</h4>
+                                <h4>Office Hours</h4>
                                 <p><?= $config['contact']['working_hours'] ?></p>
                             </div>
                         </div>
