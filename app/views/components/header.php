@@ -115,80 +115,32 @@
                                 <i class="fas fa-chevron-down"></i>
                             </a>
                             <div class="main-nav-dropdown-menu">
-                                <!-- Main Brands with Subcategories -->
-                                <div class="main-nav-dropdown-item has-submenu">
-                                    <span>Dormer <i class="fas fa-chevron-right"></i></span>
-                                    <div class="main-nav-submenu">
-                                        <a href="<?= View::url('products?brand=dormer&category=turning') ?>" class="main-nav-submenu-item">Turning</a>
-                                        <a href="<?= View::url('products?brand=dormer&category=indexable-milling') ?>" class="main-nav-submenu-item">Indexable Milling</a>
-                                        <a href="<?= View::url('products?brand=dormer&category=solid-milling') ?>" class="main-nav-submenu-item">Solid Milling</a>
-                                        <a href="<?= View::url('products?brand=dormer&category=hole-making') ?>" class="main-nav-submenu-item">Hole Making</a>
-                                        <a href="<?= View::url('products?brand=dormer&category=threading') ?>" class="main-nav-submenu-item">Threading</a>
-                                        <a href="<?= View::url('products?brand=dormer&category=tooling-systems') ?>" class="main-nav-submenu-item">Tooling Systems</a>
+                                <?php 
+                                require_once APP_PATH . '/models/Brand.php';
+                                $navBrands = Brand::getWithProducts();
+                                foreach ($navBrands as $brandData):
+                                    $brandObj = new Brand();
+                                    $brandObj->id = $brandData['id'];
+                                    $brandCategories = $brandObj->getCategories();
+                                    
+                                    if (!empty($brandCategories)):
+                                ?>
+                                    <div class="main-nav-dropdown-item has-submenu">
+                                        <span><?= htmlspecialchars($brandData['name']) ?> <i class="fas fa-chevron-right"></i></span>
+                                        <div class="main-nav-submenu">
+                                            <?php foreach ($brandCategories as $cat): ?>
+                                                <a href="<?= View::url('products?brand=' . $brandData['slug'] . '&category=' . $cat['slug']) ?>" class="main-nav-submenu-item">
+                                                    <?= htmlspecialchars($cat['name']) ?>
+                                                </a>
+                                            <?php endforeach; ?>
+                                        </div>
                                     </div>
-                                </div>
-                                <div class="main-nav-dropdown-item has-submenu">
-                                    <span>Sandvik Coromant <i class="fas fa-chevron-right"></i></span>
-                                    <div class="main-nav-submenu">
-                                        <a href="<?= View::url('products?brand=sandvik&category=turning') ?>" class="main-nav-submenu-item">Turning</a>
-                                        <a href="<?= View::url('products?brand=sandvik&category=indexable-milling') ?>" class="main-nav-submenu-item">Indexable Milling</a>
-                                        <a href="<?= View::url('products?brand=sandvik&category=solid-milling') ?>" class="main-nav-submenu-item">Solid Milling</a>
-                                        <a href="<?= View::url('products?brand=sandvik&category=hole-making') ?>" class="main-nav-submenu-item">Hole Making</a>
-                                        <a href="<?= View::url('products?brand=sandvik&category=threading') ?>" class="main-nav-submenu-item">Threading</a>
-                                        <a href="<?= View::url('products?brand=sandvik&category=tooling-systems') ?>" class="main-nav-submenu-item">Tooling Systems</a>
-                                    </div>
-                                </div>
-                                <div class="main-nav-dropdown-item has-submenu">
-                                    <span>Seco <i class="fas fa-chevron-right"></i></span>
-                                    <div class="main-nav-submenu">
-                                        <a href="<?= View::url('products?brand=seco&category=turning') ?>" class="main-nav-submenu-item">Turning</a>
-                                        <a href="<?= View::url('products?brand=seco&category=indexable-milling') ?>" class="main-nav-submenu-item">Indexable Milling</a>
-                                        <a href="<?= View::url('products?brand=seco&category=solid-milling') ?>" class="main-nav-submenu-item">Solid Milling</a>
-                                        <a href="<?= View::url('products?brand=seco&category=hole-making') ?>" class="main-nav-submenu-item">Hole Making</a>
-                                        <a href="<?= View::url('products?brand=seco&category=threading') ?>" class="main-nav-submenu-item">Threading</a>
-                                        <a href="<?= View::url('products?brand=seco&category=tooling-systems') ?>" class="main-nav-submenu-item">Tooling Systems</a>
-                                    </div>
-                                </div>
-                                <div class="main-nav-dropdown-item has-submenu">
-                                    <span>Pramet <i class="fas fa-chevron-right"></i></span>
-                                    <div class="main-nav-submenu">
-                                        <a href="<?= View::url('products?brand=pramet&category=turning') ?>" class="main-nav-submenu-item">Turning</a>
-                                        <a href="<?= View::url('products?brand=pramet&category=indexable-milling') ?>" class="main-nav-submenu-item">Indexable Milling</a>
-                                        <a href="<?= View::url('products?brand=pramet&category=solid-milling') ?>" class="main-nav-submenu-item">Solid Milling</a>
-                                        <a href="<?= View::url('products?brand=pramet&category=hole-making') ?>" class="main-nav-submenu-item">Hole Making</a>
-                                        <a href="<?= View::url('products?brand=pramet&category=threading') ?>" class="main-nav-submenu-item">Threading</a>
-                                        <a href="<?= View::url('products?brand=pramet&category=tooling-systems') ?>" class="main-nav-submenu-item">Tooling Systems</a>
-                                    </div>
-                                </div>
-                                <div class="main-nav-dropdown-item has-submenu">
-                                    <span>Kyocera <i class="fas fa-chevron-right"></i></span>
-                                    <div class="main-nav-submenu">
-                                        <a href="<?= View::url('products?brand=kyocera&category=turning') ?>" class="main-nav-submenu-item">Turning</a>
-                                        <a href="<?= View::url('products?brand=kyocera&category=indexable-milling') ?>" class="main-nav-submenu-item">Indexable Milling</a>
-                                        <a href="<?= View::url('products?brand=kyocera&category=solid-milling') ?>" class="main-nav-submenu-item">Solid Milling</a>
-                                        <a href="<?= View::url('products?brand=kyocera&category=hole-making') ?>" class="main-nav-submenu-item">Hole Making</a>
-                                        <a href="<?= View::url('products?brand=kyocera&category=threading') ?>" class="main-nav-submenu-item">Threading</a>
-                                        <a href="<?= View::url('products?brand=kyocera&category=tooling-systems') ?>" class="main-nav-submenu-item">Tooling Systems</a>
-                                    </div>
-                                </div>
-                                <div class="main-nav-dropdown-item has-submenu">
-                                    <span>YG-1 <i class="fas fa-chevron-right"></i></span>
-                                    <div class="main-nav-submenu">
-                                        <a href="<?= View::url('products?brand=yg-1&category=turning') ?>" class="main-nav-submenu-item">Turning</a>
-                                        <a href="<?= View::url('products?brand=yg-1&category=indexable-milling') ?>" class="main-nav-submenu-item">Indexable Milling</a>
-                                        <a href="<?= View::url('products?brand=yg-1&category=solid-milling') ?>" class="main-nav-submenu-item">Solid Milling</a>
-                                        <a href="<?= View::url('products?brand=yg-1&category=hole-making') ?>" class="main-nav-submenu-item">Hole Making</a>
-                                        <a href="<?= View::url('products?brand=yg-1&category=threading') ?>" class="main-nav-submenu-item">Threading</a>
-                                        <a href="<?= View::url('products?brand=yg-1&category=tooling-systems') ?>" class="main-nav-submenu-item">Tooling Systems</a>
-                                    </div>
-                                </div>
-                                
-                                <!-- Other Brands (Simple Links) -->
-                                <div class="dropdown-divider"></div>
-                                <a href="<?= View::url('products?brand=vertex') ?>" class="main-nav-dropdown-item">Vertex</a>
-                                <a href="<?= View::url('products?brand=pafana') ?>" class="main-nav-dropdown-item">Pafana</a>
-                                <a href="<?= View::url('products?brand=mitutoyo') ?>" class="main-nav-dropdown-item">Mitutoyo</a>
-                                <a href="<?= View::url('products?brand=fibro') ?>" class="main-nav-dropdown-item">Fibro</a>
+                                <?php else: ?>
+                                    <a href="<?= View::url('products?brand=' . $brandData['slug']) ?>" class="main-nav-dropdown-item">
+                                        <?= htmlspecialchars($brandData['name']) ?>
+                                    </a>
+                                <?php endif; ?>
+                                <?php endforeach; ?>
                             </div>
                         </li>
                         <li class="main-nav-item main-nav-dropdown">

@@ -22,13 +22,13 @@ ob_start();
 <div class="section">
     <h2 style="font-size: 20px; margin-bottom: 25px; font-weight: 700; color: #1e293b;">✏️ Edit Brand</h2>
 
-    <form method="POST" action="<?= View::url('/admin/brands/' . $brand['id']) ?>" enctype="multipart/form-data">
+    <form method="POST" action="<?= View::url('/admin/brands/' . $brand->id) ?>" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
 
         <div class="form-row">
             <div class="form-group">
                 <label for="name">Brand Name *</label>
-                <input type="text" id="name" name="name" value="<?= htmlspecialchars($brand['name'] ?? '') ?>" required>
+                <input type="text" id="name" name="name" value="<?= htmlspecialchars($brand->name ?? '') ?>" required>
                 <?php if (!empty($errors['name'])): ?>
                 <div class="error"><?= $errors['name'] ?></div>
                 <?php endif; ?>
@@ -36,7 +36,7 @@ ob_start();
 
             <div class="form-group">
                 <label for="slug">Slug</label>
-                <input type="text" id="slug" name="slug" value="<?= htmlspecialchars($brand['slug'] ?? '') ?>">
+                <input type="text" id="slug" name="slug" value="<?= htmlspecialchars($brand->slug ?? '') ?>">
                 <small style="color: #64748b;">Leave empty to auto-generate</small>
                 <?php if (!empty($errors['slug'])): ?>
                 <div class="error"><?= $errors['slug'] ?></div>
@@ -46,39 +46,39 @@ ob_start();
 
         <div class="form-group">
             <label for="description">Description</label>
-            <input type="text" id="description" name="description" value="<?= htmlspecialchars($brand['description'] ?? '') ?>">
+            <input type="text" id="description" name="description" value="<?= htmlspecialchars($brand->description ?? '') ?>">
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label for="website">Website</label>
-                <input type="url" id="website" name="website" value="<?= htmlspecialchars($brand['website'] ?? '') ?>" placeholder="https://brand.com">
+                <input type="url" id="website" name="website" value="<?= htmlspecialchars($brand->website ?? '') ?>" placeholder="https://brand.com">
             </div>
 
             <div class="form-group">
                 <label for="country">Country</label>
-                <input type="text" id="country" name="country" value="<?= htmlspecialchars($brand['country'] ?? '') ?>">
+                <input type="text" id="country" name="country" value="<?= htmlspecialchars($brand->country ?? '') ?>">
             </div>
         </div>
 
         <div class="form-row">
             <div class="form-group">
                 <label for="founded_year">Founded Year</label>
-                <input type="number" id="founded_year" name="founded_year" value="<?= htmlspecialchars($brand['founded_year'] ?? '') ?>" min="1800" max="<?= date('Y') ?>">
+                <input type="number" id="founded_year" name="founded_year" value="<?= htmlspecialchars($brand->founded_year ?? '') ?>" min="1800" max="<?= date('Y') ?>">
             </div>
 
             <div class="form-group">
                 <label for="sort_order">Sort Order</label>
-                <input type="number" id="sort_order" name="sort_order" value="<?= htmlspecialchars($brand['sort_order'] ?? '0') ?>" min="0">
+                <input type="number" id="sort_order" name="sort_order" value="<?= htmlspecialchars($brand->sort_order ?? '0') ?>" min="0">
             </div>
         </div>
 
         <div class="form-group">
             <label for="logo">Brand Logo</label>
-            <?php if (!empty($brand['logo'])): ?>
+            <?php if (!empty($brand->logo)): ?>
                 <div class="form-group">
                     <label style="font-size: 13px; color: #64748b;">Current Logo:</label>
-                    <img src="<?= BASE_URL . '/' . htmlspecialchars($brand['logo']) ?>" alt="Current Logo" class="current-logo" 
+                    <img src="<?= BASE_URL . '/' . htmlspecialchars($brand->logo) ?>" alt="Current Logo" class="current-logo" 
                          onerror="this.style.display='none'">
                 </div>
             <?php endif; ?>
@@ -88,20 +88,20 @@ ob_start();
 
         <div class="form-group">
             <label for="about">About Brand</label>
-            <textarea id="about" name="about"><?= htmlspecialchars($brand['about'] ?? '') ?></textarea>
+            <textarea id="about" name="about"><?= htmlspecialchars($brand->about ?? '') ?></textarea>
         </div>
 
         <div class="form-group">
             <label for="specialties">Specialties</label>
-            <textarea id="specialties" name="specialties"><?= htmlspecialchars($brand['specialties'] ?? '') ?></textarea>
+            <textarea id="specialties" name="specialties"><?= htmlspecialchars($brand->specialties ?? '') ?></textarea>
             <small style="color: #64748b;">e.g., Cutting Tools, Measuring Instruments, etc.</small>
         </div>
 
         <div class="form-group">
             <label for="status">Status</label>
             <select id="status" name="status">
-                <option value="active" <?= ($brand['status'] ?? 'active') == 'active' ? 'selected' : '' ?>>Active</option>
-                <option value="inactive" <?= ($brand['status'] ?? '') == 'inactive' ? 'selected' : '' ?>>Inactive</option>
+                <option value="active" <?= ($brand->status ?? 'active') == 'active' ? 'selected' : '' ?>>Active</option>
+                <option value="inactive" <?= ($brand->status ?? '') == 'inactive' ? 'selected' : '' ?>>Inactive</option>
             </select>
         </div>
 

@@ -86,4 +86,20 @@ class Brand extends Model
              ORDER BY b.name"
         );
     }
+    /**
+     * Get categories for this brand that have active products
+     */
+    public function getCategories()
+    {
+        return $this->db->select(
+            "SELECT DISTINCT c.* 
+             FROM categories c 
+             JOIN products p ON p.category_id = c.id 
+             WHERE p.brand_id = :brand_id 
+             AND p.status = 'active' 
+             AND c.status = 'active'
+             ORDER BY c.name",
+            ['brand_id' => $this->id]
+        );
+    }
 }

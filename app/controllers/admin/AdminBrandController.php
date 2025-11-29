@@ -247,14 +247,14 @@ class AdminBrandController
             
             if (move_uploaded_file($_FILES['logo']['tmp_name'], $targetPath)) {
                 // Delete old logo if exists
-                if (!empty($brand['logo']) && file_exists(ROOT_PATH . '/' . $brand['logo'])) {
-                    unlink(ROOT_PATH . '/' . $brand['logo']);
+                if (!empty($brand->logo) && file_exists(ROOT_PATH . '/' . $brand->logo)) {
+                    unlink(ROOT_PATH . '/' . $brand->logo);
                 }
                 $data['logo'] = 'public/assets/images/brands/' . $fileName;
             }
         } else {
             // Keep existing logo
-            $data['logo'] = $brand['logo'];
+            $data['logo'] = $brand->logo;
         }
         
         // Update brand

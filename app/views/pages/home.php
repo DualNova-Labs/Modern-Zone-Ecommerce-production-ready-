@@ -67,17 +67,7 @@ ob_start();
                         <?php foreach ($brands as $brand): ?>
                             <a href="<?= View::url('products?brand=' . urlencode($brand['slug'])) ?>" class="brand-item">
                                 <div class="brand-logo">
-                                    <img src="<?= BASE_URL . '/' . htmlspecialchars($brand['logo']) ?>" 
-                                         alt="<?= htmlspecialchars($brand['name']) ?>" 
-                                         onerror="this.style.display='none'; this.parentElement.innerHTML='<?= htmlspecialchars($brand['name']) ?>';">
-                                </div>
-                            </a>
-                        <?php endforeach; ?>
-                        <!-- Duplicate for infinite scroll -->
-                        <?php foreach ($brands as $brand): ?>
-                            <a href="<?= View::url('products?brand=' . urlencode($brand['slug'])) ?>" class="brand-item">
-                                <div class="brand-logo">
-                                    <img src="<?= BASE_URL . '/' . htmlspecialchars($brand['logo']) ?>" 
+                                    <img src="<?= htmlspecialchars($brand['logo']) ?>" 
                                          alt="<?= htmlspecialchars($brand['name']) ?>" 
                                          onerror="this.style.display='none'; this.parentElement.innerHTML='<?= htmlspecialchars($brand['name']) ?>';">
                                 </div>

@@ -611,6 +611,276 @@ ob_start();
             justify-content: center;
         }
     }
+    
+    /* Modal Styles */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        animation: fadeIn 0.3s ease-out;
+    }
+    
+    .modal-overlay.active {
+        display: flex;
+    }
+    
+    .modal {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        max-width: 800px;
+        width: 100%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #e2e8f0;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0;
+    }
+    
+    .modal-title svg {
+        width: 24px;
+        height: 24px;
+        color: #6366f1;
+    }
+    
+    .modal-close {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .modal-close svg {
+        width: 20px;
+        height: 20px;
+        color: #64748b;
+    }
+    
+    .modal-close:hover {
+        background: #f1f5f9;
+        transform: rotate(90deg);
+    }
+    
+    .modal-body {
+        padding: 2rem;
+        overflow-y: auto;
+        flex: 1;
+    }
+    
+    .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1.5rem 2rem;
+        border-top: 1px solid #e2e8f0;
+        background: #f8fafc;
+        border-radius: 0 0 16px 16px;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .form-label.required::after {
+        content: ' *';
+        color: #ef4444;
+    }
+    
+    .form-input,
+    .form-select,
+    .form-textarea {
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        background: white;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: inherit;
+    }
+    
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .form-help {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: -0.25rem;
+    }
+    
+    .file-upload {
+        position: relative;
+    }
+    
+    .file-upload-input {
+        position: absolute;
+        width: 0.1px;
+        height: 0.1px;
+        opacity: 0;
+        overflow: hidden;
+        z-index: -1;
+    }
+    
+    .file-upload-label {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        border: 2px dashed #e2e8f0;
+        border-radius: 12px;
+        background: #f8fafc;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        text-align: center;
+    }
+    
+    .file-upload-label:hover {
+        border-color: #6366f1;
+        background: rgba(99, 102, 241, 0.05);
+    }
+    
+    .file-upload-icon {
+        width: 48px;
+        height: 48px;
+        color: #64748b;
+        margin-bottom: 1rem;
+    }
+    
+    .file-upload-text {
+        color: #64748b;
+    }
+    
+    .file-upload-text strong {
+        color: #6366f1;
+        display: inline-block;
+    }
+    
+    .file-upload-text small {
+        display: block;
+        margin-top: 0.25rem;
+        font-size: 0.75rem;
+    }
+    
+    .btn-secondary {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+    }
+    
+    .btn-secondary:hover {
+        background: #e2e8f0;
+        color: #475569;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .modal {
+            max-width: 95%;
+            max-height: 95vh;
+        }
+        
+        .modal-header,
+        .modal-body,
+        .modal-footer {
+            padding: 1rem;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+        }
+        
+        .modal-footer {
+            flex-direction: column;
+        }
+        
+        .modal-footer .btn {
+            width: 100%;
+        }
+    }
 </style>
 
 <div class="section-card">
@@ -1776,6 +2046,223 @@ ob_start();
         </form>
     </div>
 </div>
+
+<script>
+// Modal Functions
+function openCreateModal() {
+    console.log('Opening create modal');
+    const modal = document.getElementById('createProductModal');
+    if (modal) {
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    } else {
+        console.error('Create modal not found');
+    }
+}
+
+function closeCreateModal() {
+    const modal = document.getElementById('createProductModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+        // Reset form
+        document.getElementById('createProductForm').reset();
+    }
+}
+
+function openEditModal(productId) {
+    console.log('Opening edit modal for product:', productId);
+    const modal = document.getElementById('editProductModal');
+    if (!modal) {
+        console.error('Edit modal not found');
+        return;
+    }
+    
+    const url = `<?= View::url('/admin/products/') ?>${productId}/edit`;
+    console.log('Fetching product data from:', url);
+    
+    // Fetch product data
+    fetch(url)
+        .then(response => {
+            console.log('Response status:', response.status);
+            return response.text().then(text => {
+                try {
+                    return JSON.parse(text);
+                } catch (e) {
+                    console.error('Failed to parse JSON:', text);
+                    throw new Error('Invalid JSON response');
+                }
+            });
+        })
+        .then(data => {
+            console.log('Product data:', data);
+            if (data.success && data.product) {
+                const product = data.product;
+                
+                // Populate form fields
+                document.getElementById('edit_product_id').value = product.id;
+                document.getElementById('edit_name').value = product.name || '';
+                document.getElementById('edit_sku').value = product.sku || '';
+                document.getElementById('edit_category_id').value = product.category_id || '';
+                document.getElementById('edit_brand_id').value = product.brand_id || '';
+                document.getElementById('edit_description').value = product.description || '';
+                document.getElementById('edit_price').value = product.price || '';
+                document.getElementById('edit_compare_price').value = product.compare_price || '';
+                document.getElementById('edit_quantity').value = product.quantity || 0;
+                document.getElementById('edit_min_quantity').value = product.min_quantity || 1;
+                document.getElementById('edit_status').value = product.status || 'active';
+                
+                // Set checkboxes
+                document.getElementById('edit_featured').checked = product.featured == 1;
+                document.getElementById('edit_best_seller').checked = product.best_seller == 1;
+                document.getElementById('edit_new_arrival').checked = product.new_arrival == 1;
+                
+                // Show current image if exists
+                const currentImageDiv = document.getElementById('edit_currentImage');
+                if (product.image) {
+                    currentImageDiv.innerHTML = `
+                        <div style="margin-bottom: 1rem;">
+                            <label class="form-label">Current Image</label>
+                            <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; background: #f8fafc;">
+                                <img src="<?= BASE_URL ?>/${product.image}" alt="${product.name}" style="max-width: 200px; max-height: 200px; object-fit: contain;">
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    currentImageDiv.innerHTML = '';
+                }
+                
+                // Update form action
+                document.getElementById('editProductForm').action = `<?= View::url('/admin/products/') ?>${productId}`;
+                
+                // Show modal
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } else {
+                alert('Failed to load product data: ' + (data.message || 'Unknown error'));
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while loading product data. Check console for details.');
+        });
+}
+
+function closeEditModal() {
+    const modal = document.getElementById('editProductModal');
+    if (modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+}
+
+function deleteProduct(productId) {
+    if (!confirm('Are you sure you want to delete this product?')) {
+        return;
+    }
+    
+    const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+    
+    fetch(`<?= View::url('/admin/products/') ?>${productId}/delete`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `csrf_token=${encodeURIComponent(csrfToken)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert(data.message || 'Product deleted successfully');
+            location.reload();
+        } else {
+            alert(data.error || 'Failed to delete product');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred while deleting the product');
+    });
+}
+
+function toggleFeatured(productId, button) {
+    const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+    
+    fetch(`<?= View::url('/admin/products/') ?>${productId}/toggle-featured`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `csrf_token=${encodeURIComponent(csrfToken)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.featured) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        } else {
+            alert(data.error || 'Failed to update featured status');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred');
+    });
+}
+
+function toggleBestSeller(productId, button) {
+    const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+    
+    // Fixed URL to match route: toggle-bestseller instead of toggle-best-seller
+    fetch(`<?= View::url('/admin/products/') ?>${productId}/toggle-bestseller`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `csrf_token=${encodeURIComponent(csrfToken)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            if (data.best_seller) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        } else {
+            alert(data.error || 'Failed to update best seller status');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred');
+    });
+}
+
+// Close modals when clicking outside
+document.addEventListener('click', function(e) {
+    const createModal = document.getElementById('createProductModal');
+    const editModal = document.getElementById('editProductModal');
+    
+    if (e.target === createModal) {
+        closeCreateModal();
+    }
+    if (e.target === editModal) {
+        closeEditModal();
+    }
+});
+
+// Close modals with Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeCreateModal();
+        closeEditModal();
+    }
+});
+</script>
 
 <?php
 $content = ob_get_clean();
