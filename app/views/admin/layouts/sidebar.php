@@ -39,6 +39,13 @@ $user = Auth::getInstance()->user();
             <span>Products</span>
         </a>
 
+        <a href="<?= View::url('/admin/categories') ?>" class="nav-item <?= strpos($currentPath, '/admin/categories') !== false ? 'active' : '' ?>">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+            </svg>
+            <span>Categories</span>
+        </a>
+
         <a href="<?= View::url('/admin/orders') ?>" class="nav-item <?= strpos($currentPath, '/admin/orders') !== false ? 'active' : '' ?>">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"></circle>

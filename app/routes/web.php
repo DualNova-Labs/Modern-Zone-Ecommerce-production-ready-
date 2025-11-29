@@ -96,11 +96,11 @@ $router->get('/admin/orders/export', 'admin/AdminOrderController@export');
 // Admin Category Management
 $router->get('/admin/categories', 'admin/AdminCategoryController@index');
 $router->get('/admin/categories/create', 'admin/AdminCategoryController@create');
-$router->post('/admin/categories', 'admin/AdminCategoryController@store');
+$router->post('/admin/categories/store', 'admin/AdminCategoryController@store');
 $router->get('/admin/categories/{id}/edit', 'admin/AdminCategoryController@edit');
-$router->post('/admin/categories/{id}', 'admin/AdminCategoryController@update');
+$router->post('/admin/categories/{id}/update', 'admin/AdminCategoryController@update');
 $router->post('/admin/categories/{id}/delete', 'admin/AdminCategoryController@destroy');
-$router->post('/admin/categories/{id}/toggle-status', 'admin/AdminCategoryController@toggleStatus');
+$router->get('/admin/categories/{id}/toggle-status', 'admin/AdminCategoryController@toggleStatus');
 
 // Admin Brand Management
 $router->get('/admin/brands', 'admin/AdminBrandController@index');

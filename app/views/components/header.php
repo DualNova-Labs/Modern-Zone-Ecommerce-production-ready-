@@ -149,16 +149,15 @@
                                 <i class="fas fa-chevron-down"></i>
                             </a>
                             <div class="main-nav-dropdown-menu">
-                                <a href="<?= View::url('products?category=hand-tools') ?>" class="main-nav-dropdown-item">Hand Tools</a>
-                                <a href="<?= View::url('products?category=power-tools-electrical') ?>" class="main-nav-dropdown-item">Power Tools Electrical</a>
-                                <a href="<?= View::url('products?category=other-measuring-instruments') ?>" class="main-nav-dropdown-item">Other Measuring Instruments</a>
-                                <a href="<?= View::url('products?category=safety') ?>" class="main-nav-dropdown-item">Safety</a>
-                                <a href="<?= View::url('products?category=machine-shop') ?>" class="main-nav-dropdown-item">Machine Shop</a>
-                                <a href="<?= View::url('products?category=abrasive') ?>" class="main-nav-dropdown-item">Abrasive</a>
-                                <a href="<?= View::url('products?category=welding') ?>" class="main-nav-dropdown-item">Welding</a>
-                                <a href="<?= View::url('products?category=plumbing') ?>" class="main-nav-dropdown-item">Plumbing</a>
-                                <a href="<?= View::url('products?category=construction') ?>" class="main-nav-dropdown-item">Construction</a>
-                                <a href="<?= View::url('products?category=uncategorized') ?>" class="main-nav-dropdown-item">Uncategorized/Others</a>
+                                <?php 
+                                require_once APP_PATH . '/models/Category.php';
+                                $generalCategories = Category::getByType('general');
+                                foreach ($generalCategories as $category):
+                                ?>
+                                    <a href="<?= View::url('products?category=' . $category['slug']) ?>" class="main-nav-dropdown-item">
+                                        <?= htmlspecialchars($category['name']) ?>
+                                    </a>
+                                <?php endforeach; ?>
                             </div>
                         </li>
                         <li class="main-nav-item main-nav-dropdown">
@@ -167,33 +166,14 @@
                                 <i class="fas fa-chevron-down"></i>
                             </a>
                             <div class="main-nav-dropdown-menu">
-                                <a href="<?= View::url('products?category=ball-cages') ?>" class="main-nav-dropdown-item">Ball Cages</a>
-                                <a href="<?= View::url('products?category=band-saw-blades') ?>" class="main-nav-dropdown-item">Band Saw Blades</a>
-                                <a href="<?= View::url('products?category=brazed-tool-holders') ?>" class="main-nav-dropdown-item">Brazed Tool Holders</a>
-                                <a href="<?= View::url('products?category=bushes') ?>" class="main-nav-dropdown-item">Bushes</a>
-                                <a href="<?= View::url('products?category=carbide-hss-drill-bits') ?>" class="main-nav-dropdown-item">Carbide & HSS Drill Bits</a>
-                                <a href="<?= View::url('products?category=carbide-hss-end-mills') ?>" class="main-nav-dropdown-item">Carbide & HSS End Mills</a>
-                                <a href="<?= View::url('products?category=carbide-rotary-burrs') ?>" class="main-nav-dropdown-item">Carbide Rotary Burrs</a>
-                                <a href="<?= View::url('products?category=drill-chucks-lathe') ?>" class="main-nav-dropdown-item">Drill Chucks & Lathe</a>
-                                <a href="<?= View::url('products?category=ejector-pins') ?>" class="main-nav-dropdown-item">Ejector Pins</a>
-                                <a href="<?= View::url('products?category=fibro') ?>" class="main-nav-dropdown-item">Fibro</a>
-                                <a href="<?= View::url('products?category=grooving-threading-cut') ?>" class="main-nav-dropdown-item">Grooving, Threading, Cut</a>
-                                <a href="<?= View::url('products?category=hack-saw-blades') ?>" class="main-nav-dropdown-item">Hack Saw Blades</a>
-                                <a href="<?= View::url('products?category=hole-saw-blades') ?>" class="main-nav-dropdown-item">Hole Saw Blades</a>
-                                <a href="<?= View::url('products?category=hole-saw-core-cutters') ?>" class="main-nav-dropdown-item">Hole Saw and Core Cutters</a>
-                                <a href="<?= View::url('products?category=machine-tool-accessories') ?>" class="main-nav-dropdown-item">Machine Tool Accessories</a>
-                                <a href="<?= View::url('products?category=measuring-instruments') ?>" class="main-nav-dropdown-item">Measuring Instruments</a>
-                                <a href="<?= View::url('products?category=milling-cutters') ?>" class="main-nav-dropdown-item">Milling Cutters</a>
-                                <a href="<?= View::url('products?category=pcd-cbn-ceramic-inserts') ?>" class="main-nav-dropdown-item">PCD, CBN Ceramic Inserts</a>
-                                <a href="<?= View::url('products?category=pillars') ?>" class="main-nav-dropdown-item">Pillars</a>
-                                <a href="<?= View::url('products?category=punches') ?>" class="main-nav-dropdown-item">Punches</a>
-                                <a href="<?= View::url('products?category=reamers-countersinks') ?>" class="main-nav-dropdown-item">Reamers & Countersinks</a>
-                                <a href="<?= View::url('products?category=springs') ?>" class="main-nav-dropdown-item">Springs</a>
-                                <a href="<?= View::url('products?category=standard-parts-dies-molds') ?>" class="main-nav-dropdown-item">Standard Parts for Dies & Molds</a>
-                                <a href="<?= View::url('products?category=taps-dies') ?>" class="main-nav-dropdown-item">Taps & Dies</a>
-                                <a href="<?= View::url('products?category=turning-holders') ?>" class="main-nav-dropdown-item">Turning Holders</a>
-                                <a href="<?= View::url('products?category=turning-inserts') ?>" class="main-nav-dropdown-item">Turning Inserts</a>
-                                <a href="<?= View::url('products?category=u-drills') ?>" class="main-nav-dropdown-item">U Drills</a>
+                                <?php 
+                                $ourProductsCategories = Category::getByType('our-products');
+                                foreach ($ourProductsCategories as $category):
+                                ?>
+                                    <a href="<?= View::url('products?category=' . $category['slug']) ?>" class="main-nav-dropdown-item">
+                                        <?= htmlspecialchars($category['name']) ?>
+                                    </a>
+                                <?php endforeach; ?>
                             </div>
                         </li>
                         <li class="main-nav-item">

@@ -8,7 +8,7 @@ class Category extends Model
 {
     protected $table = 'categories';
     protected $fillable = [
-        'parent_id', 'name', 'slug', 'description', 
+        'parent_id', 'type', 'name', 'slug', 'description', 
         'image', 'icon', 'sort_order', 'status'
     ];
     
@@ -30,6 +30,20 @@ class Category extends Model
             "SELECT * FROM categories 
              WHERE status = 'active' 
              ORDER BY sort_order, name"
+        );
+    }
+    
+    /**
+     * Get active categories by type
+     */
+    public static function getByType($type = 'general')
+    {
+        $db = Database::getInstance();
+        return $db->select(
+            "SELECT * FROM categories 
+             WHERE status = 'active' AND type = :type
+             ORDER BY sort_order, name",
+            ['type' => $type]
         );
     }
     

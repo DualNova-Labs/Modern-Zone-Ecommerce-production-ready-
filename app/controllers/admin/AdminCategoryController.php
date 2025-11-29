@@ -89,6 +89,7 @@ class AdminCategoryController
         // Get and sanitize input
         $data = [
             'parent_id' => Request::post('parent_id') ?: null,
+            'type' => Request::post('type', 'general'),
             'name' => $this->security->cleanInput(Request::post('name')),
             'slug' => $this->security->cleanInput(Request::post('slug')),
             'description' => $this->security->cleanInput(Request::post('description')),
@@ -191,6 +192,7 @@ class AdminCategoryController
         // Get and sanitize input
         $data = [
             'parent_id' => Request::post('parent_id') ?: null,
+            'type' => Request::post('type', 'general'),
             'name' => $this->security->cleanInput(Request::post('name')),
             'slug' => $this->security->cleanInput(Request::post('slug')),
             'description' => $this->security->cleanInput(Request::post('description')),
