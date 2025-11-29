@@ -33,13 +33,6 @@ class AdminBrandController
              ORDER BY b.name"
         );
         
-        // Add subcategory IDs for each brand
-        foreach ($brands as &$brand) {
-            $brandObj = new Brand();
-            $brandObj->id = $brand['id'];
-            $brand['subcategory_ids'] = $brandObj->getSubcategoryIds();
-        }
-        
         $data = [
             'title' => 'Brands Management',
             'brands' => $brands,
@@ -268,15 +261,6 @@ class AdminBrandController
         try {
             $db = Database::getInstance();
             $db->update('brands', $data, 'id = :id', ['id' => $id]);
-            
-            // Sync subcategories
-            $subcategoryIds = Request::post('subcategory_ids', []);
-            if (!empty($subcategoryIds)) {
-                $brand->syncSubcategories($subcategoryIds);
-            } else {
-                // Clear all subcategories if none selected
-                $brand->syncSubcategories([]);
-            }
             
             $_SESSION['brand_success'] = 'Brand updated successfully!';
             header('Location: ' . View::url('/admin/brands'));
