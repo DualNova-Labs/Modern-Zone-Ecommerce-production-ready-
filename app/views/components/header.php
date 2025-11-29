@@ -117,7 +117,7 @@
                             <div class="main-nav-dropdown-menu">
                                 <?php 
                                 require_once APP_PATH . '/models/Brand.php';
-                                $navBrands = Brand::getWithProducts();
+                                $navBrands = Brand::getActive();
                                 foreach ($navBrands as $brandData):
                                     $brandObj = new Brand();
                                     $brandObj->id = $brandData['id'];

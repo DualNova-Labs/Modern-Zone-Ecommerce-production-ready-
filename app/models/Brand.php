@@ -87,19 +87,90 @@ class Brand extends Model
         );
     }
     /**
-     * Get categories for this brand that have active products
+     * Get categories for this brand from the pivot table
      */
     public function getCategories()
     {
-        return $this->db->select(
+        // First try to get from pivot table
+        $pivotCategories = $this->db->select(
             "SELECT DISTINCT c.* 
              FROM categories c 
-             JOIN products p ON p.category_id = c.id 
-             WHERE p.brand_id = :brand_id 
-             AND p.status = 'active' 
+             JOIN brand_subcategory bs ON bs.subcategory_id = c.id 
+             WHERE bs.brand_id = :brand_id 
              AND c.status = 'active'
              ORDER BY c.name",
             ['brand_id' => $this->id]
         );
+        
+        // If no pivot data, fall back to categories with products
+        if (empty($pivotCategories)) {
+            return $this->db->select(
+                "SELECT DISTINCT c.* 
+                 FROM categories c 
+                 JOIN products p ON p.category_id = c.id 
+                 WHERE p.brand_id = :brand_id 
+                 AND p.status = 'active' 
+                 AND c.status = 'active'
+                 ORDER BY c.name",
+                ['brand_id' => $this->id]
+            );
+        }
+        
+        return $pivotCategories;
+    }
+    
+    /**
+     * Get subcategories assigned to this brand
+     */
+    public function getSubcategories()
+    {
+        return $this->db->select(
+            "SELECT c.* 
+             FROM categories c 
+             JOIN brand_subcategory bs ON bs.subcategory_id = c.id 
+             WHERE bs.brand_id = :brand_id 
+             AND c.status = 'active' 
+             AND c.parent_id IS NOT NULL
+             ORDER BY c.name",
+            ['brand_id' => $this->id]
+        );
+    }
+    
+    /**
+     * Get subcategory IDs for this brand
+     */
+    public function getSubcategoryIds()
+    {
+        $subcategories = $this->db->select(
+            "SELECT subcategory_id FROM brand_subcategory WHERE brand_id = :brand_id",
+            ['brand_id' => $this->id]
+        );
+        
+        return array_column($subcategories, 'subcategory_id');
+    }
+    
+    /**
+     * Sync subcategories for this brand
+     * @param array $subcategoryIds Array of category IDs to link to this brand
+     */
+    public function syncSubcategories($subcategoryIds)
+    {
+        // Delete existing relationships
+        $this->db->query(
+            'DELETE FROM brand_subcategory WHERE brand_id = :brand_id',
+            ['brand_id' => $this->id]
+        );
+        
+        // Insert new relationships
+        if (!empty($subcategoryIds)) {
+            foreach ($subcategoryIds as $subcategoryId) {
+                $this->db->insert('brand_subcategory', [
+                    'brand_id' => $this->id,
+                    'subcategory_id' => $subcategoryId
+                ]);
+            }
+        }
+        
+        return true;
     }
 }

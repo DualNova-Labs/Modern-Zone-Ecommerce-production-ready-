@@ -1,7 +1,13 @@
--- Modern Zone Trading Database Schema
+-- Modern Zone Trading Complete Database Schema
+-- Generated on 2025-11-29
 -- Supports MySQL/MariaDB
 
+-- ==========================================
+-- 1. Base Schema (from schema.sql)
+-- ==========================================
+
 -- Drop tables if they exist (for fresh installation)
+DROP TABLE IF EXISTS brand_subcategory; -- Drop pivot table first due to FKs
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS orders;
 DROP TABLE IF EXISTS cart_items;
@@ -266,7 +272,6 @@ CREATE TABLE order_items (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert default admin user (password: Admin@123)
--- Note: Run setup_admin.php to create/update admin user with correct password hash
 INSERT INTO users (name, email, password, role, status, email_verified_at) VALUES
 ('Admin', 'admin@modernzonetrading.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active', NOW())
 ON DUPLICATE KEY UPDATE 
@@ -274,3 +279,84 @@ ON DUPLICATE KEY UPDATE
     status = 'active',
     email_verified_at = NOW();
 
+
+-- ==========================================
+-- 2. Migrations (from add_category_type.sql)
+-- ==========================================
+
+-- Add type column to categories table
+-- This allows distinguishing between 'general' and 'our-products' categories
+ALTER TABLE categories 
+ADD COLUMN type ENUM('general', 'our-products') DEFAULT 'general' AFTER parent_id;
+
+-- Add index for type column for better query performance
+ALTER TABLE categories 
+ADD INDEX idx_type (type);
+
+-- Update existing hardcoded categories if they exist in the database
+-- These are the current "GENERAL CATEGORIES" in the navigation
+UPDATE categories SET type = 'general' WHERE slug IN (
+    'hand-tools',
+    'power-tools-electrical',
+    'other-measuring-instruments',
+    'safety',
+    'machine-shop',
+    'abrasive',
+    'welding',
+    'plumbing',
+    'construction',
+    'uncategorized'
+);
+
+-- These are the current "OUR PRODUCTS" categories in the navigation
+UPDATE categories SET type = 'our-products' WHERE slug IN (
+    'ball-cages',
+    'band-saw-blades',
+    'brazed-tool-holders',
+    'bushes',
+    'carbide-hss-drill-bits',
+    'carbide-hss-end-mills',
+    'carbide-rotary-burrs',
+    'drill-chucks-lathe',
+    'ejector-pins',
+    'fibro',
+    'grooving-threading-cut',
+    'hack-saw-blades',
+    'hole-saw-blades',
+    'hole-saw-core-cutters',
+    'machine-tool-accessories',
+    'measuring-instruments',
+    'milling-cutters',
+    'pcd-cbn-ceramic-inserts',
+    'pillars',
+    'punches',
+    'reamers-countersinks',
+    'springs',
+    'standard-parts-dies-molds',
+    'taps-dies',
+    'turning-holders',
+    'turning-inserts',
+    'u-drills'
+);
+
+
+-- ==========================================
+-- 3. Migrations (from create_brand_subcategory_table.sql)
+-- ==========================================
+
+-- Create brand_subcategory pivot table
+-- This table links brands to specific subcategories
+CREATE TABLE IF NOT EXISTS brand_subcategory (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    brand_id INT NOT NULL,
+    subcategory_id INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE CASCADE,
+    FOREIGN KEY (subcategory_id) REFERENCES categories(id) ON DELETE CASCADE,
+    
+    UNIQUE KEY unique_brand_subcategory (brand_id, subcategory_id),
+    KEY idx_brand (brand_id),
+    KEY idx_subcategory (subcategory_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

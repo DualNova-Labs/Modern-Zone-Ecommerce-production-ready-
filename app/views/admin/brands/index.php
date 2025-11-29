@@ -540,6 +540,35 @@ ob_start();
                 </div>
                 
                 <div class="form-group">
+                    <label for="edit_subcategories" class="form-label">Linked Subcategories</label>
+                    <select id="edit_subcategories" name="subcategory_ids[]" multiple class="form-select" size="8" style="height: auto;">
+                        <?php
+                        require_once APP_PATH . '/models/Category.php';
+                        $db = Database::getInstance();
+                        // Get all parent categories
+                        $parentCategories = $db->select("SELECT * FROM categories WHERE parent_id IS NULL AND status = 'active' ORDER BY name");
+                        foreach ($parentCategories as $parent):
+                            // Get subcategories for this parent
+                            $subcategories = $db->select(
+                                "SELECT * FROM categories WHERE parent_id = :parent_id AND status = 'active' ORDER BY name",
+                                ['parent_id' => $parent['id']]
+                            );
+                            if (!empty($subcategories)):
+                        ?>
+                            <optgroup label="<?= htmlspecialchars($parent['name']) ?>">
+                                <?php foreach ($subcategories as $subcat): ?>
+                                    <option value="<?= $subcat['id'] ?>"><?= htmlspecialchars($subcat['name']) ?></option>
+                                <?php endforeach; ?>
+                            </optgroup>
+                        <?php 
+                            endif;
+                        endforeach; 
+                        ?>
+                    </select>
+                    <small class="form-help">Hold Ctrl/Cmd to select multiple subcategories</small>
+                </div>
+                
+                <div class="form-group">
                     <label for="edit_status" class="form-label">Status</label>
                     <select id="edit_status" name="status" class="form-select">
                         <option value="active">Active</option>
@@ -632,6 +661,22 @@ ob_start();
         document.getElementById('edit_about').value = brand.about || '';
         document.getElementById('edit_specialties').value = brand.specialties || '';
         document.getElementById('edit_status').value = brand.status || 'active';
+        
+        // Pre-select subcategories
+        const subcategorySelect = document.getElementById('edit_subcategories');
+        if (subcategorySelect && brand.subcategory_ids) {
+            // Clear all selections first
+            Array.from(subcategorySelect.options).forEach(option => {
+                option.selected = false;
+            });
+            
+            // Select the brand's subcategories
+            Array.from(subcategorySelect.options).forEach(option => {
+                if (brand.subcategory_ids.includes(parseInt(option.value))) {
+                    option.selected = true;
+                }
+            });
+        }
         
         // Show current logo if exists
         const logoContainer = document.getElementById('current_logo_container');
