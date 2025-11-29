@@ -33,31 +33,258 @@ ob_start();
     .alert-success { background: #d1fae5; color: #065f46; border: 1px solid #6ee7b7; }
     .alert-error { background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; }
     
-    /* Modal Styles */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; backdrop-filter: blur(4px); animation: fadeIn 0.2s ease; }
-    .modal-overlay.active { display: flex; align-items: center; justify-content: center; }
-    .modal-container { background: white; border-radius: 16px; width: 90%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: slideUp 0.3s ease; }
-    .modal-header { padding: 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; }
-    .modal-title { font-size: 20px; font-weight: 700; color: #1e293b; display: flex; align-items: center; gap: 10px; }
-    .modal-close { background: none; border: none; font-size: 24px; color: #94a3b8; cursor: pointer; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; transition: all 0.2s; }
-    .modal-close:hover { background: #f1f5f9; color: #1e293b; }
-    .modal-body { padding: 24px; }
-    .form-group { margin-bottom: 20px; }
-    .form-group label { display: block; margin-bottom: 8px; color: #2c3e50; font-weight: 500; font-size: 14px; }
-    .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 2px solid #e2e8f0; border-radius: 8px; font-size: 14px; transition: all 0.2s; }
-    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: #6366f1; }
-    .form-group textarea { min-height: 100px; resize: vertical; font-family: inherit; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .form-group small { color: #64748b; font-size: 12px; }
-    .form-actions { display: flex; gap: 10px; padding: 20px 24px; border-top: 1px solid #e2e8f0; background: #f8fafc; border-radius: 0 0 16px 16px; }
-    .btn-modal-primary { background: #6366f1; color: white; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-    .btn-modal-primary:hover { background: #4f46e5; }
-    .btn-modal-secondary { background: #e2e8f0; color: #475569; padding: 10px 20px; border-radius: 8px; border: none; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-    .btn-modal-secondary:hover { background: #cbd5e1; }
-    .current-logo-preview { max-width: 120px; margin: 10px 0; border: 2px solid #e2e8f0; border-radius: 8px; padding: 8px; background: #f8fafc; }
+    /* Modal Styles - Matching Product Modal */
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        animation: fadeIn 0.3s ease-out;
+    }
     
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .modal-overlay.active {
+        display: flex;
+    }
+    
+    .modal-container {
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        max-width: 800px;
+        width: 100%;
+        max-height: 90vh;
+        display: flex;
+        flex-direction: column;
+        animation: slideUp 0.3s ease-out;
+    }
+    
+    .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid #e2e8f0;
+        background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        border-radius: 16px 16px 0 0;
+    }
+    
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #1e293b;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin: 0;
+    }
+    
+    .modal-title svg {
+        width: 24px;
+        height: 24px;
+        color: #6366f1;
+    }
+    
+    .modal-close {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 24px;
+        color: #64748b;
+        width: 32px;
+        height: 32px;
+    }
+    
+    .modal-close:hover {
+        background: #f1f5f9;
+        transform: rotate(90deg);
+    }
+    
+    .modal-body {
+        padding: 2rem;
+        overflow-y: auto;
+        flex: 1;
+    }
+    
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .form-group:not(.form-row .form-group) {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #1e293b;
+    }
+    
+    .form-label.required::after {
+        content: ' *';
+        color: #ef4444;
+    }
+    
+    .form-input,
+    .form-select,
+    .form-textarea {
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        background: white;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-family: inherit;
+        width: 100%;
+    }
+    
+    .form-input:focus,
+    .form-select:focus,
+    .form-textarea:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+    
+    .form-textarea {
+        resize: vertical;
+        min-height: 100px;
+    }
+    
+    .form-help {
+        font-size: 0.75rem;
+        color: #64748b;
+        margin-top: -0.25rem;
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        padding: 1.5rem 2rem;
+        border-top: 1px solid #e2e8f0;
+        background: #f8fafc;
+        border-radius: 0 0 16px 16px;
+    }
+    
+    .btn-modal-primary {
+        background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+        color: white;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: none;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 0.875rem;
+        box-shadow: 0 2px 4px rgba(99, 102, 241, 0.2);
+    }
+    
+    .btn-modal-primary:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+    }
+    
+    .btn-modal-secondary {
+        background: #f1f5f9;
+        color: #64748b;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        border: 1px solid #e2e8f0;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        font-size: 0.875rem;
+    }
+    
+    .btn-modal-secondary:hover {
+        background: #e2e8f0;
+        color: #475569;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .current-logo-preview {
+        max-width: 150px;
+        margin: 0.5rem 0;
+        border: 2px solid #e2e8f0;
+        border-radius: 8px;
+        padding: 0.5rem;
+        background: #f8fafc;
+    }
+    
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .modal-container {
+            max-width: 95%;
+            max-height: 95vh;
+        }
+        
+        .modal-header,
+        .modal-body,
+        .form-actions {
+            padding: 1rem;
+        }
+        
+        .form-row {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+        
+        .modal-title {
+            font-size: 1.25rem;
+        }
+        
+        .form-actions {
+            flex-direction: column;
+        }
+        
+        .btn-modal-primary,
+        .btn-modal-secondary {
+            width: 100%;
+        }
+    }
 </style>
 
 <div class="page-header">
@@ -156,66 +383,66 @@ ob_start();
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="create_name">Brand Name *</label>
-                        <input type="text" id="create_name" name="name" required>
+                        <label for="create_name" class="form-label required">Brand Name</label>
+                        <input type="text" id="create_name" name="name" class="form-input" required placeholder="Enter brand name">
                     </div>
                     
                     <div class="form-group">
-                        <label for="create_slug">Slug</label>
-                        <input type="text" id="create_slug" name="slug">
-                        <small>Leave empty to auto-generate</small>
+                        <label for="create_slug" class="form-label">Slug</label>
+                        <input type="text" id="create_slug" name="slug" class="form-input" placeholder="auto-generated">
+                        <small class="form-help">Leave empty to auto-generate</small>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="create_description">Description</label>
-                    <input type="text" id="create_description" name="description">
+                    <label for="create_description" class="form-label">Description</label>
+                    <input type="text" id="create_description" name="description" class="form-input" placeholder="Brief description of the brand">
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="create_website">Website</label>
-                        <input type="url" id="create_website" name="website" placeholder="https://brand.com">
+                        <label for="create_website" class="form-label">Website</label>
+                        <input type="url" id="create_website" name="website" class="form-input" placeholder="https://brand.com">
                     </div>
                     
                     <div class="form-group">
-                        <label for="create_country">Country</label>
-                        <input type="text" id="create_country" name="country">
+                        <label for="create_country" class="form-label">Country</label>
+                        <input type="text" id="create_country" name="country" class="form-input" placeholder="e.g., United States">
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="create_founded_year">Founded Year</label>
-                        <input type="number" id="create_founded_year" name="founded_year" min="1800" max="<?= date('Y') ?>">
+                        <label for="create_founded_year" class="form-label">Founded Year</label>
+                        <input type="number" id="create_founded_year" name="founded_year" class="form-input" min="1800" max="<?= date('Y') ?>" placeholder="e.g., 2004">
                     </div>
                     
                     <div class="form-group">
-                        <label for="create_sort_order">Sort Order</label>
-                        <input type="number" id="create_sort_order" name="sort_order" min="0" value="0">
+                        <label for="create_sort_order" class="form-label">Sort Order</label>
+                        <input type="number" id="create_sort_order" name="sort_order" class="form-input" min="0" value="0" placeholder="0">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="create_logo">Brand Logo</label>
-                    <input type="file" id="create_logo" name="logo" accept="image/*">
-                    <small>PNG, JPG, SVG recommended (max 2MB)</small>
+                    <label for="create_logo" class="form-label">Brand Logo</label>
+                    <input type="file" id="create_logo" name="logo" class="form-input" accept="image/*">
+                    <small class="form-help">PNG, JPG, SVG recommended (max 2MB)</small>
                 </div>
                 
                 <div class="form-group">
-                    <label for="create_about">About Brand</label>
-                    <textarea id="create_about" name="about"></textarea>
+                    <label for="create_about" class="form-label">About Brand</label>
+                    <textarea id="create_about" name="about" class="form-textarea" placeholder="Detailed information about the brand"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label for="create_specialties">Specialties</label>
-                    <textarea id="create_specialties" name="specialties"></textarea>
-                    <small>e.g., Cutting Tools, Measuring Instruments, etc.</small>
+                    <label for="create_specialties" class="form-label">Specialties</label>
+                    <textarea id="create_specialties" name="specialties" class="form-textarea" placeholder="e.g., Cutting Tools, Measuring Instruments, etc."></textarea>
+                    <small class="form-help">e.g., Cutting Tools, Measuring Instruments, etc.</small>
                 </div>
                 
                 <div class="form-group">
-                    <label for="create_status">Status</label>
-                    <select id="create_status" name="status">
+                    <label for="create_status" class="form-label">Status</label>
+                    <select id="create_status" name="status" class="form-select">
                         <option value="active" selected>Active</option>
                         <option value="inactive">Inactive</option>
                     </select>
@@ -251,70 +478,70 @@ ob_start();
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="edit_name">Brand Name *</label>
-                        <input type="text" id="edit_name" name="name" required>
+                        <label for="edit_name" class="form-label required">Brand Name</label>
+                        <input type="text" id="edit_name" name="name" class="form-input" required placeholder="Enter brand name">
                     </div>
                     
                     <div class="form-group">
-                        <label for="edit_slug">Slug</label>
-                        <input type="text" id="edit_slug" name="slug">
-                        <small>Leave empty to auto-generate</small>
+                        <label for="edit_slug" class="form-label">Slug</label>
+                        <input type="text" id="edit_slug" name="slug" class="form-input" placeholder="auto-generated">
+                        <small class="form-help">Leave empty to auto-generate</small>
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="edit_description">Description</label>
-                    <input type="text" id="edit_description" name="description">
+                    <label for="edit_description" class="form-label">Description</label>
+                    <input type="text" id="edit_description" name="description" class="form-input" placeholder="Brief description of the brand">
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="edit_website">Website</label>
-                        <input type="url" id="edit_website" name="website" placeholder="https://brand.com">
+                        <label for="edit_website" class="form-label">Website</label>
+                        <input type="url" id="edit_website" name="website" class="form-input" placeholder="https://brand.com">
                     </div>
                     
                     <div class="form-group">
-                        <label for="edit_country">Country</label>
-                        <input type="text" id="edit_country" name="country">
+                        <label for="edit_country" class="form-label">Country</label>
+                        <input type="text" id="edit_country" name="country" class="form-input" placeholder="e.g., United States">
                     </div>
                 </div>
                 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="edit_founded_year">Founded Year</label>
-                        <input type="number" id="edit_founded_year" name="founded_year" min="1800" max="<?= date('Y') ?>">
+                        <label for="edit_founded_year" class="form-label">Founded Year</label>
+                        <input type="number" id="edit_founded_year" name="founded_year" class="form-input" min="1800" max="<?= date('Y') ?>" placeholder="e.g., 2004">
                     </div>
                     
                     <div class="form-group">
-                        <label for="edit_sort_order">Sort Order</label>
-                        <input type="number" id="edit_sort_order" name="sort_order" min="0" value="0">
+                        <label for="edit_sort_order" class="form-label">Sort Order</label>
+                        <input type="number" id="edit_sort_order" name="sort_order" class="form-input" min="0" value="0" placeholder="0">
                     </div>
                 </div>
                 
                 <div class="form-group">
-                    <label for="edit_logo">Brand Logo</label>
+                    <label for="edit_logo" class="form-label">Brand Logo</label>
                     <div id="current_logo_container" style="display: none;">
                         <small style="display: block; margin-bottom: 5px; color: #64748b;">Current Logo:</small>
                         <img id="current_logo" src="" alt="Current Logo" class="current-logo-preview">
                     </div>
-                    <input type="file" id="edit_logo" name="logo" accept="image/*">
-                    <small>PNG, JPG, SVG recommended (max 2MB) - Leave empty to keep current logo</small>
+                    <input type="file" id="edit_logo" name="logo" class="form-input" accept="image/*">
+                    <small class="form-help">PNG, JPG, SVG recommended (max 2MB) - Leave empty to keep current logo</small>
                 </div>
                 
                 <div class="form-group">
-                    <label for="edit_about">About Brand</label>
-                    <textarea id="edit_about" name="about"></textarea>
+                    <label for="edit_about" class="form-label">About Brand</label>
+                    <textarea id="edit_about" name="about" class="form-textarea" placeholder="Detailed information about the brand"></textarea>
                 </div>
                 
                 <div class="form-group">
-                    <label for="edit_specialties">Specialties</label>
-                    <textarea id="edit_specialties" name="specialties"></textarea>
-                    <small>e.g., Cutting Tools, Measuring Instruments, etc.</small>
+                    <label for="edit_specialties" class="form-label">Specialties</label>
+                    <textarea id="edit_specialties" name="specialties" class="form-textarea" placeholder="e.g., Cutting Tools, Measuring Instruments, etc."></textarea>
+                    <small class="form-help">e.g., Cutting Tools, Measuring Instruments, etc.</small>
                 </div>
                 
                 <div class="form-group">
-                    <label for="edit_status">Status</label>
-                    <select id="edit_status" name="status">
+                    <label for="edit_status" class="form-label">Status</label>
+                    <select id="edit_status" name="status" class="form-select">
                         <option value="active">Active</option>
                         <option value="inactive">Inactive</option>
                     </select>
