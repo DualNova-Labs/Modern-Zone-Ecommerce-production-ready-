@@ -38,6 +38,7 @@ class AdminBrandController
             'brands' => $brands,
             'success' => $_SESSION['brand_success'] ?? null,
             'error' => $_SESSION['brand_error'] ?? null,
+            'csrf_token' => $this->security->getCsrfToken(),
         ];
         
         // Clear flash messages

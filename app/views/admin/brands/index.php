@@ -377,7 +377,7 @@ ob_start();
             <button class="modal-close" onclick="closeCreateModal()">&times;</button>
         </div>
         
-        <form id="createBrandForm" method="POST" enctype="multipart/form-data">
+        <form id="createBrandForm" method="POST" action="<?= View::url('/admin/brands') ?>" enctype="multipart/form-data">
             <div class="modal-body">
                 <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                 
