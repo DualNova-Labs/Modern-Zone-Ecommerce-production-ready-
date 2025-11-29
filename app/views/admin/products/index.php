@@ -1169,7 +1169,7 @@ ob_start();
         <div class="empty-state">
             <div class="empty-state-icon">📦</div>
             <p>No products found.</p>
-            <a href="<?= View::url('/admin/products/create') ?>">Create your first product</a>
+            <button onclick="openCreateModal()" class="btn btn-success" style="cursor: pointer;">Create your first product</button>
         </div>
         <?php endif; ?>
     </div>
