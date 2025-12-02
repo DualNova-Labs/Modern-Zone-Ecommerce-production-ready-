@@ -150,6 +150,20 @@ ob_start();
         box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
     }
     
+    .btn-secondary {
+        background: #f1f5f9;
+        color: #64748b;
+        border: 1px solid #e2e8f0;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    }
+    
+    .btn-secondary:hover {
+        background: #e2e8f0;
+        color: #475569;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
     .btn-sm {
         padding: 0.5rem 1rem;
         font-size: 0.75rem;
@@ -1175,7 +1189,156 @@ ob_start();
     </div>
 </div>
 
+<!-- Edit Product Modal -->
+<div class="modal-overlay" id="editProductModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Edit Product
+            </h3>
+            <button type="button" class="modal-close" onclick="closeEditModal()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+            </button>
+        </div>
+        
+        <form id="editProductForm" method="POST" enctype="multipart/form-data">
+            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
+            <input type="hidden" name="_method" value="PUT">
+            <input type="hidden" id="edit_product_id" name="id">
+            
+            <div class="modal-body">
+                <!-- Current Image Display -->
+                <div id="edit_currentImage"></div>
+                
+                <!-- Basic Information -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label required">Product Name</label>
+                        <input type="text" id="edit_name" name="name" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label required">SKU</label>
+                        <input type="text" id="edit_sku" name="sku" class="form-input" required>
+                    </div>
+                </div>
+                
+                <!-- Category and Brand -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label required">Category</label>
+                        <select id="edit_category_id" name="category_id" class="form-select" required>
+                            <option value="">Select Category</option>
+                            <?php foreach ($categories as $cat): ?>
+                            <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Brand</label>
+                        <select id="edit_brand_id" name="brand_id" class="form-select">
+                            <option value="">Select Brand</option>
+                            <?php foreach ($brands as $brand): ?>
+                            <option value="<?= $brand['id'] ?>"><?= htmlspecialchars($brand['name']) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Description -->
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea id="edit_description" name="description" class="form-textarea" rows="4"></textarea>
+                </div>
+                
+                <!-- Pricing -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label required">Price (SAR)</label>
+                        <input type="number" id="edit_price" name="price" class="form-input" step="0.01" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Compare Price (SAR)</label>
+                        <input type="number" id="edit_compare_price" name="compare_price" class="form-input" step="0.01" min="0">
+                        <small class="form-help">Original price before discount</small>
+                    </div>
+                </div>
+                
+                <!-- Stock -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label required">Quantity</label>
+                        <input type="number" id="edit_quantity" name="quantity" class="form-input" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Minimum Order Quantity</label>
+                        <input type="number" id="edit_min_quantity" name="min_quantity" class="form-input" min="1" value="1">
+                    </div>
+                </div>
+                
+                <!-- Status and Features -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label required">Status</label>
+                        <select id="edit_status" name="status" class="form-select" required>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="out_of_stock">Out of Stock</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Product Features</label>
+                        <div style="display: flex; flex-direction: column; gap: 0.5rem; margin-top: 0.5rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" id="edit_featured" name="featured" value="1">
+                                <span style="font-size: 0.875rem;">Featured Product</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" id="edit_best_seller" name="best_seller" value="1">
+                                <span style="font-size: 0.875rem;">Best Seller</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                                <input type="checkbox" id="edit_new_arrival" name="new_arrival" value="1">
+                                <span style="font-size: 0.875rem;">New Arrival</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Image Upload -->
+                <div class="form-group">
+                    <label class="form-label">Update Product Image</label>
+                    <div class="file-upload">
+                        <input type="file" id="edit_image" name="image" class="file-upload-input" accept="image/*" onchange="previewEditImage(this)">
+                        <label for="edit_image" class="file-upload-label">
+                            <div class="file-upload-icon">📁</div>
+                            <div class="file-upload-text">
+                                <strong>Click to upload new image</strong>
+                                <span>or drag and drop</span>
+                            </div>
+                            <div class="file-upload-hint">PNG, JPG, GIF up to 10MB</div>
+                        </label>
+                    </div>
+                    <div id="edit_imagePreview" style="margin-top: 1rem;"></div>
+                </div>
+            </div>
+            
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary" id="editSubmitBtn">Update Product</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <script>
+
         function deleteProduct(id) {
             if (!confirm('Are you sure you want to delete this product?')) {
                 return;
@@ -1546,6 +1709,28 @@ ob_start();
                 `;
                 uploadLabel.style.border = '2px dashed #e2e8f0';
                 uploadLabel.style.background = '#f8fafc';
+            }
+        }
+        
+        // Standalone preview function for edit modal (called from inline onchange)
+        function previewEditImage(input) {
+            const file = input.files[0];
+            const previewDiv = document.getElementById('edit_imagePreview');
+            
+            if (file && previewDiv) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewDiv.innerHTML = `
+                        <div style="border: 2px solid #10b981; border-radius: 12px; padding: 1rem; background: rgba(16, 185, 129, 0.05);">
+                            <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: contain; display: block; margin: 0 auto;">
+                            <div style="margin-top: 1rem; text-align: center; font-size: 0.875rem; color: #64748b;">
+                                <strong>${file.name}</strong><br>
+                                <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small>
+                            </div>
+                        </div>
+                    `;
+                };
+                reader.readAsDataURL(file);
             }
         }
 </script>
