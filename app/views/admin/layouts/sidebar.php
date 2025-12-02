@@ -173,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function() {
         display: none;
         position: fixed;
         top: 11px;
-        left: 11px;
+        right: 11px;
         z-index: 1002;
         background: white;
         border: 1px solid #e2e8f0;

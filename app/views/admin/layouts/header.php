@@ -527,7 +527,7 @@ $pageTitle = $pageTitle ?? 'Dashboard';
     /* Mobile Responsive */
     @media (max-width: 768px) {
         .header-content {
-            padding: 0 1rem 0 4.5rem;
+            padding: 0 6rem 0 1rem;
         }
         
         .page-title {
@@ -564,7 +564,7 @@ $pageTitle = $pageTitle ?? 'Dashboard';
     
     @media (max-width: 480px) {
         .header-content {
-            padding: 0 0.5rem 0 4rem;
+            padding: 0 5.5rem 0 0.5rem;
         }
         
         .page-title {
