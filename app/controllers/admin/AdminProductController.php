@@ -65,6 +65,7 @@ class AdminProductController
         $params['limit'] = $perPage;
         $params['offset'] = $offset;
         
+        
         $products = $db->select(
             "SELECT p.*, c.name as category_name, b.name as brand_name
              FROM products p
@@ -79,10 +80,14 @@ class AdminProductController
         // Get categories for filter
         $categories = Category::getActive();
         
+        // Get brands for edit modal
+        $brands = Brand::getActive();
+        
         $data = [
             'title' => 'Manage Products - Admin',
             'products' => $products,
             'categories' => $categories,
+            'brands' => $brands,
             'pagination' => [
                 'total' => $total,
                 'per_page' => $perPage,
