@@ -305,7 +305,7 @@ CREATE TABLE order_items (
 -- Password: Admin@123
 -- Note: Change password after first login!
 INSERT INTO users (name, email, password, role, status, email_verified_at) VALUES
-('Admin', 'admin@modernzonetrading.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'active', NOW())
+('Admin', 'admin@modernzonetrading.com', '$2y$10$kXF/zGcEUd4YcfW/cqlJHO8vNrd6f32jjyler/T44Kw5CEWc3Tc06', 'admin', 'active', NOW())
 ON DUPLICATE KEY UPDATE 
     role = 'admin',
     status = 'active',
