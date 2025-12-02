@@ -78,18 +78,18 @@ ob_start();
                                     <div class="actions">
                                         <a href="<?= View::url('/admin/categories/' . $category['id'] . '/edit') ?>" 
                                            class="btn btn-sm btn-primary" title="Edit">
-                                            <i class="fas fa-edit"></i>
+                                            <i class="fas fa-edit"></i> Edit
                                         </a>
                                         <a href="<?= View::url('/admin/categories/' . $category['id'] . '/toggle-status') ?>" 
                                            class="btn btn-sm btn-success" title="Toggle Status"
                                            onclick="return confirm('Are you sure you want to toggle this category status?')">
-                                            <i class="fas fa-power-off"></i>
+                                            <i class="fas fa-power-off"></i> Toggle
                                         </a>
                                         <form action="<?= View::url('/admin/categories/' . $category['id'] . '/delete') ?>" 
                                               method="POST" style="display: inline;">
                                             <button type="submit" class="btn btn-sm btn-danger" title="Delete"
                                                     onclick="return confirm('Are you sure you want to delete this category? This action cannot be undone.')">
-                                                <i class="fas fa-trash"></i>
+                                                <i class="fas fa-trash"></i> Delete
                                             </button>
                                         </form>
                                     </div>
