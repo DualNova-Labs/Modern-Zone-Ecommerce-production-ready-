@@ -22,17 +22,7 @@
                 
                 <!-- Header Icons -->
                 <div class="header-icons">
-                    <!-- Language Selector -->
-                    <div class="language-selector">
-                        <button class="icon-btn" id="langBtn">
-                            <i class="fas fa-globe"></i>
-                            <span class="icon-label">عربي</span>
-                        </button>
-                        <div class="language-dropdown" id="langDropdown">
-                            <a href="#" class="lang-option active">English</a>
-                            <a href="#" class="lang-option">العربية</a>
-                        </div>
-                    </div>
+
                     
                     <!-- Cart -->
                     <div class="cart-icon-wrapper" style="position: relative;">
