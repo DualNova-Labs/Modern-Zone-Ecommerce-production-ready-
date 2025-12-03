@@ -552,24 +552,24 @@ document.addEventListener('click', function (e) {
         e.preventDefault();
         const button = e.target.closest('.add-to-cart');
         const productId = button.dataset.id;
-        
+
         // Get quantity from product detail page if available
         const qtyInput = document.getElementById('qtyInput');
         const quantity = qtyInput ? parseInt(qtyInput.value) : 1;
-        
+
         // Get CSRF token
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
-        
+
         if (!productId) {
             showNotification('Error: Product ID not found', 'error');
             return;
         }
-        
+
         // Disable button and show loading state
         const originalHTML = button.innerHTML;
         button.disabled = true;
         button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
-        
+
         // Make AJAX call to add item to cart
         fetch(getBaseUrl() + '/cart/add', {
             method: 'POST',
@@ -578,40 +578,40 @@ document.addEventListener('click', function (e) {
             },
             body: `product_id=${productId}&quantity=${quantity}&csrf_token=${csrfToken}`
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Update cart count from server response
-                updateCartCount(data.cart_count);
-                
-                // Show success feedback
-                button.innerHTML = '<i class="fas fa-check"></i> Added!';
-                button.classList.remove('btn-primary');
-                button.classList.add('btn-success');
-                
-                // Show success notification
-                showNotification(data.message || 'Product added to cart successfully!', 'success');
-                
-                // Reset button after 2 seconds
-                setTimeout(function () {
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update cart count from server response
+                    updateCartCount(data.cart_count);
+
+                    // Show success feedback
+                    button.innerHTML = '<i class="fas fa-check"></i> Added!';
+                    button.classList.remove('btn-primary');
+                    button.classList.add('btn-success');
+
+                    // Show success notification
+                    showNotification(data.message || 'Product added to cart successfully!', 'success');
+
+                    // Reset button after 2 seconds
+                    setTimeout(function () {
+                        button.innerHTML = originalHTML;
+                        button.classList.remove('btn-success');
+                        button.classList.add('btn-primary');
+                        button.disabled = false;
+                    }, 2000);
+                } else {
+                    // Show error
+                    showNotification(data.error || 'Failed to add product to cart', 'error');
                     button.innerHTML = originalHTML;
-                    button.classList.remove('btn-success');
-                    button.classList.add('btn-primary');
                     button.disabled = false;
-                }, 2000);
-            } else {
-                // Show error
-                showNotification(data.error || 'Failed to add product to cart', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error adding to cart:', error);
+                showNotification('An error occurred. Please try again.', 'error');
                 button.innerHTML = originalHTML;
                 button.disabled = false;
-            }
-        })
-        .catch(error => {
-            console.error('Error adding to cart:', error);
-            showNotification('An error occurred. Please try again.', 'error');
-            button.innerHTML = originalHTML;
-            button.disabled = false;
-        });
+            });
     }
 });
 
@@ -637,7 +637,7 @@ function showNotification(message, type = 'info') {
     if (existing) {
         existing.remove();
     }
-    
+
     // Create notification element
     const notification = document.createElement('div');
     notification.className = `notification-toast notification-${type}`;
@@ -650,13 +650,13 @@ function showNotification(message, type = 'info') {
             <i class="fas fa-times"></i>
         </button>
     `;
-    
+
     // Add to page
     document.body.appendChild(notification);
-    
+
     // Show with animation
     setTimeout(() => notification.classList.add('show'), 10);
-    
+
     // Auto-remove after 5 seconds
     setTimeout(() => {
         notification.classList.remove('show');
@@ -673,16 +673,16 @@ function getBaseUrl() {
     if (baseUrlMeta) {
         return baseUrlMeta.content;
     }
-    
+
     // Fallback: construct from current location
     const path = window.location.pathname;
     const parts = path.split('/').filter(p => p);
-    
+
     // If we're in /host/mod/, use that as base
     if (parts.length >= 2 && parts[0] === 'host' && parts[1] === 'mod') {
         return '/host/mod';
     }
-    
+
     // Otherwise use root
     return '';
 }
@@ -780,4 +780,130 @@ function initUserMenu() {
             userDropdown.classList.remove('active');
         });
     });
+}
+
+/**
+ * Mini Cart Functionality
+ */
+
+// Show/hide mini cart on hover and click
+const cartIcon = document.getElementById('cartIconBtn');
+const miniCartDropdown = document.getElementById('miniCartDropdown');
+const cartWrapper = document.querySelector('.cart-icon-wrapper');
+
+if (cartIcon && miniCartDropdown && cartWrapper) {
+    let hoverTimeout;
+    let isMobile = () => window.innerWidth <= 768;
+
+    // Show on hover (desktop)
+    cartIcon.addEventListener('mouseenter', function () {
+        if (!isMobile()) {
+            clearTimeout(hoverTimeout);
+            cartIcon.classList.add('active');
+        }
+    });
+
+    // Hide on mouse leave (with delay)
+    cartWrapper.addEventListener('mouseleave', function () {
+        if (!isMobile()) {
+            hoverTimeout = setTimeout(() => {
+                cartIcon.classList.remove('active');
+            }, 300);
+        }
+    });
+
+    // Toggle on click (works for both mobile and desktop)
+    cartIcon.addEventListener('click', function (e) {
+        if (isMobile()) {
+            e.preventDefault();
+            e.stopPropagation();
+            cartIcon.classList.toggle('active');
+
+            // Also toggle body overflow to prevent scrolling
+            if (cartIcon.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        }
+    });
+
+    // Close mini cart when clicking outside
+    document.addEventListener('click', function (e) {
+        if (!cartWrapper.contains(e.target)) {
+            cartIcon.classList.remove('active');
+            if (isMobile()) {
+                document.body.style.overflow = '';
+            }
+        }
+    });
+
+    // Close on mini-cart close button (add if needed)
+    const miniCartClose = miniCartDropdown.querySelector('.mini-cart-close');
+    if (miniCartClose) {
+        miniCartClose.addEventListener('click', function () {
+            cartIcon.classList.remove('active');
+            document.body.style.overflow = '';
+        });
+    }
+}
+
+/**
+ * Remove item from mini cart
+ */
+function removeFromMiniCart(productId) {
+    // Get CSRF token
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+
+    // Add removing animation
+    const itemElement = document.querySelector(`.mini-cart-item[data-product-id="${productId}"]`);
+    if (itemElement) {
+        itemElement.classList.add('removing');
+    }
+
+    // Make AJAX call to remove item
+    fetch(getBaseUrl() + '/cart/remove', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `product_id=${productId}&csrf_token=${csrfToken}`
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update cart count
+                updateCartCount(data.cart_count);
+
+                // Reload page to update mini cart content
+                // (In a full SPA, you'd update the mini cart HTML directly)
+                setTimeout(() => {
+                    location.reload();
+                }, 300);
+            } else {
+                showNotification(data.error || 'Failed to remove item', 'error');
+                if (itemElement) {
+                    itemElement.classList.remove('removing');
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error removing from cart:', error);
+            showNotification('An error occurred. Please try again.', 'error');
+            if (itemElement) {
+                itemElement.classList.remove('removing');
+            }
+        });
+}
+
+/**
+ * Update mini cart after adding item
+ * Called after successful add to cart
+ */
+function refreshMiniCart() {
+    // In a full implementation, you'd fetch updated mini cart HTML
+    // For now, we'll just reload the page
+    setTimeout(() => {
+        location.reload();
+    }, 1500);
 }

@@ -45,6 +45,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="<?= View::asset('css/main.css') ?>?v=<?= time() ?>">
     <link rel="stylesheet" href="<?= View::asset('css/notifications.css') ?>?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= View::asset('css/mini-cart.css') ?>?v=<?= time() ?>">
     
     <!-- CSRF Token for AJAX -->
     <meta name="csrf-token" content="<?= Security::getInstance()->getCsrfToken() ?>">

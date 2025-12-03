@@ -35,14 +35,26 @@
                     </div>
                     
                     <!-- Cart -->
-                    <a href="<?= View::url('cart') ?>" class="icon-btn">
-                        <i class="fas fa-shopping-cart"></i>
-                        <span class="icon-label">Cart</span>
-                        <span class="icon-badge cart-count"><?php 
-                            require_once APP_PATH . '/models/Cart.php';
-                            echo Cart::getInstance()->getCount();
-                        ?></span>
-                    </a>
+                    <div class="cart-icon-wrapper" style="position: relative;">
+                        <a href="<?= View::url('cart') ?>" class="icon-btn" id="cartIconBtn">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="icon-label">Cart</span>
+                            <span class="icon-badge cart-count"><?php 
+                                require_once APP_PATH . '/models/Cart.php';
+                                echo Cart::getInstance()->getCount();
+                            ?></span>
+                        </a>
+                        
+                        <!-- Mini Cart Dropdown -->
+                        <?php
+                        $cart = Cart::getInstance();
+                        $miniCartData = [
+                            'items' => $cart->getItems(),
+                            'summary' => $cart->getSummary()
+                        ];
+                        View::component('mini-cart', $miniCartData);
+                        ?>
+                    </div>
                     
                     <!-- User Account -->
                     <?php if (View::isAuth()): ?>
