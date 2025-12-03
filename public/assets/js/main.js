@@ -545,31 +545,147 @@ function initQuantitySelector() {
 }
 
 /**
- * Add to Cart
+ * Add to Cart - AJAX Implementation
  */
 document.addEventListener('click', function (e) {
     if (e.target.closest('.add-to-cart')) {
         e.preventDefault();
         const button = e.target.closest('.add-to-cart');
         const productId = button.dataset.id;
-
-        // Update cart count
-        const cartCount = document.querySelector('.cart-count');
-        if (cartCount) {
-            const currentCount = parseInt(cartCount.textContent) || 0;
-            cartCount.textContent = currentCount + 1;
+        
+        // Get quantity from product detail page if available
+        const qtyInput = document.getElementById('qtyInput');
+        const quantity = qtyInput ? parseInt(qtyInput.value) : 1;
+        
+        // Get CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || '';
+        
+        if (!productId) {
+            showNotification('Error: Product ID not found', 'error');
+            return;
         }
-
-        // Visual feedback
-        button.innerHTML = '<i class="fas fa-check"></i> Added';
+        
+        // Disable button and show loading state
+        const originalHTML = button.innerHTML;
         button.disabled = true;
-
-        setTimeout(function () {
-            button.innerHTML = '<i class="fas fa-cart-plus"></i> Add to Cart';
+        button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Adding...';
+        
+        // Make AJAX call to add item to cart
+        fetch(getBaseUrl() + '/cart/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `product_id=${productId}&quantity=${quantity}&csrf_token=${csrfToken}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update cart count from server response
+                updateCartCount(data.cart_count);
+                
+                // Show success feedback
+                button.innerHTML = '<i class="fas fa-check"></i> Added!';
+                button.classList.remove('btn-primary');
+                button.classList.add('btn-success');
+                
+                // Show success notification
+                showNotification(data.message || 'Product added to cart successfully!', 'success');
+                
+                // Reset button after 2 seconds
+                setTimeout(function () {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('btn-success');
+                    button.classList.add('btn-primary');
+                    button.disabled = false;
+                }, 2000);
+            } else {
+                // Show error
+                showNotification(data.error || 'Failed to add product to cart', 'error');
+                button.innerHTML = originalHTML;
+                button.disabled = false;
+            }
+        })
+        .catch(error => {
+            console.error('Error adding to cart:', error);
+            showNotification('An error occurred. Please try again.', 'error');
+            button.innerHTML = originalHTML;
             button.disabled = false;
-        }, 2000);
+        });
     }
 });
+
+/**
+ * Update cart count in header
+ */
+function updateCartCount(count) {
+    const cartCounts = document.querySelectorAll('.cart-count');
+    cartCounts.forEach(element => {
+        element.textContent = count || 0;
+        // Add animation
+        element.classList.add('cart-count-updated');
+        setTimeout(() => element.classList.remove('cart-count-updated'), 300);
+    });
+}
+
+/**
+ * Show notification toast
+ */
+function showNotification(message, type = 'info') {
+    // Remove existing notifications
+    const existing = document.querySelector('.notification-toast');
+    if (existing) {
+        existing.remove();
+    }
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification-toast notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    // Add to page
+    document.body.appendChild(notification);
+    
+    // Show with animation
+    setTimeout(() => notification.classList.add('show'), 10);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        notification.classList.remove('show');
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
+
+/**
+ * Get base URL for AJAX calls
+ */
+function getBaseUrl() {
+    // Try to get from meta tag first
+    const baseUrlMeta = document.querySelector('meta[name="base-url"]');
+    if (baseUrlMeta) {
+        return baseUrlMeta.content;
+    }
+    
+    // Fallback: construct from current location
+    const path = window.location.pathname;
+    const parts = path.split('/').filter(p => p);
+    
+    // If we're in /host/mod/, use that as base
+    if (parts.length >= 2 && parts[0] === 'host' && parts[1] === 'mod') {
+        return '/host/mod';
+    }
+    
+    // Otherwise use root
+    return '';
+}
 
 /**
  * Form Validation

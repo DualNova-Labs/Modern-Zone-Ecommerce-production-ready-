@@ -41,8 +41,16 @@
     <link rel="icon" type="image/png" href="<?= View::asset('images/favicon.png') ?>">
     <link rel="apple-touch-icon" href="<?= View::asset('images/logo.png') ?>">
     
+    
     <!-- Styles -->
     <link rel="stylesheet" href="<?= View::asset('css/main.css') ?>?v=<?= time() ?>">
+    <link rel="stylesheet" href="<?= View::asset('css/notifications.css') ?>?v=<?= time() ?>">
+    
+    <!-- CSRF Token for AJAX -->
+    <meta name="csrf-token" content="<?= Security::getInstance()->getCsrfToken() ?>">
+    
+    <!-- Base URL for AJAX calls -->
+    <meta name="base-url" content="<?= BASE_URL ?>">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

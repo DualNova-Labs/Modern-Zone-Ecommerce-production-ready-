@@ -71,7 +71,7 @@ ob_start();
                 </div>
                 
                 <div class="product-actions-group">
-                    <button class="btn btn-primary btn-lg btn-block">
+                    <button class="btn btn-primary btn-lg btn-block add-to-cart" data-id="<?= $product['id'] ?? $product['slug'] ?>">
                         <i class="fas fa-cart-plus"></i>
                         Add to Cart
                     </button>

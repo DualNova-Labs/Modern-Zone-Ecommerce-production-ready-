@@ -38,7 +38,10 @@
                     <a href="<?= View::url('cart') ?>" class="icon-btn">
                         <i class="fas fa-shopping-cart"></i>
                         <span class="icon-label">Cart</span>
-                        <span class="icon-badge">0</span>
+                        <span class="icon-badge cart-count"><?php 
+                            require_once APP_PATH . '/models/Cart.php';
+                            echo Cart::getInstance()->getCount();
+                        ?></span>
                     </a>
                     
                     <!-- User Account -->

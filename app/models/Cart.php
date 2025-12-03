@@ -67,7 +67,10 @@ class Cart extends Model
         $items = $this->db->select(
             "SELECT c.*, p.name, p.slug, p.sku, p.price as current_price, 
                     p.quantity as stock, p.status,
-                    (SELECT image_path FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1) as image
+                    COALESCE(
+                        (SELECT image_path FROM product_images WHERE product_id = p.id AND is_primary = 1 LIMIT 1),
+                        p.image
+                    ) as image
              FROM {$this->table} c
              JOIN products p ON c.product_id = p.id
              WHERE {$where}

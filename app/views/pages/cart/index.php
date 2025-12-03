@@ -37,9 +37,19 @@ ob_start();
                         <?php foreach ($items as $item): ?>
                             <div class="cart-item" data-product-id="<?= $item['product_id'] ?>">
                                 <div class="cart-item-image">
-                                    <img src="<?= $item['image'] ?? View::asset('images/placeholder.png') ?>" 
+                                    <?php
+                                    // Determine image source with multiple fallbacks
+                                    $imageSrc = View::asset('images/placeholder.png'); // Default placeholder
+                                    
+                                    if (!empty($item['image'])) {
+                                        // Try to use the image from database
+                                        $imageSrc = View::asset($item['image']);
+                                    }
+                                    ?>
+                                    <img src="<?= $imageSrc ?>" 
                                          alt="<?= htmlspecialchars($item['name']) ?>" 
-                                         loading="lazy">
+                                         loading="lazy"
+                                         onerror="this.src='<?= View::asset('images/placeholder.png') ?>'">
                                 </div>
                                 
                                 <div class="cart-item-details">
