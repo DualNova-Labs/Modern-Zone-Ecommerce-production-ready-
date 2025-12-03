@@ -42,8 +42,14 @@ ob_start();
                                     $imageSrc = View::asset('images/placeholder.png'); // Default placeholder
                                     
                                     if (!empty($item['image'])) {
-                                        // Try to use the image from database
-                                        $imageSrc = View::asset($item['image']);
+                                        // If path starts with / or http, it's already absolute - use as-is
+                                        if (strpos($item['image'], '/') === 0 || strpos($item['image'], 'http') === 0) {
+                                            $imageSrc = $item['image'];
+                                        }
+                                        // Otherwise prepend base URL
+                                        else {
+                                            $imageSrc = View::asset($item['image']);
+                                        }
                                     }
                                     ?>
                                     <img src="<?= $imageSrc ?>" 

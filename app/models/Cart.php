@@ -80,6 +80,19 @@ class Cart extends Model
         
         $this->items = [];
         foreach ($items as $item) {
+            // Format image path the same way as ProductController
+            if (!empty($item['image'])) {
+                // If path starts with 'public/', use as-is
+                if (strpos($item['image'], 'public/') === 0) {
+                    $item['image'] = BASE_URL . '/' . $item['image'];
+                }
+                // If it's just a filename, prepend the products directory
+                else if (strpos($item['image'], '/') === false) {
+                    $item['image'] = 'images/products/' . $item['image'];
+                }
+                // Otherwise use as-is (already has full path)
+            }
+            
             $this->items[$item['product_id']] = $item;
         }
     }
