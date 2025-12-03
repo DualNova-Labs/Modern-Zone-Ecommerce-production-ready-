@@ -73,9 +73,18 @@ ob_start();
                             <p class="product-description"><?= htmlspecialchars($product['description']) ?></p>
                             <div class="product-footer">
                                 <span class="product-price"><?= number_format($product['price'], 2) ?> SAR</span>
-                                <a href="<?= View::url('/products/' . $product['slug']) ?>" class="btn btn-primary btn-sm">
-                                    <i class="fas fa-eye"></i> View Product
-                                </a>
+                                <div class="product-footer-actions">
+                                    <button class="btn btn-primary btn-sm add-to-cart" 
+                                            data-id="<?= $product['id'] ?? $product['slug'] ?>"
+                                            title="Add to Cart">
+                                        <i class="fas fa-cart-plus"></i>
+                                    </button>
+                                    <a href="<?= View::url('/products/' . $product['slug']) ?>" 
+                                       class="btn btn-secondary btn-sm"
+                                       title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -342,6 +351,11 @@ ob_start();
     border-top: 1px solid #f0f0f0;
 }
 
+.product-footer-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
 .product-price {
     font-size: 1.25rem;
     font-weight: 700;
@@ -376,6 +390,26 @@ ob_start();
     background: #e55a2b;
     transform: translateY(-2px);
     box-shadow: 0 4px 16px rgba(255, 107, 53, 0.35);
+}
+
+.btn-primary:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-secondary {
+    background: white;
+    color: #666;
+    border: 2px solid #e0e0e0;
+    box-shadow: none;
+}
+
+.btn-secondary:hover {
+    border-color: #ff6b35;
+    color: #ff6b35;
+    background: #fff5f2;
+    transform: translateY(-2px);
 }
 
 .btn-sm {
