@@ -251,20 +251,6 @@
     gap: var(--spacing-lg);
 }
 
-.product-rating {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-md);
-}
-
-.stars {
-    color: #ffc107;
-}
-
-.rating-text {
-    color: var(--gray-600);
-    font-size: 0.9rem;
-}
 
 .product-price-section {
     display: flex;
@@ -381,45 +367,7 @@
     width: 200px;
 }
 
-.reviews-summary {
-    background: var(--gray-100);
-    padding: var(--spacing-xl);
-    border-radius: var(--border-radius);
-    margin-bottom: var(--spacing-xl);
-}
 
-.summary-rating {
-    display: flex;
-    align-items: center;
-    gap: var(--spacing-lg);
-}
-
-.rating-number {
-    font-size: 3rem;
-    font-weight: 700;
-    color: var(--primary-color);
-}
-
-.review-item {
-    padding: var(--spacing-lg) 0;
-    border-bottom: 1px solid var(--gray-300);
-}
-
-.review-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: var(--spacing-md);
-}
-
-.reviewer-info h4 {
-    margin-bottom: var(--spacing-xs);
-}
-
-.review-date {
-    color: var(--gray-600);
-    font-size: 0.9rem;
-}
 
 .related-products {
     margin-top: var(--spacing-xxl);
