@@ -96,9 +96,6 @@ ob_start();
                             <img src="<?= $product['image'] ?>" alt="<?= htmlspecialchars($product['title']) ?>" loading="lazy">
                             <div class="product-badge">Featured</div>
                             <div class="product-actions">
-                                <button class="product-action-btn" title="Add to Wishlist" onclick="event.preventDefault(); event.stopPropagation();">
-                                    <i class="far fa-heart"></i>
-                                </button>
                                 <button class="product-action-btn" title="Quick View" onclick="event.preventDefault(); event.stopPropagation();">
                                     <i class="far fa-eye"></i>
                                 </button>

@@ -54,7 +54,6 @@ $router->post('/account/orders/cancel', 'AccountController@cancelOrder');
 $router->get('/account/change-password', 'AccountController@changePassword');
 $router->post('/account/change-password', 'AccountController@updatePassword');
 $router->get('/account/addresses', 'AccountController@addresses');
-$router->get('/account/wishlist', 'AccountController@wishlist');
 
 // Support & Contact
 $router->get('/contact', 'ContactController@index');

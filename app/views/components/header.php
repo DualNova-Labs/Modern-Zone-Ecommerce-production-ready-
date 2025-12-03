@@ -81,9 +81,6 @@
                                 <a href="<?= View::url('orders') ?>" class="user-link">
                                     <i class="fas fa-shopping-bag"></i> My Orders
                                 </a>
-                                <a href="<?= View::url('wishlist') ?>" class="user-link">
-                                    <i class="fas fa-heart"></i> Wishlist
-                                </a>
                                 <?php if (View::user()->isAdmin()): ?>
                                     <div class="user-dropdown-divider"></div>
                                     <a href="<?= View::url('admin') ?>" class="user-link">

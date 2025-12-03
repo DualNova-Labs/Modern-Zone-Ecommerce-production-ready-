@@ -356,26 +356,6 @@ class AccountController
     }
     
     /**
-     * Wishlist page
-     */
-    public function wishlist()
-    {
-        $user = $this->auth->user();
-        
-        // Get wishlist items (implement wishlist model later)
-        $wishlistItems = [];
-        
-        $data = [
-            'title' => 'My Wishlist - Modern Zone Trading',
-            'description' => 'Your saved products',
-            'user' => $user,
-            'items' => $wishlistItems
-        ];
-        
-        View::render('pages/account/wishlist', $data);
-    }
-    
-    /**
      * Send JSON response
      */
     private function jsonResponse($data)

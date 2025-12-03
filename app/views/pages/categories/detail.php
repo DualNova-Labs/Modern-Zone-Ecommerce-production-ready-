@@ -104,9 +104,6 @@ ob_start();
                                             <div class="product-badge out-of-stock">Out of Stock</div>
                                         <?php endif; ?>
                                         <div class="product-actions">
-                                            <button class="product-action-btn" title="Add to Wishlist" onclick="event.preventDefault(); event.stopPropagation();">
-                                                <i class="far fa-heart"></i>
-                                            </button>
                                             <button class="product-action-btn" title="Quick View" onclick="event.preventDefault(); event.stopPropagation();">
                                                 <i class="far fa-eye"></i>
                                             </button>

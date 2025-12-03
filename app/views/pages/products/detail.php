@@ -21,9 +21,6 @@ ob_start();
             <div class="product-gallery">
                 <div class="gallery-main">
                     <img src="<?= $product['images'][0] ?>" alt="<?= htmlspecialchars($product['title']) ?>" id="mainImage">
-                    <button class="gallery-action" title="Add to Wishlist">
-                        <i class="far fa-heart"></i>
-                    </button>
                 </div>
                 <?php if (count($product['images']) > 1): ?>
                 <div class="gallery-thumbs">

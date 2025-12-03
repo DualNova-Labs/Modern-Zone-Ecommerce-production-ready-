@@ -58,9 +58,6 @@ ob_start();
                         <div class="product-image">
                             <img src="<?= $product['image'] ?>" alt="<?= htmlspecialchars($product['title']) ?>" loading="lazy">
                             <div class="product-actions">
-                                <button class="product-action-btn" title="Add to Wishlist">
-                                    <i class="far fa-heart"></i>
-                                </button>
                                 <button class="product-action-btn" title="Quick View">
                                     <i class="far fa-eye"></i>
                                 </button>
