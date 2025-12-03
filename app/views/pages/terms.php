@@ -5,7 +5,7 @@ ob_start();
 <section class="breadcrumb">
     <div class="container">
         <ul class="breadcrumb-list">
-            <li><a href="/host/mod/">Home</a></li>
+            <li><a href="<?= View::url('/') ?>">Home</a></li>
             <li>Terms & Conditions</li>
         </ul>
     </div>

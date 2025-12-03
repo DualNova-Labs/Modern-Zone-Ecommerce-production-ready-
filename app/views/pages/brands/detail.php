@@ -129,7 +129,7 @@ ob_start();
                     
                     <div class="products-grid" id="productsGrid">
                         <?php foreach ($products as $product): ?>
-                            <a href="/host/mod/products/<?= $product['slug'] ?>" 
+                            <a href="<?= View::url('/products/' . $product['slug']) ?>" 
                                class="product-card-link" 
                                data-category="<?= htmlspecialchars($product['category'] ?? '') ?>" 
                                data-price="<?= $product['price'] ?>">
@@ -162,7 +162,7 @@ ob_start();
             </div>
             
             <div class="section-footer">
-                <a href="/host/mod/products?brand=<?= $brand['slug'] ?>" class="btn btn-secondary btn-lg">
+                <a href="<?= View::url('/products?brand=' . $brand['slug']) ?>" class="btn btn-secondary btn-lg">
                     View All <?= htmlspecialchars($brand['name']) ?> Products
                     <i class="fas fa-arrow-right"></i>
                 </a>
@@ -171,7 +171,7 @@ ob_start();
             <div class="no-products">
                 <i class="fas fa-box-open"></i>
                 <p>No products available for this brand at the moment.</p>
-                <a href="/host/mod/products" class="btn btn-primary">Browse All Products</a>
+                <a href="<?= View::url('/products') ?>" class="btn btn-primary">Browse All Products</a>
             </div>
         <?php endif; ?>
     </div>

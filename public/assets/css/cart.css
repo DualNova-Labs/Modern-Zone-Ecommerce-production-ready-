@@ -361,39 +361,6 @@
     color: var(--primary-color);
 }
 
-/* Coupon Section */
-.coupon-section {
-    margin: var(--spacing-xl) 0;
-    padding: var(--spacing-lg);
-    background: var(--gray-50);
-    border-radius: var(--border-radius-md);
-}
-
-.coupon-section h4 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text-dark);
-    margin-bottom: var(--spacing-md);
-}
-
-.coupon-form .input-group {
-    display: flex;
-    gap: var(--spacing-sm);
-}
-
-.coupon-form .form-control {
-    flex: 1;
-    padding: var(--spacing-sm) var(--spacing-md);
-    border: 1px solid var(--gray-300);
-    border-radius: var(--border-radius-md);
-    font-size: 14px;
-}
-
-.coupon-form .btn {
-    padding: var(--spacing-sm) var(--spacing-lg);
-    white-space: nowrap;
-}
-
 /* Security Badges */
 .security-badges {
     display: flex;
@@ -428,7 +395,7 @@
     .cart-layout {
         grid-template-columns: 1fr;
     }
-    
+
     .cart-summary {
         position: static;
     }
@@ -439,29 +406,29 @@
         grid-template-columns: 80px 1fr;
         gap: var(--spacing-md);
     }
-    
+
     .cart-item-image {
         width: 80px;
         height: 80px;
     }
-    
+
     .cart-item-actions {
         grid-column: 1 / -1;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
     }
-    
+
     .cart-item-total {
         flex-direction: row;
         gap: var(--spacing-sm);
     }
-    
+
     .cart-actions {
         flex-direction: column;
         gap: var(--spacing-md);
     }
-    
+
     .cart-actions .btn {
         width: 100%;
     }
@@ -471,51 +438,51 @@
     .cart-page {
         padding: var(--spacing-lg) 0;
     }
-    
+
     .empty-cart {
         padding: 40px 24px;
     }
-    
+
     .empty-cart h2 {
         font-size: 24px;
     }
-    
+
     .empty-cart p {
         font-size: 14px;
     }
-    
+
     .empty-cart .btn {
         width: 100%;
         justify-content: center;
         padding: 14px 24px;
         font-size: 15px;
     }
-    
+
     .cart-items,
     .cart-summary {
         padding: var(--spacing-md);
     }
-    
+
     .cart-title {
         font-size: 20px;
     }
-    
+
     .cart-item {
         padding: var(--spacing-md);
     }
-    
+
     .cart-item-title {
         font-size: 16px;
     }
-    
+
     .price-value {
         font-size: 16px;
     }
-    
+
     .total-value {
         font-size: 18px;
     }
-    
+
     .summary-total-value {
         font-size: 20px;
     }

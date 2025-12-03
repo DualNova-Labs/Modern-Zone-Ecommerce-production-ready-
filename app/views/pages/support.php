@@ -6,7 +6,7 @@ ob_start();
 <section class="breadcrumb">
     <div class="container">
         <ul class="breadcrumb-list">
-            <li><a href="/host/mod/">Home</a></li>
+            <li><a href="<?= View::url('/') ?>">Home</a></li>
             <li>Support</li>
         </ul>
     </div>
@@ -100,7 +100,7 @@ ob_start();
                 <p>Can't find what you're looking for? Our support team is ready to assist you.</p>
                 
                 <div class="support-actions">
-                    <a href="/host/mod/contact" class="btn btn-primary btn-lg">
+                    <a href="<?= View::url('/contact') ?>" class="btn btn-primary btn-lg">
                         <i class="fas fa-envelope"></i>
                         Contact Support
                     </a>

@@ -32,7 +32,7 @@ class ContactController
         
         if (empty($errors)) {
             // Send email or save to database
-            header('Location: /host/mod/contact?success=1');
+            header('Location: ' . View::url('/contact?success=1'));
             exit;
         }
         

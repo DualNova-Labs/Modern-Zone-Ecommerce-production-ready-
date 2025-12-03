@@ -6,8 +6,8 @@ ob_start();
 <section class="breadcrumb">
     <div class="container">
         <ul class="breadcrumb-list">
-            <li><a href="/host/mod/">Home</a></li>
-            <li><a href="/host/mod/products">Products</a></li>
+            <li><a href="<?= View::url('/') ?>">Home</a></li>
+            <li><a href="<?= View::url('/products') ?>">Products</a></li>
             <li><?= htmlspecialchars($product['title']) ?></li>
         </ul>
     </div>
@@ -184,11 +184,11 @@ ob_start();
                             </div>
                             <div class="product-content">
                                 <h3 class="product-title">
-                                    <a href="/host/mod/products/<?= $relatedProduct['slug'] ?>"><?= htmlspecialchars($relatedProduct['title']) ?></a>
+                                    <a href="<?= View::url('/products/' . $relatedProduct['slug']) ?>"><?= htmlspecialchars($relatedProduct['title']) ?></a>
                                 </h3>
                                 <div class="product-footer">
                                     <span class="product-price"><?= number_format($relatedProduct['price'], 2) ?> SAR</span>
-                                    <a href="/host/mod/products/<?= $relatedProduct['slug'] ?>" class="btn btn-primary btn-sm">View</a>
+                                    <a href="<?= View::url('/products/' . $relatedProduct['slug']) ?>" class="btn btn-primary btn-sm">View</a>
                                 </div>
                             </div>
                         </div>

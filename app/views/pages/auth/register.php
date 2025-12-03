@@ -130,7 +130,7 @@ ob_start();
                         <div class="form-group">
                             <label class="checkbox-label">
                                 <input type="checkbox" name="terms" required>
-                                <span>I agree to the <a href="/host/mod/terms" target="_blank">Terms & Conditions</a> and <a href="/host/mod/privacy" target="_blank">Privacy Policy</a></span>
+                                <span>I agree to the <a href="<?= View::url('/terms') ?>" target="_blank">Terms & Conditions</a> and <a href="<?= View::url('/privacy') ?>" target="_blank">Privacy Policy</a></span>
                             </label>
                         </div>
                         
