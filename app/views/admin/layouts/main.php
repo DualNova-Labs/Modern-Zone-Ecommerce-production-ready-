@@ -40,8 +40,15 @@
             }
             
             .content-wrapper {
-                padding: 1rem;
-                padding-top: 1rem; /* Reduced since main-content has padding-top */
+                padding: 0.5rem;
+                padding-top: 0.5rem; /* Reduced since main-content has padding-top */
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .content-wrapper {
+                padding: 0.25rem;
+                padding-top: 0.25rem;
             }
         }
 

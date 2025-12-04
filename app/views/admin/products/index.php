@@ -376,7 +376,8 @@ ob_start();
     .actions {
         display: flex;
         gap: 0.5rem;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        align-items: center;
     }
 
     .pagination {

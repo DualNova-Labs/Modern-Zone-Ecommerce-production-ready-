@@ -93,15 +93,17 @@ ob_start();
     .toolbar {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         margin-bottom: 2rem;
-        gap: 1rem;
+        gap: 1.5rem;
         flex-wrap: wrap;
     }
     
     .filters {
         display: flex;
-        gap: 1rem;
+        gap: 0.75rem;
+        flex: 1;
+        max-width: 800px;
         flex-wrap: wrap;
         align-items: center;
     }
@@ -114,7 +116,12 @@ ob_start();
         font-size: 0.875rem;
         background: white;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        min-width: 150px;
+        min-width: 130px;
+        height: 44px;
+    }
+
+    .filters .btn {
+        height: 44px;
     }
     
     .filters input:focus,
@@ -176,15 +183,31 @@ ob_start();
     table {
         width: 100%;
         border-collapse: collapse;
-        min-width: 800px;
+        min-width: 750px;
     }
+
+    /* Column widths using percentages for better fit */
+    table th:nth-child(1),
+    table td:nth-child(1) { width: 12%; } /* Order # */
+    table th:nth-child(2),
+    table td:nth-child(2) { width: 18%; } /* Customer */
+    table th:nth-child(3),
+    table td:nth-child(3) { width: 12%; } /* Amount */
+    table th:nth-child(4),
+    table td:nth-child(4) { width: 14%; } /* Payment */
+    table th:nth-child(5),
+    table td:nth-child(5) { width: 12%; text-align: center; } /* Status */
+    table th:nth-child(6),
+    table td:nth-child(6) { width: 14%; } /* Date */
+    table th:nth-child(7),
+    table td:nth-child(7) { width: 18%; } /* Actions */
     
     th {
         text-align: left;
-        padding: 1rem;
+        padding: 0.875rem 1rem;
         background: #f8fafc;
         color: #64748b;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: 600;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -193,10 +216,12 @@ ob_start();
     }
     
     td {
-        padding: 1rem;
+        padding: 0.875rem 1rem;
         border-bottom: 1px solid #f1f5f9;
         font-size: 0.875rem;
         vertical-align: middle;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
     
     tr:last-child td {
@@ -383,53 +408,90 @@ ob_start();
         }
     }
     
-    /* Mobile Responsive */
+    /* Tablet Responsive */
+    @media (max-width: 1200px) {
+        table {
+            min-width: 700px;
+        }
+    }
+
     @media (max-width: 1024px) {
         .toolbar {
             flex-direction: column;
             align-items: stretch;
+            gap: 1rem;
         }
         
         .filters {
-            justify-content: stretch;
+            max-width: none;
+            width: 100%;
         }
         
         .filters input,
         .filters select {
             flex: 1;
-            min-width: auto;
+            min-width: 0;
+        }
+
+        .toolbar .btn-success {
+            align-self: flex-start;
         }
     }
     
+    /* Mobile Responsive */
     @media (max-width: 768px) {
         .section-header {
-            padding: 1rem;
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
+            padding: 1.25rem 1rem;
         }
         
         .section-content {
             padding: 1rem;
         }
+
+        .section-title {
+            font-size: 1.1rem;
+        }
         
         .status-tabs {
             padding: 0.25rem;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
         }
         
         .status-tab {
             padding: 0.5rem 0.75rem;
             font-size: 0.8125rem;
+            flex-shrink: 0;
+        }
+
+        .toolbar {
+            gap: 1rem;
         }
         
         .filters {
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
             gap: 0.75rem;
+        }
+
+        .filters input[type="text"] {
+            grid-column: 1 / -1;
         }
         
         .filters input,
         .filters select {
             width: 100%;
+            min-width: auto;
+        }
+
+        .filters .btn {
+            grid-column: 1 / -1;
+            justify-content: center;
+        }
+
+        .toolbar .btn-success {
+            width: 100%;
+            justify-content: center;
         }
         
         .pagination {
@@ -447,6 +509,29 @@ ob_start();
         .pagination-info {
             font-size: 0.8125rem;
             margin-top: 0.75rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .section-header {
+            padding: 1rem;
+        }
+
+        .section-title {
+            font-size: 1rem;
+        }
+
+        .filters {
+            grid-template-columns: 1fr;
+        }
+
+        .status-tabs {
+            gap: 0.25rem;
+        }
+
+        .status-tab {
+            padding: 0.4rem 0.6rem;
+            font-size: 0.75rem;
         }
     }
 </style>
