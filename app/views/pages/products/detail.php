@@ -20,6 +20,9 @@ ob_start();
             <!-- Product Gallery -->
             <div class="product-gallery">
                 <div class="gallery-main">
+                    <button class="gallery-action" title="Add to Wishlist">
+                        <i class="far fa-heart"></i>
+                    </button>
                     <img src="<?= $product['images'][0] ?>" alt="<?= htmlspecialchars($product['title']) ?>" id="mainImage">
                 </div>
                 <?php if (count($product['images']) > 1): ?>
@@ -36,11 +39,26 @@ ob_start();
             
             <!-- Product Info -->
             <div class="product-info">
+                <!-- Product Category Badge -->
+                <?php if (!empty($product['category'])): ?>
+                <div class="product-category-badge">
+                    <span><?= htmlspecialchars($product['category']) ?></span>
+                </div>
+                <?php endif; ?>
+                
                 <h1 class="product-title"><?= htmlspecialchars($product['title']) ?></h1>
                 
-
+                <!-- SKU & Stock Info -->
+                <div class="product-sku-stock">
+                    <?php if (!empty($product['sku'])): ?>
+                    <span class="sku">SKU: <?= htmlspecialchars($product['sku']) ?></span>
+                    <?php endif; ?>
+                </div>
                 
                 <div class="product-price-section">
+                    <?php if (!empty($product['compare_price']) && $product['compare_price'] > $product['price']): ?>
+                    <span class="product-price-old"><?= number_format($product['compare_price'], 2) ?> SAR</span>
+                    <?php endif; ?>
                     <span class="product-price"><?= number_format($product['price'], 2) ?> SAR</span>
                     <span class="product-badge">In Stock</span>
                 </div>
@@ -51,19 +69,19 @@ ob_start();
                     <div class="option-group">
                         <label>Quantity:</label>
                         <div class="quantity-selector">
-                            <button class="qty-btn" id="qtyMinus">-</button>
-                            <input type="number" class="qty-input" value="1" min="1" id="qtyInput">
-                            <button class="qty-btn" id="qtyPlus">+</button>
+                            <button class="qty-btn" id="qtyMinus" type="button">−</button>
+                            <input type="number" class="qty-input" value="1" min="1" id="qtyInput" readonly>
+                            <button class="qty-btn" id="qtyPlus" type="button">+</button>
                         </div>
                     </div>
                 </div>
                 
                 <div class="product-actions-group">
-                    <button class="btn btn-primary btn-lg btn-block add-to-cart" data-id="<?= $product['id'] ?? $product['slug'] ?>">
-                        <i class="fas fa-cart-plus"></i>
+                    <button class="btn btn-primary btn-lg add-to-cart" data-id="<?= $product['id'] ?? $product['slug'] ?>">
+                        <i class="fas fa-shopping-cart"></i>
                         Add to Cart
                     </button>
-                    <button class="btn btn-secondary btn-lg">
+                    <button class="btn btn-secondary btn-lg buy-now-btn">
                         <i class="fas fa-bolt"></i>
                         Buy Now
                     </button>
@@ -89,9 +107,12 @@ ob_start();
         <!-- Product Tabs -->
         <div class="product-tabs">
             <div class="tabs-header">
-                <button class="tab-btn active" data-tab="description">Description</button>
-                <button class="tab-btn" data-tab="specifications">Specifications</button>
-
+                <button class="tab-btn active" data-tab="description">
+                    <i class="fas fa-file-alt"></i> Description
+                </button>
+                <button class="tab-btn" data-tab="specifications">
+                    <i class="fas fa-list-ul"></i> Specifications
+                </button>
             </div>
             
             <div class="tabs-content">
@@ -112,15 +133,20 @@ ob_start();
                 <div class="tab-panel" id="specifications">
                     <h3>Technical Specifications</h3>
                     <table class="specs-table">
-                        <?php foreach ($product['specifications'] as $key => $value): ?>
+                        <?php if (!empty($product['specifications'])): ?>
+                            <?php foreach ($product['specifications'] as $key => $value): ?>
+                                <tr>
+                                    <th><?= htmlspecialchars($key) ?></th>
+                                    <td><?= htmlspecialchars($value) ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php else: ?>
                             <tr>
-                                <th><?= htmlspecialchars($key) ?></th>
-                                <td><?= htmlspecialchars($value) ?></td>
+                                <td colspan="2" style="text-align: center; color: #6c757d;">No specifications available</td>
                             </tr>
-                        <?php endforeach; ?>
+                        <?php endif; ?>
                     </table>
                 </div>
-
             </div>
         </div>
         
@@ -150,6 +176,138 @@ ob_start();
         <?php endif; ?>
     </div>
 </section>
+
+<style>
+/* Additional Product Detail Styles */
+.product-category-badge {
+    margin-bottom: 8px;
+}
+
+.product-category-badge span {
+    display: inline-block;
+    padding: 4px 12px;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    color: #1565c0;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.product-sku-stock {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 4px;
+}
+
+.product-sku-stock .sku {
+    font-size: 0.85rem;
+    color: #6c757d;
+}
+
+.product-price-old {
+    font-size: 1.1rem;
+    color: #adb5bd;
+    text-decoration: line-through;
+}
+
+.buy-now-btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.buy-now-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: left 0.5s ease;
+}
+
+.buy-now-btn:hover::before {
+    left: 100%;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Quantity selector
+    const qtyInput = document.getElementById('qtyInput');
+    const qtyMinus = document.getElementById('qtyMinus');
+    const qtyPlus = document.getElementById('qtyPlus');
+    
+    if (qtyMinus && qtyPlus && qtyInput) {
+        qtyMinus.addEventListener('click', function() {
+            let value = parseInt(qtyInput.value) || 1;
+            if (value > 1) {
+                qtyInput.value = value - 1;
+            }
+        });
+        
+        qtyPlus.addEventListener('click', function() {
+            let value = parseInt(qtyInput.value) || 1;
+            qtyInput.value = value + 1;
+        });
+    }
+    
+    // Gallery thumbnail click
+    const thumbs = document.querySelectorAll('.gallery-thumb');
+    const mainImage = document.getElementById('mainImage');
+    
+    thumbs.forEach(thumb => {
+        thumb.addEventListener('click', function() {
+            // Remove active class from all thumbs
+            thumbs.forEach(t => t.classList.remove('active'));
+            // Add active class to clicked thumb
+            this.classList.add('active');
+            // Update main image
+            if (mainImage) {
+                mainImage.src = this.dataset.image;
+            }
+        });
+    });
+    
+    // Tab functionality
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+    
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const tabId = this.dataset.tab;
+            
+            // Remove active class from all buttons and panels
+            tabBtns.forEach(b => b.classList.remove('active'));
+            tabPanels.forEach(p => p.classList.remove('active'));
+            
+            // Add active class to clicked button and corresponding panel
+            this.classList.add('active');
+            document.getElementById(tabId)?.classList.add('active');
+        });
+    });
+    
+    // Wishlist button
+    const wishlistBtn = document.querySelector('.gallery-action');
+    if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (icon.classList.contains('far')) {
+                icon.classList.remove('far');
+                icon.classList.add('fas');
+                this.style.color = '#e74c3c';
+            } else {
+                icon.classList.remove('fas');
+                icon.classList.add('far');
+                this.style.color = '';
+            }
+        });
+    }
+});
+</script>
 
 <?php
 $content = ob_get_clean();
