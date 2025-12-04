@@ -38,16 +38,7 @@ ob_start();
             <div class="product-info">
                 <h1 class="product-title"><?= htmlspecialchars($product['title']) ?></h1>
                 
-                <div class="product-rating">
-                    <div class="stars">
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star"></i>
-                        <i class="fas fa-star-half-alt"></i>
-                    </div>
-                    <span class="rating-text">(4.5 out of 5) - 127 reviews</span>
-                </div>
+
                 
                 <div class="product-price-section">
                     <span class="product-price"><?= number_format($product['price'], 2) ?> SAR</span>
@@ -100,7 +91,7 @@ ob_start();
             <div class="tabs-header">
                 <button class="tab-btn active" data-tab="description">Description</button>
                 <button class="tab-btn" data-tab="specifications">Specifications</button>
-                <button class="tab-btn" data-tab="reviews">Reviews (127)</button>
+
             </div>
             
             <div class="tabs-content">
@@ -129,43 +120,7 @@ ob_start();
                         <?php endforeach; ?>
                     </table>
                 </div>
-                
-                <div class="tab-panel" id="reviews">
-                    <h3>Customer Reviews</h3>
-                    
-                    <div class="reviews-summary">
-                        <div class="summary-rating">
-                            <span class="rating-number">4.5</span>
-                            <div class="stars">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
-                            <p>Based on 127 reviews</p>
-                        </div>
-                    </div>
-                    
-                    <div class="reviews-list">
-                        <div class="review-item">
-                            <div class="review-header">
-                                <div class="reviewer-info">
-                                    <h4>John Smith</h4>
-                                    <div class="stars">
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                        <i class="fas fa-star"></i>
-                                    </div>
-                                </div>
-                                <span class="review-date">2 weeks ago</span>
-                            </div>
-                            <p class="review-text">Excellent product! Very powerful and reliable. Been using it for a month now and it performs flawlessly.</p>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
         

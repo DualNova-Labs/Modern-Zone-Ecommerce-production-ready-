@@ -56,70 +56,6 @@ ob_start();
         
         <?php if (!empty($products)): ?>
             <div class="brand-products-layout">
-                <!-- Filters Sidebar -->
-                <aside class="filters-sidebar">
-                    <div class="filters-header">
-                        <h3 class="filters-title">Filters</h3>
-                        <button class="clear-filters-btn" id="clearFilters">Clear All</button>
-                    </div>
-                    
-                    <!-- Category Filter -->
-                    <div class="filter-group">
-                        <button class="filter-group-header" data-filter="category">
-                            <span>Category</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="filter-group-content active" id="categoryFilter">
-                            <?php if (!empty($categories)): ?>
-                                <?php foreach ($categories as $category): ?>
-                                    <label class="filter-checkbox">
-                                        <input type="checkbox" name="category" value="<?= htmlspecialchars($category['slug']) ?>">
-                                        <span><?= htmlspecialchars($category['name']) ?></span>
-                                        <span class="filter-count">(<?= $category['count'] ?>)</span>
-                                    </label>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                    
-                    <!-- Price Filter -->
-                    <div class="filter-group">
-                        <button class="filter-group-header" data-filter="price">
-                            <span>Price</span>
-                            <i class="fas fa-chevron-down"></i>
-                        </button>
-                        <div class="filter-group-content active" id="priceFilter">
-                            <label class="filter-checkbox">
-                                <input type="checkbox" name="price" value="0-100">
-                                <span>Under 100 SAR</span>
-                            </label>
-                            <label class="filter-checkbox">
-                                <input type="checkbox" name="price" value="100-200">
-                                <span>100 - 200 SAR</span>
-                            </label>
-                            <label class="filter-checkbox">
-                                <input type="checkbox" name="price" value="200-400">
-                                <span>200 - 400 SAR</span>
-                            </label>
-                            <label class="filter-checkbox">
-                                <input type="checkbox" name="price" value="400-600">
-                                <span>400 - 600 SAR</span>
-                            </label>
-                            <label class="filter-checkbox">
-                                <input type="checkbox" name="price" value="600+">
-                                <span>600 SAR & Above</span>
-                            </label>
-                        </div>
-                    </div>
-                    
-                    <!-- Stock Filter -->
-                    <div class="filter-group">
-                        <label class="filter-checkbox stock-filter">
-                            <input type="checkbox" name="stock" id="showOutOfStock">
-                            <span>Show out of stock items</span>
-                        </label>
-                    </div>
-                </aside>
                 
                 <!-- Products Grid -->
                 <div class="products-content">
@@ -316,137 +252,8 @@ ob_start();
 }
 
 .brand-products-layout {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 40px;
+    display: block;
     margin-bottom: 50px;
-}
-
-/* Filters Sidebar */
-.filters-sidebar {
-    background: white;
-    border-radius: var(--border-radius);
-    padding: 24px;
-    box-shadow: var(--shadow-sm);
-    height: fit-content;
-    position: sticky;
-    top: 100px;
-}
-
-.filters-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 24px;
-    padding-bottom: 16px;
-    border-bottom: 1px solid var(--gray-200);
-}
-
-.filters-title {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--secondary-color);
-    margin: 0;
-}
-
-.clear-filters-btn {
-    background: none;
-    border: none;
-    color: var(--primary-color);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 4px 8px;
-    transition: opacity 0.2s;
-}
-
-.clear-filters-btn:hover {
-    opacity: 0.8;
-}
-
-.filter-group {
-    margin-bottom: 24px;
-    border-bottom: 1px solid var(--gray-200);
-    padding-bottom: 16px;
-}
-
-.filter-group:last-child {
-    border-bottom: none;
-    margin-bottom: 0;
-}
-
-.filter-group-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    background: none;
-    border: none;
-    padding: 12px 0;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--secondary-color);
-    transition: color 0.2s;
-}
-
-.filter-group-header:hover {
-    color: var(--primary-color);
-}
-
-.filter-group-header i {
-    transition: transform 0.3s;
-    font-size: 0.9rem;
-}
-
-.filter-group-header.collapsed i {
-    transform: rotate(-90deg);
-}
-
-.filter-group-content {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease;
-}
-
-.filter-group-content.active {
-    max-height: 500px;
-    padding-top: 8px;
-}
-
-.filter-checkbox {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 8px 0;
-    cursor: pointer;
-    font-size: 0.95rem;
-    color: var(--gray-700);
-    transition: color 0.2s;
-}
-
-.filter-checkbox:hover {
-    color: var(--primary-color);
-}
-
-.filter-checkbox input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    cursor: pointer;
-    accent-color: var(--primary-color);
-}
-
-.filter-checkbox span {
-    flex: 1;
-}
-
-.filter-count {
-    color: var(--gray-500);
-    font-size: 0.85rem;
-}
-
-.stock-filter {
-    padding: 12px 0;
 }
 
 /* Products Content */
@@ -473,7 +280,7 @@ ob_start();
 
 .products-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
     gap: 30px;
     margin-bottom: 0;
 }
@@ -680,14 +487,7 @@ ob_start();
         font-size: 2rem;
     }
     
-    .brand-products-layout {
-        grid-template-columns: 1fr;
-        gap: 30px;
-    }
-    
-    .filters-sidebar {
-        position: static;
-    }
+
     
     .products-grid {
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -732,79 +532,6 @@ ob_start();
 }
 </style>
 
-<script>
-// Brand Page Filter Functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const filterGroupHeaders = document.querySelectorAll('.filter-group-header');
-    const clearFiltersBtn = document.getElementById('clearFilters');
-    const productCards = document.querySelectorAll('.product-card-link');
-    const productCountEl = document.getElementById('productCount');
-    
-    // Toggle filter groups
-    filterGroupHeaders.forEach(header => {
-        header.addEventListener('click', function() {
-            const content = this.nextElementSibling;
-            this.classList.toggle('collapsed');
-            content.classList.toggle('active');
-        });
-    });
-    
-    // Filter functionality
-    function applyFilters() {
-        const selectedCategories = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => cb.value);
-        const selectedPrices = Array.from(document.querySelectorAll('input[name="price"]:checked')).map(cb => cb.value);
-        const showOutOfStock = document.getElementById('showOutOfStock').checked;
-        
-        let visibleCount = 0;
-        
-        productCards.forEach(card => {
-            let show = true;
-            const category = card.dataset.category;
-            const price = parseFloat(card.dataset.price);
-            
-            // Category filter
-            if (selectedCategories.length > 0 && !selectedCategories.includes(category)) {
-                show = false;
-            }
-            
-            // Price filter
-            if (selectedPrices.length > 0) {
-                const matchesPrice = selectedPrices.some(range => {
-                    if (range === '0-100') return price < 100;
-                    if (range === '100-200') return price >= 100 && price < 200;
-                    if (range === '200-400') return price >= 200 && price < 400;
-                    if (range === '400-600') return price >= 400 && price < 600;
-                    if (range === '600+') return price >= 600;
-                    return false;
-                });
-                if (!matchesPrice) show = false;
-            }
-            
-            if (show) {
-                card.style.display = 'block';
-                visibleCount++;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-        
-        productCountEl.textContent = visibleCount;
-    }
-    
-    // Add event listeners to all filter checkboxes
-    document.querySelectorAll('.filter-checkbox input[type="checkbox"]').forEach(checkbox => {
-        checkbox.addEventListener('change', applyFilters);
-    });
-    
-    // Clear all filters
-    clearFiltersBtn.addEventListener('click', function() {
-        document.querySelectorAll('.filter-checkbox input[type="checkbox"]').forEach(cb => {
-            cb.checked = false;
-        });
-        applyFilters();
-    });
-});
-</script>
 
 <?php
 $content = ob_get_clean();
