@@ -108,9 +108,10 @@ ob_start();
             <h2 class="section-title-modern">Our Premium Brands</h2>
             <p class="section-subtitle-modern">We partner with the world's leading manufacturers</p>
         </div>
+        <?php $brandCount = !empty($brands) ? count($brands) : 0; ?>
         <div class="brands-carousel-wrapper">
             <div class="brands-carousel" id="brandsCarousel">
-                <div class="brands-track">
+                <div class="brands-track <?= $brandCount > 4 ? 'is-animated' : '' ?>">
                     <?php if (!empty($brands)): ?>
                         <?php foreach ($brands as $brand): ?>
                             <a href="<?= View::url('products?brand=' . urlencode($brand['slug'])) ?>" class="brand-item-modern">
@@ -121,6 +122,17 @@ ob_start();
                                 </div>
                             </a>
                         <?php endforeach; ?>
+                        <?php if ($brandCount > 4): ?>
+                            <?php foreach ($brands as $brand): ?>
+                                <a href="<?= View::url('products?brand=' . urlencode($brand['slug'])) ?>" class="brand-item-modern clone">
+                                    <div class="brand-logo-modern">
+                                        <img src="<?= htmlspecialchars($brand['logo']) ?>" 
+                                             alt="<?= htmlspecialchars($brand['name']) ?>" 
+                                             onerror="this.style.display='none'; this.parentElement.innerHTML='<?= htmlspecialchars($brand['name']) ?>';">
+                                    </div>
+                                </a>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
                     <?php endif; ?>
                 </div>
             </div>
@@ -379,43 +391,95 @@ ob_start();
     overflow: hidden;
 }
 
+.brands-carousel-wrapper {
+    position: relative;
+    overflow: hidden;
+    padding: 20px 0;
+}
+
+.brands-carousel::before,
+.brands-carousel::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 80px;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.brands-carousel::before {
+    left: 0;
+    background: linear-gradient(90deg, #fff 10%, transparent);
+}
+
+.brands-carousel::after {
+    right: 0;
+    background: linear-gradient(270deg, #fff 10%, transparent);
+}
+
+.brands-track {
+    display: inline-flex;
+    gap: 1.5rem;
+    animation: brandsMarquee 28s linear infinite;
+    will-change: transform;
+}
+
+.brands-track:hover {
+    animation-play-state: paused;
+}
+
+@keyframes brandsMarquee {
+    from {
+        transform: translateX(0);
+    }
+    to {
+        transform: translateX(-50%);
+    }
+}
+
 .brand-item-modern {
     flex: 0 0 auto;
     width: 140px;
     height: 140px;
     background: #fff;
     border: 2px solid #e9ecef;
-    border-radius: 16px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: all 0.3s ease;
     cursor: pointer;
     text-decoration: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
 }
 
 .brand-item-modern:hover {
     border-color: var(--primary-color);
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(var(--primary-color-rgb), 0.15);
+    transform: translateY(-5px) scale(1.03);
+    box-shadow: 0 15px 35px rgba(var(--primary-color-rgb), 0.2);
 }
 
 .brand-logo-modern {
-    padding: 20px;
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #f8fafc;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 12px;
 }
 
 .brand-logo-modern img {
-    max-width: 100%;
-    max-height: 80px;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     transition: transform 0.3s ease;
 }
 
 .brand-item-modern:hover .brand-logo-modern img {
-    transform: scale(1.1);
+    transform: scale(1.07);
 }
 
 /* Featured Products Modern */
