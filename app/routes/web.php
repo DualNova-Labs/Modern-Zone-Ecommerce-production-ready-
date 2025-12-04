@@ -83,6 +83,7 @@ $router->post('/admin/products/{id}', 'admin/AdminProductController@update');
 $router->post('/admin/products/{id}/delete', 'admin/AdminProductController@destroy');
 $router->post('/admin/products/{id}/toggle-featured', 'admin/AdminProductController@toggleFeatured');
 $router->post('/admin/products/{id}/toggle-bestseller', 'admin/AdminProductController@toggleBestSeller');
+$router->post('/admin/products/images/delete', 'admin/AdminProductController@deleteImage');
 
 // Admin Order Management
 $router->get('/admin/orders', 'admin/AdminOrderController@index');

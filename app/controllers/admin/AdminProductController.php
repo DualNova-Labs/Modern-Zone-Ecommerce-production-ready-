@@ -161,8 +161,12 @@ class AdminProductController
         
         $db = Database::getInstance();
         
+        
+        // Initialize image path
+        $imagePath = null;
+        
         // Handle main image upload
-        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK && !empty($_FILES['image']['name'])) {
             $uploadDir = PUBLIC_PATH . '/assets/images/products/';
             
             // Create directory if it doesn't exist
@@ -170,51 +174,81 @@ class AdminProductController
                 mkdir($uploadDir, 0755, true);
             }
             
-            $fileName = time() . '_' . basename($_FILES['image']['name']);
+            // Clean filename and add timestamp
+            $originalName = preg_replace('/[^a-zA-Z0-9._-]/', '', basename($_FILES['image']['name']));
+            $fileName = time() . '_main_' . $originalName;
             $targetPath = $uploadDir . $fileName;
             
             if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
-                $data['product']['image'] = 'public/assets/images/products/' . $fileName;
+                $imagePath = 'public/assets/images/products/' . $fileName;
             }
         }
         
-        // Create product
-        $product = new Product();
-        $product->fill($data['product']);
+        // Build product data array for direct insert (bypass fill to ensure image is saved)
+        $productData = [
+            'name' => $data['product']['name'],
+            'sku' => $data['product']['sku'],
+            'slug' => $this->generateSlug($data['product']['name']),
+            'category_id' => $data['product']['category_id'],
+            'brand_id' => $data['product']['brand_id'],
+            'description' => $data['product']['description'] ?? null,
+            'specifications' => $data['product']['specifications'] ?? null,
+            'price' => $data['product']['price'],
+            'compare_price' => $data['product']['compare_price'],
+            'cost' => $data['product']['cost'] ?? null,
+            'quantity' => $data['product']['quantity'],
+            'min_quantity' => $data['product']['min_quantity'] ?? 1,
+            'weight' => $data['product']['weight'] ?? null,
+            'image' => $imagePath,
+            'featured' => $data['product']['featured'] ?? 0,
+            'best_seller' => $data['product']['best_seller'] ?? 0,
+            'new_arrival' => $data['product']['new_arrival'] ?? 0,
+            'status' => $data['product']['status'] ?? 'active',
+            'created_at' => date('Y-m-d H:i:s'),
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
         
-        // Generate slug
-        $product->slug = $this->generateSlug($product->name);
-        
-        if ($product->save()) {
-            $productId = $db->getConnection()->lastInsertId();
+        try {
+            // Insert product directly to ensure all fields are saved
+            $productId = $db->insert('products', $productData);
             
-            // Handle additional images
-            if (isset($_FILES['additional_images']) && is_array($_FILES['additional_images']['name'])) {
-                $uploadDir = PUBLIC_PATH . '/assets/images/products/';
-                
-                for ($i = 0; $i < count($_FILES['additional_images']['name']); $i++) {
-                    if ($_FILES['additional_images']['error'][$i] === UPLOAD_ERR_OK) {
-                        $fileName = time() . '_' . $i . '_' . basename($_FILES['additional_images']['name'][$i]);
-                        $targetPath = $uploadDir . $fileName;
-                        
-                        if (move_uploaded_file($_FILES['additional_images']['tmp_name'][$i], $targetPath)) {
-                            // Insert into product_images table
-                            $db->insert('product_images', [
-                                'product_id' => $productId,
-                                'image_path' => 'public/assets/images/products/' . $fileName,
-                                'alt_text' => $product->name . ' - Image ' . ($i + 1),
-                                'is_primary' => 0,
-                                'sort_order' => $i + 1
-                            ]);
+            if ($productId) {
+                // Handle additional images
+                if (isset($_FILES['additional_images']) && is_array($_FILES['additional_images']['name'])) {
+                    $uploadDir = PUBLIC_PATH . '/assets/images/products/';
+                    
+                    for ($i = 0; $i < count($_FILES['additional_images']['name']); $i++) {
+                        if (isset($_FILES['additional_images']['error'][$i]) && 
+                            $_FILES['additional_images']['error'][$i] === UPLOAD_ERR_OK &&
+                            !empty($_FILES['additional_images']['name'][$i])) {
+                            
+                            $originalName = preg_replace('/[^a-zA-Z0-9._-]/', '', basename($_FILES['additional_images']['name'][$i]));
+                            $fileName = time() . '_add' . $i . '_' . $originalName;
+                            $targetPath = $uploadDir . $fileName;
+                            
+                            if (move_uploaded_file($_FILES['additional_images']['tmp_name'][$i], $targetPath)) {
+                                // Insert into product_images table
+                                $db->insert('product_images', [
+                                    'product_id' => $productId,
+                                    'image_path' => 'public/assets/images/products/' . $fileName,
+                                    'alt_text' => $productData['name'] . ' - Image ' . ($i + 1),
+                                    'is_primary' => 0,
+                                    'sort_order' => $i + 1
+                                ]);
+                            }
                         }
                     }
                 }
+                
+                $_SESSION['product_success'] = 'Product created successfully';
+                header('Location: ' . View::url('/admin/products'));
+            } else {
+                $_SESSION['product_error'] = 'Failed to create product';
+                $_SESSION['product_old'] = Request::all();
+                header('Location: ' . View::url('/admin/products/create'));
             }
-            
-            $_SESSION['product_success'] = 'Product created successfully';
-            header('Location: ' . View::url('/admin/products'));
-        } else {
-            $_SESSION['product_error'] = 'Failed to create product';
+        } catch (Exception $e) {
+            $_SESSION['product_error'] = 'Error creating product: ' . $e->getMessage();
             $_SESSION['product_old'] = Request::all();
             header('Location: ' . View::url('/admin/products/create'));
         }
@@ -242,9 +276,18 @@ class AdminProductController
             exit;
         }
         
+        // Get product images
+        $images = $db->select(
+            "SELECT * FROM product_images 
+             WHERE product_id = :product_id 
+             ORDER BY is_primary DESC, sort_order ASC",
+            ['product_id' => $id]
+        );
+        
         echo json_encode([
             'success' => true,
-            'product' => $product
+            'product' => $product,
+            'images' => $images
         ]);
         exit;
     }
@@ -261,9 +304,11 @@ class AdminProductController
             exit;
         }
         
-        $product = Product::find($id);
+        $db = Database::getInstance();
         
-        if (!$product) {
+        $existingProduct = $db->selectOne("SELECT * FROM products WHERE id = :id", ['id' => $id]);
+        
+        if (!$existingProduct) {
             $_SESSION['product_error'] = 'Product not found';
             header('Location: ' . View::url('/admin/products'));
             exit;
@@ -278,8 +323,11 @@ class AdminProductController
             exit;
         }
         
-        // Handle image upload if new image provided
-        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+        // Handle image path - start with existing image
+        $imagePath = $existingProduct['image'];
+        
+        // Handle new main image upload if provided
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK && !empty($_FILES['image']['name'])) {
             $uploadDir = PUBLIC_PATH . '/assets/images/products/';
             
             // Create directory if it doesn't exist
@@ -287,35 +335,93 @@ class AdminProductController
                 mkdir($uploadDir, 0755, true);
             }
             
-            $fileName = time() . '_' . basename($_FILES['image']['name']);
+            // Clean filename and add timestamp
+            $originalName = preg_replace('/[^a-zA-Z0-9._-]/', '', basename($_FILES['image']['name']));
+            $fileName = time() . '_main_' . $originalName;
             $targetPath = $uploadDir . $fileName;
             
             if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
                 // Delete old image if exists
-                if ($product->image && file_exists(ROOT_PATH . '/' . $product->image)) {
-                    unlink(ROOT_PATH . '/' . $product->image);
+                if ($existingProduct['image'] && file_exists(ROOT_PATH . '/' . $existingProduct['image'])) {
+                    @unlink(ROOT_PATH . '/' . $existingProduct['image']);
                 }
                 
-                $data['product']['image'] = 'public/assets/images/products/' . $fileName;
+                $imagePath = 'public/assets/images/products/' . $fileName;
             }
-        } else {
-            // Keep existing image
-            $data['product']['image'] = $product->image;
         }
         
-        // Update product
-        $product->fill($data['product']);
-        
-        // Update slug if name changed
-        if ($product->isDirty('name')) {
-            $product->slug = $this->generateSlug($product->name, $product->id);
+        // Determine if slug needs update
+        $slug = $existingProduct['slug'];
+        if ($data['product']['name'] !== $existingProduct['name']) {
+            $slug = $this->generateSlug($data['product']['name'], $id);
         }
         
-        if ($product->save()) {
+        // Build update data
+        $updateData = [
+            'name' => $data['product']['name'],
+            'sku' => $data['product']['sku'],
+            'slug' => $slug,
+            'category_id' => $data['product']['category_id'],
+            'brand_id' => $data['product']['brand_id'],
+            'description' => $data['product']['description'] ?? null,
+            'specifications' => $data['product']['specifications'] ?? null,
+            'price' => $data['product']['price'],
+            'compare_price' => $data['product']['compare_price'],
+            'cost' => $data['product']['cost'] ?? null,
+            'quantity' => $data['product']['quantity'],
+            'min_quantity' => $data['product']['min_quantity'] ?? 1,
+            'weight' => $data['product']['weight'] ?? null,
+            'image' => $imagePath,
+            'featured' => $data['product']['featured'] ?? 0,
+            'best_seller' => $data['product']['best_seller'] ?? 0,
+            'new_arrival' => $data['product']['new_arrival'] ?? 0,
+            'status' => $data['product']['status'] ?? 'active',
+            'updated_at' => date('Y-m-d H:i:s')
+        ];
+        
+        try {
+            // Update product directly
+            $db->update('products', $updateData, 'id = :id', ['id' => $id]);
+            
+            // Handle additional images
+            if (isset($_FILES['additional_images']) && is_array($_FILES['additional_images']['name'])) {
+                $uploadDir = PUBLIC_PATH . '/assets/images/products/';
+                
+                // Get current max sort_order for this product
+                $maxSort = $db->selectOne(
+                    "SELECT MAX(sort_order) as max_sort FROM product_images WHERE product_id = :product_id",
+                    ['product_id' => $id]
+                );
+                $sortOrder = ($maxSort['max_sort'] ?? 0) + 1;
+                
+                for ($i = 0; $i < count($_FILES['additional_images']['name']); $i++) {
+                    if (isset($_FILES['additional_images']['error'][$i]) && 
+                        $_FILES['additional_images']['error'][$i] === UPLOAD_ERR_OK &&
+                        !empty($_FILES['additional_images']['name'][$i])) {
+                        
+                        $originalName = preg_replace('/[^a-zA-Z0-9._-]/', '', basename($_FILES['additional_images']['name'][$i]));
+                        $fileName = time() . '_add' . $i . '_' . $originalName;
+                        $targetPath = $uploadDir . $fileName;
+                        
+                        if (move_uploaded_file($_FILES['additional_images']['tmp_name'][$i], $targetPath)) {
+                            // Insert into product_images table
+                            $db->insert('product_images', [
+                                'product_id' => $id,
+                                'image_path' => 'public/assets/images/products/' . $fileName,
+                                'alt_text' => $data['product']['name'] . ' - Image ' . ($sortOrder),
+                                'is_primary' => 0,
+                                'sort_order' => $sortOrder
+                            ]);
+                            $sortOrder++;
+                        }
+                    }
+                }
+            }
+            
             $_SESSION['product_success'] = 'Product updated successfully';
             header('Location: ' . View::url('/admin/products'));
-        } else {
-            $_SESSION['product_error'] = 'Failed to update product';
+        } catch (Exception $e) {
+            $_SESSION['product_error'] = 'Error updating product: ' . $e->getMessage();
             header('Location: ' . View::url('/admin/products/' . $id . '/edit'));
         }
         exit;
@@ -569,6 +675,59 @@ class AdminProductController
             ]);
         } else {
             $this->jsonResponse(['success' => false, 'error' => 'Failed to update status']);
+        }
+    }
+    
+    /**
+     * Delete individual product image
+     */
+    public function deleteImage()
+    {
+        // Validate CSRF token
+        if (!$this->security->validateCsrfToken()) {
+            $this->jsonResponse(['success' => false, 'error' => 'Invalid security token']);
+            return;
+        }
+        
+        $imageId = Request::post('image_id');
+        
+        if (!$imageId) {
+            $this->jsonResponse(['success' => false, 'error' => 'Image ID is required']);
+            return;
+        }
+        
+        $db = Database::getInstance();
+        $image = $db->selectOne(
+            "SELECT * FROM product_images WHERE id = :id",
+            ['id' => $imageId]
+        );
+        
+        if (!$image) {
+            $this->jsonResponse(['success' => false, 'error' => 'Image not found']);
+            return;
+        }
+        
+        // Delete physical file
+        if ($image['image_path'] && file_exists(ROOT_PATH . '/' . $image['image_path'])) {
+            unlink(ROOT_PATH . '/' . $image['image_path']);
+        }
+        
+        // Delete from database
+        $deleted = $db->query(
+            "DELETE FROM product_images WHERE id = :id",
+            ['id' => $imageId]
+        );
+        
+        if ($deleted) {
+            $this->jsonResponse([
+                'success' => true,
+                'message' => 'Image deleted successfully'
+            ]);
+        } else {
+            $this->jsonResponse([
+                'success' => false,
+                'error' => 'Failed to delete image'
+            ]);
         }
     }
     
