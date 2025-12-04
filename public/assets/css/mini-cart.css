@@ -312,6 +312,7 @@
         border-radius: 0;
         margin-top: 0;
         transform: translateX(100%);
+        z-index: 1010; /* Higher than hamburger menu */
     }
 
     .icon-btn:hover ~.mini-cart-dropdown,
@@ -329,6 +330,11 @@
 
     .mini-cart-footer {
         padding: 20px;
+    }
+
+    /* Hide hamburger when mini-cart is open */
+    body.mini-cart-open .mobile-menu-toggle {
+        z-index: 1;
     }
 }
 

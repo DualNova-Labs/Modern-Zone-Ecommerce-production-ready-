@@ -6,6 +6,8 @@ require_once APP_PATH . '/core/Model.php';
 
 class Category extends Model
 {
+    public $id;
+    public $name;
     protected $table = 'categories';
     protected $fillable = [
         'parent_id', 'type', 'name', 'slug', 'description', 
