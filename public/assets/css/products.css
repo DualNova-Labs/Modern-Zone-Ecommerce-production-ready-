@@ -222,21 +222,26 @@
 
 .gallery-thumbs {
     display: flex;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
+    flex-wrap: wrap;
 }
 
 .gallery-thumb {
-    flex: 1;
-    aspect-ratio: 1;
+    width: 70px;
+    height: 70px;
+    min-width: 70px;
     border-radius: var(--border-radius);
     overflow: hidden;
-    border: 2px solid transparent;
-    transition: border-color var(--transition-base);
+    border: 2px solid var(--gray-300);
+    transition: all var(--transition-base);
+    cursor: pointer;
+    background: var(--gray-100);
 }
 
 .gallery-thumb.active,
 .gallery-thumb:hover {
     border-color: var(--primary-color);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
 .gallery-thumb img {

@@ -1628,19 +1628,20 @@ ob_start();
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">
-                        Cancel
-                    </button>
-                    <button type="submit" id="submitBtn" class="btn btn-success">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        Create Product
-                    </button>
-                </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" onclick="closeCreateModal()">
+                    Cancel
+                </button>
+                <button type="submit" id="createSubmitBtn" class="btn btn-success">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Create Product
+                </button>
+            </div>
         </form>
     </div>
 </div>
@@ -2157,7 +2158,7 @@ ob_start();
                 e.preventDefault();
 
                 const formData = new FormData(this);
-                const submitBtn = document.getElementById('submitBtn');
+                const submitBtn = document.getElementById('createSubmitBtn');
                 const originalText = submitBtn.innerHTML;
 
                 submitBtn.innerHTML = 'Creating...';
@@ -2336,8 +2337,12 @@ ob_start();
 <!-- Add base URL meta tag for JavaScript -->
 <meta name="base-url" content="<?= BASE_URL ?>">
 
-<!-- Include the admin products fix script -->
-<script src="<?= BASE_URL ?>/public/assets/js/admin-products.js"></script>
+<!-- 
+    Note: admin-products.js is disabled to avoid conflicts with the inline openEditModal function.
+    The inline version uses the built-in modal which is more consistent with the page design.
+    Uncomment the line below if you prefer the custom modal from admin-products.js
+-->
+<!-- <script src="<?= BASE_URL ?>/public/assets/js/admin-products.js"></script> -->
 
 <?php
 $content = ob_get_clean();
