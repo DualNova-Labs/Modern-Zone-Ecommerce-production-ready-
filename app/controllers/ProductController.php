@@ -220,8 +220,9 @@ class ProductController
         
         // Add search filter
         if ($search) {
-            $sql .= " AND (p.name LIKE :search OR p.description LIKE :search OR p.sku LIKE :search_sku)";
-            $params['search'] = "%{$search}%";
+            $sql .= " AND (p.name LIKE :search_name OR p.description LIKE :search_description OR p.sku LIKE :search_sku)";
+            $params['search_name'] = "%{$search}%";
+            $params['search_description'] = "%{$search}%";
             $params['search_sku'] = $search;
         }
         
