@@ -113,28 +113,13 @@ class AdminProductController
     }
 
     /**
-     * Show create product form
+     * Show create product form - redirects to index with modal
      */
     public function create()
     {
-        $categories = Category::getActive();
-        $brands = Brand::getActive();
-
-        $data = [
-            'title' => 'Add New Product - Admin',
-            'categories' => $categories,
-            'brands' => $brands,
-            'csrf_token' => $this->security->getCsrfToken(),
-            'admin_menu' => AdminMiddleware::getAdminMenu(),
-            'active_menu' => 'products',
-            'errors' => $_SESSION['product_errors'] ?? [],
-            'old' => $_SESSION['product_old'] ?? []
-        ];
-
-        unset($_SESSION['product_errors']);
-        unset($_SESSION['product_old']);
-
-        View::render('admin/products/create', $data);
+        // Redirect to index page - product creation is handled via modal
+        header('Location: ' . View::url('/admin/products'));
+        exit;
     }
 
     /**
@@ -145,7 +130,7 @@ class AdminProductController
         // Validate CSRF token
         if (!$this->security->validateCsrfToken()) {
             $_SESSION['product_error'] = 'Invalid security token. Please try again.';
-            header('Location: ' . View::url('/admin/products/create'));
+            header('Location: ' . View::url('/admin/products'));
             exit;
         }
 
@@ -155,7 +140,8 @@ class AdminProductController
         if (!empty($data['errors'])) {
             $_SESSION['product_errors'] = $data['errors'];
             $_SESSION['product_old'] = Request::all();
-            header('Location: ' . View::url('/admin/products/create'));
+            $_SESSION['product_error'] = implode('<br>', $data['errors']);
+            header('Location: ' . View::url('/admin/products'));
             exit;
         }
 

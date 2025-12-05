@@ -550,7 +550,7 @@ ob_start();
             <button class="modal-close" onclick="closeCreateModal()">&times;</button>
         </div>
         
-        <form id="createBrandForm" method="POST" action="<?= View::url('/admin/brands') ?>" enctype="multipart/form-data">
+        <form id="createBrandForm" method="POST" action="<?= View::url('/admin/brands/store') ?>" enctype="multipart/form-data">
             <div class="modal-body">
                 <input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
                 
@@ -752,36 +752,13 @@ ob_start();
         }
     });
     
-    // Handle create form submission
+    // Handle create form submission - use native form submit
     document.getElementById('createBrandForm').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const formData = new FormData(this);
-        
         // Show loading state
         const submitBtn = this.querySelector('.btn-modal-primary');
-        const originalText = submitBtn.textContent;
         submitBtn.textContent = 'Creating...';
         submitBtn.disabled = true;
-        
-        fetch('<?= View::url('/admin/brands') ?>', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
-                // Success - reload page to show new brand
-                window.location.reload();
-            } else {
-                throw new Error('Creation failed');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('An error occurred while creating the brand');
-            submitBtn.textContent = originalText;
-            submitBtn.disabled = false;
-        });
+        // Let the form submit naturally
     });
     
     // Edit Brand Modal Functions

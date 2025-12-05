@@ -106,6 +106,7 @@ $router->get('/admin/categories/{id}/toggle-status', 'admin/AdminCategoryControl
 $router->get('/admin/brands', 'admin/AdminBrandController@index');
 $router->get('/admin/brands/create', 'admin/AdminBrandController@create');
 $router->post('/admin/brands', 'admin/AdminBrandController@store');
+$router->post('/admin/brands/store', 'admin/AdminBrandController@store');
 $router->get('/admin/brands/{id}/edit', 'admin/AdminBrandController@edit');
 $router->post('/admin/brands/{id}', 'admin/AdminBrandController@update');
 $router->post('/admin/brands/{id}/delete', 'admin/AdminBrandController@destroy');

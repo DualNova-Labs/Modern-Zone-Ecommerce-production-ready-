@@ -50,28 +50,13 @@ class AdminCategoryController
     }
     
     /**
-     * Show create category form
+     * Show create category form - redirects to index with modal
      */
     public function create()
     {
-        $db = Database::getInstance();
-        $parentCategories = $db->select(
-            "SELECT * FROM categories WHERE parent_id IS NULL AND status = 'active' ORDER BY name"
-        );
-        
-        $data = [
-            'title' => 'Create Category',
-            'parentCategories' => $parentCategories,
-            'csrf_token' => $this->security->getCsrfToken(),
-            'errors' => $_SESSION['category_errors'] ?? [],
-            'old' => $_SESSION['category_old'] ?? [],
-        ];
-        
-        // Clear flash data
-        unset($_SESSION['category_errors']);
-        unset($_SESSION['category_old']);
-        
-        View::render('admin/categories/create', $data);
+        // Redirect to index page - category creation is handled via modal
+        header('Location: ' . View::url('/admin/categories'));
+        exit;
     }
     
     /**
@@ -117,7 +102,8 @@ class AdminCategoryController
         if (!empty($errors)) {
             $_SESSION['category_errors'] = $errors;
             $_SESSION['category_old'] = $data;
-            header('Location: ' . View::url('/admin/categories/create'));
+            $_SESSION['category_error'] = implode('<br>', $errors);
+            header('Location: ' . View::url('/admin/categories'));
             exit;
         }
         
@@ -131,7 +117,7 @@ class AdminCategoryController
             exit;
         } catch (Exception $e) {
             $_SESSION['category_error'] = 'Failed to create category: ' . $e->getMessage();
-            header('Location: ' . View::url('/admin/categories/create'));
+            header('Location: ' . View::url('/admin/categories'));
             exit;
         }
     }

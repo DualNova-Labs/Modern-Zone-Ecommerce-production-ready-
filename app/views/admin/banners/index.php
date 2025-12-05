@@ -451,7 +451,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray-600);">
                             <strong>${file.name}</strong><br>
                             <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small><br>
-                            <button type="button" onclick="clearImageUpload()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--danger-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
+                            <button type="button" onclick="clearImageUpload(); return false;" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--danger-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
                                 Remove Image
                             </button>
                         </div>
@@ -480,7 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         <div style="margin-top: 1rem; font-size: 0.875rem; color: var(--gray-600);">
                             <strong>${file.name}</strong><br>
                             <small>${(file.size / 1024 / 1024).toFixed(2)} MB</small><br>
-                            <button type="button" onclick="clearEditImageUpload()" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--danger-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
+                            <button type="button" onclick="clearEditImageUpload(); return false;" style="margin-top: 0.5rem; padding: 0.5rem 1rem; background: var(--danger-color); color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.75rem;">
                                 Remove Image
                             </button>
                         </div>

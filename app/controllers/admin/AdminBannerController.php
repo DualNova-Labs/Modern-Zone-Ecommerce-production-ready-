@@ -47,15 +47,13 @@ class AdminBannerController
     }
     
     /**
-     * Show create banner form
+     * Show create banner form - redirects to index with modal
      */
     public function create()
     {
-        $data = [
-            'title' => 'Create New Banner'
-        ];
-        
-        View::render('admin/banners/create', $data);
+        // Redirect to index page - banner creation is handled via modal
+        header('Location: ' . View::url('admin/banners'));
+        exit;
     }
     
     /**
@@ -106,7 +104,7 @@ class AdminBannerController
         
         if (!empty($errors)) {
             $_SESSION['error'] = implode('<br>', $errors);
-            header('Location: ' . View::url('admin/banners/create'));
+            header('Location: ' . View::url('admin/banners'));
             exit;
         }
         

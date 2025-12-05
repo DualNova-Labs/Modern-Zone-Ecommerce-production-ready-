@@ -49,22 +49,13 @@ class AdminBrandController
     }
     
     /**
-     * Show create brand form
+     * Show create brand form - redirects to index with modal
      */
     public function create()
     {
-        $data = [
-            'title' => 'Create Brand',
-            'csrf_token' => $this->security->getCsrfToken(),
-            'errors' => $_SESSION['brand_errors'] ?? [],
-            'old' => $_SESSION['brand_old'] ?? [],
-        ];
-        
-        // Clear flash data
-        unset($_SESSION['brand_errors']);
-        unset($_SESSION['brand_old']);
-        
-        View::render('admin/brands/create', $data);
+        // Redirect to index page - brand creation is handled via modal
+        header('Location: ' . View::url('/admin/brands'));
+        exit;
     }
     
     /**
@@ -112,7 +103,8 @@ class AdminBrandController
         if (!empty($errors)) {
             $_SESSION['brand_errors'] = $errors;
             $_SESSION['brand_old'] = $data;
-            header('Location: ' . View::url('/admin/brands/create'));
+            $_SESSION['brand_error'] = implode('<br>', $errors);
+            header('Location: ' . View::url('/admin/brands'));
             exit;
         }
         
@@ -144,7 +136,7 @@ class AdminBrandController
             exit;
         } catch (Exception $e) {
             $_SESSION['brand_error'] = 'Failed to create brand: ' . $e->getMessage();
-            header('Location: ' . View::url('/admin/brands/create'));
+            header('Location: ' . View::url('/admin/brands'));
             exit;
         }
     }
