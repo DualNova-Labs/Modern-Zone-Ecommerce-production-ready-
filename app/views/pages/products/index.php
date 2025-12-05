@@ -168,10 +168,161 @@ $categoryFilter = $_GET['category'] ?? '';
                 </div>
             </aside>
             
+            <!-- Mobile Sort & Filter Bar (Flipkart Style) -->
+            <div class="mobile-filter-bar">
+                <button class="mobile-filter-btn" id="mobileSortBtn">
+                    <i class="fas fa-sort"></i>
+                    <span>Sort</span>
+                </button>
+                <div class="mobile-filter-divider"></div>
+                <button class="mobile-filter-btn" id="mobileFilterBtn">
+                    <i class="fas fa-filter"></i>
+                    <span>Filter</span>
+                </button>
+            </div>
+            
+            <!-- Mobile Filter Modal (Flipkart Style) -->
+            <div class="mobile-filter-modal" id="mobileFilterModal">
+                <div class="mobile-filter-overlay" id="filterOverlay"></div>
+                <div class="mobile-filter-sheet">
+                    <!-- Header -->
+                    <div class="filter-sheet-header">
+                        <button class="filter-back-btn" id="filterCloseBtn">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <span class="filter-sheet-title">Filters</span>
+                    </div>
+                    
+                    <!-- Body -->
+                    <div class="filter-sheet-body">
+                        <!-- Left: Filter Categories -->
+                        <div class="filter-categories">
+                            <button class="filter-cat-btn active" data-filter="category">
+                                Category
+                            </button>
+                            <button class="filter-cat-btn" data-filter="price">
+                                Price
+                            </button>
+                            <button class="filter-cat-btn" data-filter="quick">
+                                Quick Filters
+                            </button>
+                        </div>
+                        
+                        <!-- Right: Filter Options -->
+                        <div class="filter-options">
+                            <!-- Category Options -->
+                            <div class="filter-option-panel active" id="filter-category">
+                                <label class="filter-checkbox-item <?= empty($categoryFilter) ? 'checked' : '' ?>">
+                                    <input type="checkbox" name="mob_category" value="" <?= empty($categoryFilter) ? 'checked' : '' ?>>
+                                    <span class="checkbox-box"></span>
+                                    <span class="checkbox-label">All Products</span>
+                                </label>
+                                <?php if (!empty($categories)): ?>
+                                    <?php foreach ($categories as $cat): ?>
+                                        <label class="filter-checkbox-item <?= $categoryFilter === $cat['slug'] ? 'checked' : '' ?>">
+                                            <input type="checkbox" name="mob_category" value="<?= $cat['slug'] ?>" <?= $categoryFilter === $cat['slug'] ? 'checked' : '' ?>>
+                                            <span class="checkbox-box"></span>
+                                            <span class="checkbox-label"><?= htmlspecialchars($cat['name']) ?></span>
+                                        </label>
+                                    <?php endforeach; ?>
+                                <?php endif; ?>
+                            </div>
+                            
+                            <!-- Price Options -->
+                            <div class="filter-option-panel" id="filter-price">
+                                <label class="filter-checkbox-item">
+                                    <input type="checkbox" name="mob_price" value="0-100">
+                                    <span class="checkbox-box"></span>
+                                    <span class="checkbox-label">SAR 0 - SAR 100</span>
+                                </label>
+                                <label class="filter-checkbox-item">
+                                    <input type="checkbox" name="mob_price" value="100-500">
+                                    <span class="checkbox-box"></span>
+                                    <span class="checkbox-label">SAR 100 - SAR 500</span>
+                                </label>
+                                <label class="filter-checkbox-item">
+                                    <input type="checkbox" name="mob_price" value="500-1000">
+                                    <span class="checkbox-box"></span>
+                                    <span class="checkbox-label">SAR 500 - SAR 1000</span>
+                                </label>
+                                <label class="filter-checkbox-item">
+                                    <input type="checkbox" name="mob_price" value="1000+">
+                                    <span class="checkbox-box"></span>
+                                    <span class="checkbox-label">SAR 1000 and Above</span>
+                                </label>
+                            </div>
+                            
+                            <!-- Quick Filters -->
+                            <div class="filter-option-panel" id="filter-quick">
+                                <label class="filter-checkbox-item">
+                                    <input type="checkbox" name="mob_quick" value="featured">
+                                    <span class="checkbox-box"></span>
+                                    <span class="checkbox-label">Featured Products</span>
+                                </label>
+                                <label class="filter-checkbox-item">
+                                    <input type="checkbox" name="mob_quick" value="bestseller">
+                                    <span class="checkbox-box"></span>
+                                    <span class="checkbox-label">Best Sellers</span>
+                                </label>
+                                <label class="filter-checkbox-item">
+                                    <input type="checkbox" name="mob_quick" value="new">
+                                    <span class="checkbox-box"></span>
+                                    <span class="checkbox-label">New Arrivals</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Footer -->
+                    <div class="filter-sheet-footer">
+                        <div class="filter-footer-info">
+                            <span class="filter-count"><?= count($products) ?></span>
+                            <span>products found</span>
+                        </div>
+                        <button class="filter-apply-btn" id="applyFiltersBtn">Apply</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mobile Sort Modal -->
+            <div class="mobile-sort-modal" id="mobileSortModal">
+                <div class="mobile-sort-overlay" id="sortOverlay"></div>
+                <div class="mobile-sort-sheet">
+                    <div class="sort-sheet-header">
+                        <span>Sort By</span>
+                        <button class="sort-close-btn" id="sortCloseBtn">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="sort-options">
+                        <label class="sort-option">
+                            <input type="radio" name="mobile_sort" value="popular" checked>
+                            <span>Most Popular</span>
+                        </label>
+                        <label class="sort-option">
+                            <input type="radio" name="mobile_sort" value="newest">
+                            <span>Newest First</span>
+                        </label>
+                        <label class="sort-option">
+                            <input type="radio" name="mobile_sort" value="price-low">
+                            <span>Price: Low to High</span>
+                        </label>
+                        <label class="sort-option">
+                            <input type="radio" name="mobile_sort" value="price-high">
+                            <span>Price: High to Low</span>
+                        </label>
+                        <label class="sort-option">
+                            <input type="radio" name="mobile_sort" value="name">
+                            <span>Name: A to Z</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
             <!-- Main Products Area -->
             <main class="products-main">
-                <!-- Toolbar -->
-                <div class="products-toolbar">
+                <!-- Toolbar (Desktop) -->
+                <div class="products-toolbar desktop-toolbar">
                     <div class="toolbar-info">
                         <span class="results-count">
                             <strong><?= count($products) ?></strong> products found
@@ -1434,6 +1585,325 @@ $categoryFilter = $_GET['category'] ?? '';
     font-size: 0.75rem;
 }
 
+/* ===== Mobile Filter Bar (Flipkart Style) ===== */
+.mobile-filter-bar {
+    display: none;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.mobile-filter-bar {
+    display: none;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+}
+
+.mobile-filter-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1rem;
+    background: none;
+    border: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #212121;
+    cursor: pointer;
+}
+
+.mobile-filter-btn i {
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.mobile-filter-divider {
+    width: 1px;
+    height: 24px;
+    background: #e0e0e0;
+}
+
+/* Mobile Filter Modal */
+.mobile-filter-modal,
+.mobile-sort-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+}
+
+.mobile-filter-modal.active,
+.mobile-sort-modal.active {
+    display: block;
+}
+
+.mobile-filter-overlay,
+.mobile-sort-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+}
+
+/* Filter Sheet */
+.mobile-filter-sheet {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.filter-sheet-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 1rem;
+    border-bottom: 1px solid #e0e0e0;
+    background: #fff;
+}
+
+.filter-back-btn {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: none;
+    border: none;
+    font-size: 1rem;
+    color: #212121;
+    cursor: pointer;
+}
+
+.filter-sheet-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #212121;
+}
+
+.filter-sheet-body {
+    flex: 1;
+    display: flex;
+    overflow: hidden;
+}
+
+/* Filter Categories (Left Sidebar) */
+.filter-categories {
+    width: 140px;
+    background: #f5f5f5;
+    border-right: 1px solid #e0e0e0;
+    overflow-y: auto;
+}
+
+.filter-cat-btn {
+    display: block;
+    width: 100%;
+    padding: 1rem 0.875rem;
+    text-align: left;
+    background: none;
+    border: none;
+    border-left: 3px solid transparent;
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: #666;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-cat-btn:hover {
+    background: #eee;
+}
+
+.filter-cat-btn.active {
+    background: #fff;
+    border-left-color: #2874f0;
+    color: #2874f0;
+    font-weight: 500;
+}
+
+/* Filter Options (Right Panel) */
+.filter-options {
+    flex: 1;
+    overflow-y: auto;
+    background: #fff;
+}
+
+.filter-option-panel {
+    display: none;
+    padding: 0.5rem 0;
+}
+
+.filter-option-panel.active {
+    display: block;
+}
+
+.filter-checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.filter-checkbox-item:hover {
+    background: #f9f9f9;
+}
+
+.filter-checkbox-item input {
+    display: none;
+}
+
+.checkbox-box {
+    width: 18px;
+    height: 18px;
+    border: 2px solid #c2c2c2;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.checkbox-box::after {
+    content: '';
+    width: 10px;
+    height: 6px;
+    border-left: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(-45deg) scale(0);
+    transition: transform 0.2s;
+    margin-top: -2px;
+}
+
+.filter-checkbox-item.checked .checkbox-box,
+.filter-checkbox-item input:checked + .checkbox-box {
+    background: #2874f0;
+    border-color: #2874f0;
+}
+
+.filter-checkbox-item.checked .checkbox-box::after,
+.filter-checkbox-item input:checked + .checkbox-box::after {
+    transform: rotate(-45deg) scale(1);
+}
+
+.checkbox-label {
+    font-size: 0.875rem;
+    color: #212121;
+}
+
+/* Filter Footer */
+.filter-sheet-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.875rem 1rem;
+    border-top: 1px solid #e0e0e0;
+    background: #fff;
+}
+
+.filter-footer-info {
+    font-size: 0.875rem;
+    color: #666;
+}
+
+.filter-count {
+    font-weight: 600;
+    color: #212121;
+}
+
+.filter-apply-btn {
+    padding: 0.75rem 2.5rem;
+    background: #ff6b35;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.filter-apply-btn:hover {
+    background: #e55a2b;
+}
+
+/* Sort Sheet */
+.mobile-sort-sheet {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-radius: 16px 16px 0 0;
+    max-height: 70vh;
+    overflow: hidden;
+}
+
+.sort-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.sort-sheet-header span {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #212121;
+}
+
+.sort-close-btn {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f5f5f5;
+    border: none;
+    border-radius: 50%;
+    font-size: 0.875rem;
+    color: #666;
+    cursor: pointer;
+}
+
+.sort-options {
+    padding: 0.5rem 0;
+}
+
+.sort-option {
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sort-option:hover {
+    background: #f9f9f9;
+}
+
+.sort-option input {
+    width: 18px;
+    height: 18px;
+    accent-color: #2874f0;
+}
+
+.sort-option span {
+    font-size: 0.9375rem;
+    color: #212121;
+}
+
 /* ===== Pagination ===== */
 .pagination-wrapper {
     text-align: center;
@@ -1524,7 +1994,7 @@ $categoryFilter = $_GET['category'] ?? '';
         position: static;
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: 0.75rem;
     }
     
     .filter-card {
@@ -1532,175 +2002,491 @@ $categoryFilter = $_GET['category'] ?? '';
     }
     
     .support-card {
-        order: 2;
         display: none;
     }
     
+    /* Collapse filters by default on tablet */
+    .accordion-item {
+        border-bottom: none;
+    }
+    
+    .accordion-item:not(.active) .accordion-content {
+        max-height: 0;
+        padding: 0;
+    }
+    
     .filter-header {
-        padding: 1rem 1.25rem;
+        padding: 0.875rem 1rem;
+    }
+    
+    .filter-header-title {
+        font-size: 0.9rem;
+    }
+    
+    .filter-icon-wrapper {
+        width: 32px;
+        height: 32px;
+        border-radius: 8px;
+    }
+    
+    .filter-icon-wrapper i {
+        font-size: 0.8rem;
+    }
+    
+    .accordion-header {
+        padding: 0.75rem 1rem;
+    }
+    
+    .accordion-title {
+        font-size: 0.8rem;
     }
     
     .accordion-item.active .accordion-content {
-        padding: 0 1.25rem 1rem;
+        padding: 0 1rem 0.75rem;
     }
     
     .quick-filters-section {
-        padding: 0.875rem 1.25rem 1.25rem;
+        padding: 0.75rem 1rem;
+    }
+    
+    .quick-filters-title {
+        font-size: 0.7rem;
+        margin-bottom: 0.5rem;
     }
 }
 
 @media (max-width: 768px) {
-    .products-toolbar {
-        flex-direction: column;
-        align-items: stretch;
+    .products-page {
+        padding: 0 0 1rem;
     }
     
-    .toolbar-actions {
-        justify-content: space-between;
+    .products-page .container {
+        padding: 0;
     }
     
-    .products-grid {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 0.75rem;
+    .products-layout {
+        gap: 0;
     }
     
-    /* Product Card Tablet */
-    .card-image-section {
-        height: 140px;
-        padding: 0.5rem;
+    /* Hide desktop sidebar on mobile */
+    .products-sidebar {
+        display: none !important;
     }
     
-    .card-image-container {
-        height: 120px;
+    /* Hide desktop toolbar on mobile */
+    .desktop-toolbar {
+        display: none !important;
     }
     
-    .card-content {
-        padding: 0.5rem;
+    /* Hide active filters bar on mobile */
+    .active-filters {
+        display: none !important;
     }
     
-    .card-title {
-        font-size: 0.75rem;
-        min-height: 2em;
+    /* Show mobile filter bar */
+    .mobile-filter-bar {
+        display: grid !important;
+        grid-template-columns: 1fr auto 1fr;
+        margin-bottom: 0.5rem;
     }
     
-    .price-amount {
-        font-size: 0.9rem;
+    /* Products main area */
+    .products-main {
+        padding: 0 0.5rem;
     }
     
-    .card-add-to-cart {
-        padding: 0.4rem 0.5rem;
-        font-size: 0.65rem;
+    .filter-card {
+        border-radius: 10px;
     }
     
-    .quick-action-btn {
-        width: 24px;
-        height: 24px;
-        font-size: 0.75rem;
+    .filter-header {
+        padding: 0.75rem 1rem;
     }
     
-    .card-badge {
-        font-size: 0.55rem;
-        padding: 0.15rem 0.35rem;
+    .filter-header-title span {
+        font-size: 0.875rem;
     }
     
-    .quick-filter-pills {
+    .filter-icon-wrapper {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .clear-filters-link {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+    }
+    
+    .active-filter-pills {
+        padding: 0.5rem 1rem;
         gap: 0.375rem;
     }
     
-    .quick-pill {
-        padding: 0.375rem 0.625rem;
-        font-size: 0.75rem;
+    .filter-pill {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
     }
     
-    .price-inputs-row {
-        flex-direction: column;
+    .pill-remove {
+        width: 16px;
+        height: 16px;
+    }
+    
+    /* Accordion compact */
+    .accordion-header {
+        padding: 0.625rem 1rem;
+    }
+    
+    .accordion-title {
+        font-size: 0.8rem;
         gap: 0.5rem;
     }
     
-    .price-divider {
-        display: none;
+    .accordion-title i {
+        width: 14px;
+        font-size: 0.75rem;
+    }
+    
+    .accordion-item.active .accordion-content {
+        padding: 0 1rem 0.625rem;
+        max-height: 400px;
+    }
+    
+    /* Category items compact */
+    .category-item {
+        padding: 0.5rem 0.625rem;
+        gap: 0.5rem;
+    }
+    
+    .category-checkbox {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .category-name {
+        font-size: 0.8rem;
+    }
+    
+    .category-count {
+        font-size: 0.65rem;
+        padding: 0.1rem 0.375rem;
+    }
+    
+    /* Price filter compact */
+    .price-slider-container {
+        padding: 0.25rem 0 1rem;
+    }
+    
+    .price-inputs-row {
+        flex-direction: row;
+        gap: 0.5rem;
     }
     
     .price-input-group {
-        width: 100%;
-    }
-}
-
-@media (max-width: 480px) {
-    .products-page {
-        padding: 1rem 0 2rem;
+        padding: 0.375rem 0.5rem;
     }
     
+    .price-currency {
+        font-size: 0.65rem;
+    }
+    
+    .price-input-group input {
+        font-size: 0.8rem;
+    }
+    
+    .apply-price-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+        border-radius: 6px;
+    }
+    
+    /* Quick filters compact */
+    .quick-filters-section {
+        padding: 0.625rem 1rem 0.75rem;
+    }
+    
+    .quick-filters-title {
+        font-size: 0.65rem;
+        margin-bottom: 0.375rem;
+    }
+    
+    .quick-filter-pills {
+        gap: 0.25rem;
+    }
+    
+    .quick-pill {
+        padding: 0.3rem 0.5rem;
+        font-size: 0.65rem;
+        gap: 0.25rem;
+    }
+    
+    .quick-pill i {
+        font-size: 0.55rem;
+    }
+    
+    /* Toolbar compact */
+    .products-toolbar {
+        flex-direction: row;
+        align-items: center;
+        padding: 0.625rem 0.75rem;
+        border-radius: 8px;
+        margin-bottom: 0.75rem;
+        gap: 0.5rem;
+    }
+    
+    .toolbar-info {
+        flex: 1;
+    }
+    
+    .results-count {
+        font-size: 0.8rem;
+    }
+    
+    .results-count strong {
+        font-size: 0.9rem;
+    }
+    
+    .toolbar-actions {
+        gap: 0.5rem;
+    }
+    
+    .sort-dropdown {
+        display: none;
+    }
+    
+    .view-toggle {
+        padding: 0.125rem;
+        border-radius: 6px;
+    }
+    
+    .view-btn {
+        padding: 0.375rem 0.5rem;
+        font-size: 0.75rem;
+    }
+    
+    /* Products Grid */
     .products-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 0.5rem;
     }
     
+    /* Product Card Mobile */
     .product-card {
         border-radius: 8px;
+        border: 1px solid #eee;
     }
     
     .card-image-section {
-        height: 120px;
+        height: 130px;
         padding: 0.5rem;
     }
     
     .card-image-container {
-        height: 100px;
+        height: 110px;
+    }
+    
+    .card-badges {
+        top: 0.375rem;
+        left: 0.375rem;
+        gap: 0.2rem;
+    }
+    
+    .card-badge {
+        font-size: 0.5rem;
+        padding: 0.15rem 0.35rem;
+    }
+    
+    .card-badge i {
+        font-size: 0.45rem;
+    }
+    
+    .card-quick-actions {
+        top: 0.375rem;
+        right: 0.375rem;
+    }
+    
+    .quick-action-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.7rem;
     }
     
     .card-content {
         padding: 0.5rem;
+        gap: 0.2rem;
     }
     
     .card-title {
-        font-size: 0.7rem;
-        min-height: 1.8em;
+        font-size: 0.75rem;
+        min-height: auto;
         -webkit-line-clamp: 2;
-    }
-    
-    .price-amount {
-        font-size: 0.85rem;
-    }
-    
-    .price-currency {
-        font-size: 0.6rem;
-    }
-    
-    .card-add-to-cart {
-        padding: 0.35rem 0.5rem;
-        font-size: 0.6rem;
-        border-radius: 3px;
+        line-height: 1.3;
     }
     
     .card-sku {
         display: none;
     }
     
+    .card-price-section {
+        margin-top: 0.25rem;
+        padding-top: 0;
+        border-top: none;
+    }
+    
+    .price-amount {
+        font-size: 0.9rem;
+        font-weight: 700;
+    }
+    
+    .price-currency {
+        font-size: 0.65rem;
+    }
+    
+    .card-add-to-cart {
+        padding: 0.4rem 0.5rem;
+        margin-top: 0.375rem;
+        font-size: 0.65rem;
+        border-radius: 4px;
+        gap: 0.25rem;
+    }
+    
+    .card-add-to-cart i {
+        font-size: 0.6rem;
+    }
+    
+    /* Pagination compact */
+    .pagination-wrapper {
+        margin-top: 1rem;
+    }
+    
+    .pagination {
+        padding: 0.5rem;
+        border-radius: 8px;
+        gap: 0.25rem;
+    }
+    
+    .pagination-btn {
+        padding: 0.375rem 0.625rem;
+        font-size: 0.75rem;
+    }
+    
     .pagination-btn span {
         display: none;
     }
     
-    .active-filter-pills {
-        padding: 0.75rem 1rem;
+    .pagination-numbers {
+        gap: 0.125rem;
     }
     
-    .filter-pill {
+    .pagination-num {
+        min-width: 32px;
+        height: 32px;
         font-size: 0.75rem;
-        padding: 0.375rem 0.625rem;
+    }
+    
+    .pagination-info {
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+    }
+    
+    /* Empty state compact */
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+    
+    .empty-state-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state-icon i {
+        font-size: 1.5rem;
+    }
+    
+    .empty-state-title {
+        font-size: 1rem;
+    }
+    
+    .empty-state-text {
+        font-size: 0.8rem;
+    }
+    
+    .empty-state-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .products-page .container {
+        padding: 0 0.5rem;
+    }
+    
+    .products-grid {
+        gap: 0.375rem;
+    }
+    
+    .card-image-section {
+        height: 110px;
+    }
+    
+    .card-image-container {
+        height: 90px;
+    }
+    
+    .card-content {
+        padding: 0.375rem;
+    }
+    
+    .card-title {
+        font-size: 0.7rem;
+    }
+    
+    .price-amount {
+        font-size: 0.8rem;
+    }
+    
+    .card-add-to-cart {
+        padding: 0.35rem 0.4rem;
+        font-size: 0.6rem;
+    }
+    
+    .filter-header {
+        padding: 0.625rem 0.75rem;
+    }
+    
+    .accordion-header {
+        padding: 0.5rem 0.75rem;
+    }
+    
+    .accordion-item.active .accordion-content {
+        padding: 0 0.75rem 0.5rem;
     }
     
     .category-item {
-        padding: 0.5rem 0.625rem;
+        padding: 0.375rem 0.5rem;
     }
     
     .category-name {
-        font-size: 0.8125rem;
+        font-size: 0.75rem;
     }
     
-    .category-count {
-        font-size: 0.7rem;
-        padding: 0.1rem 0.375rem;
+    .quick-filters-section {
+        padding: 0.5rem 0.75rem 0.625rem;
+    }
+    
+    .quick-pill {
+        padding: 0.25rem 0.4rem;
+        font-size: 0.6rem;
+    }
+    
+    .products-toolbar {
+        padding: 0.5rem;
+    }
+    
+    .results-count {
+        font-size: 0.75rem;
     }
 }
 </style>
@@ -1832,6 +2618,144 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location = url;
         });
     }
+    
+    // ===== Mobile Filter Modal (Flipkart Style) =====
+    const mobileFilterBtn = document.getElementById('mobileFilterBtn');
+    const mobileFilterModal = document.getElementById('mobileFilterModal');
+    const filterCloseBtn = document.getElementById('filterCloseBtn');
+    const filterOverlay = document.getElementById('filterOverlay');
+    const filterCatBtns = document.querySelectorAll('.filter-cat-btn');
+    const filterPanels = document.querySelectorAll('.filter-option-panel');
+    const applyFiltersBtn = document.getElementById('applyFiltersBtn');
+    
+    // Open filter modal
+    if (mobileFilterBtn) {
+        mobileFilterBtn.addEventListener('click', function() {
+            mobileFilterModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+    
+    // Close filter modal
+    function closeFilterModal() {
+        mobileFilterModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    if (filterCloseBtn) {
+        filterCloseBtn.addEventListener('click', closeFilterModal);
+    }
+    
+    if (filterOverlay) {
+        filterOverlay.addEventListener('click', closeFilterModal);
+    }
+    
+    // Switch filter categories
+    filterCatBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+            const filterType = this.dataset.filter;
+            
+            // Update active button
+            filterCatBtns.forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            // Show corresponding panel
+            filterPanels.forEach(panel => {
+                panel.classList.remove('active');
+                if (panel.id === 'filter-' + filterType) {
+                    panel.classList.add('active');
+                }
+            });
+        });
+    });
+    
+    // Handle checkbox clicks
+    const filterCheckboxItems = document.querySelectorAll('.filter-checkbox-item');
+    filterCheckboxItems.forEach(item => {
+        item.addEventListener('click', function() {
+            const checkbox = this.querySelector('input[type="checkbox"]');
+            const name = checkbox.name;
+            
+            // For category, only allow one selection
+            if (name === 'mob_category') {
+                document.querySelectorAll('input[name="mob_category"]').forEach(cb => {
+                    cb.checked = false;
+                    cb.closest('.filter-checkbox-item').classList.remove('checked');
+                });
+            }
+            
+            checkbox.checked = !checkbox.checked;
+            this.classList.toggle('checked', checkbox.checked);
+        });
+    });
+    
+    // Apply filters
+    if (applyFiltersBtn) {
+        applyFiltersBtn.addEventListener('click', function() {
+            const url = new URL(window.location);
+            
+            // Get selected category
+            const selectedCategory = document.querySelector('input[name="mob_category"]:checked');
+            if (selectedCategory && selectedCategory.value) {
+                url.searchParams.set('category', selectedCategory.value);
+            } else {
+                url.searchParams.delete('category');
+            }
+            
+            // Get selected price ranges
+            const selectedPrices = document.querySelectorAll('input[name="mob_price"]:checked');
+            if (selectedPrices.length > 0) {
+                const priceValues = Array.from(selectedPrices).map(p => p.value);
+                url.searchParams.set('price', priceValues.join(','));
+            }
+            
+            // Get quick filters
+            const selectedQuick = document.querySelectorAll('input[name="mob_quick"]:checked');
+            selectedQuick.forEach(q => {
+                url.searchParams.set(q.value, '1');
+            });
+            
+            window.location = url;
+        });
+    }
+    
+    // ===== Mobile Sort Modal =====
+    const mobileSortBtn = document.getElementById('mobileSortBtn');
+    const mobileSortModal = document.getElementById('mobileSortModal');
+    const sortCloseBtn = document.getElementById('sortCloseBtn');
+    const sortOverlay = document.getElementById('sortOverlay');
+    const sortOptions = document.querySelectorAll('.sort-option input');
+    
+    // Open sort modal
+    if (mobileSortBtn) {
+        mobileSortBtn.addEventListener('click', function() {
+            mobileSortModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+    
+    // Close sort modal
+    function closeSortModal() {
+        mobileSortModal.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
+    if (sortCloseBtn) {
+        sortCloseBtn.addEventListener('click', closeSortModal);
+    }
+    
+    if (sortOverlay) {
+        sortOverlay.addEventListener('click', closeSortModal);
+    }
+    
+    // Apply sort on selection
+    sortOptions.forEach(option => {
+        option.addEventListener('change', function() {
+            const url = new URL(window.location);
+            url.searchParams.set('sort', this.value);
+            window.location = url;
+        });
+    });
 });
 </script>
 
