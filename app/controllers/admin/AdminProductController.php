@@ -233,12 +233,12 @@ class AdminProductController
             } else {
                 $_SESSION['product_error'] = 'Failed to create product';
                 $_SESSION['product_old'] = Request::all();
-                header('Location: ' . View::url('/admin/products/create'));
+                header('Location: ' . View::url('/admin/products'));
             }
         } catch (Exception $e) {
             $_SESSION['product_error'] = 'Error creating product: ' . $e->getMessage();
             $_SESSION['product_old'] = Request::all();
-            header('Location: ' . View::url('/admin/products/create'));
+            header('Location: ' . View::url('/admin/products'));
         }
         exit;
     }

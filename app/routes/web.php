@@ -78,12 +78,13 @@ $router->get('/admin/analytics', 'admin/AdminDashboardController@analytics');
 $router->get('/admin/products', 'admin/AdminProductController@index');
 $router->get('/admin/products/create', 'admin/AdminProductController@create');
 $router->post('/admin/products', 'admin/AdminProductController@store');
+$router->post('/admin/products/store', 'admin/AdminProductController@store');
+$router->post('/admin/products/images/delete', 'admin/AdminProductController@deleteImage'); // Must be before {id} routes
 $router->get('/admin/products/{id}/edit', 'admin/AdminProductController@edit');
 $router->post('/admin/products/{id}', 'admin/AdminProductController@update');
 $router->post('/admin/products/{id}/delete', 'admin/AdminProductController@destroy');
 $router->post('/admin/products/{id}/toggle-featured', 'admin/AdminProductController@toggleFeatured');
 $router->post('/admin/products/{id}/toggle-bestseller', 'admin/AdminProductController@toggleBestSeller');
-$router->post('/admin/products/images/delete', 'admin/AdminProductController@deleteImage');
 
 // Admin Order Management
 $router->get('/admin/orders', 'admin/AdminOrderController@index');

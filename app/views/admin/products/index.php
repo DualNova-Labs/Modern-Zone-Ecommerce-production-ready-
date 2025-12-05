@@ -1318,7 +1318,7 @@ ob_start();
             </button>
         </div>
 
-        <form id="createProductForm" method="POST" enctype="multipart/form-data">
+        <form id="createProductForm" method="POST" action="<?= View::url('/admin/products/store') ?>" enctype="multipart/form-data">
             <?= View::csrfField() ?>
 
             <div class="modal-body">
@@ -1549,10 +1549,16 @@ ob_start();
                                         const reader = new FileReader();
                                         reader.onload = function (event) {
                                             const slot = document.getElementById(`add-slot-${i}`);
+                                            // Keep the input element, just add preview image
+                                            const existingInput = slot.querySelector('input[type="file"]');
                                             slot.innerHTML = `
                                             <img src="${event.target.result}" alt="Additional Image ${i}">
                                             <button type="button" class="remove-additional-image" onclick="removeAdditionalImageModal(${i})">×</button>
                                         `;
+                                            // Re-add the input element (hidden but with the file)
+                                            if (existingInput) {
+                                                slot.appendChild(existingInput);
+                                            }
                                             slot.classList.add('has-image');
                                         };
                                         reader.readAsDataURL(file);
@@ -2165,7 +2171,7 @@ ob_start();
                 submitBtn.innerHTML = 'Creating...';
                 submitBtn.disabled = true;
 
-                fetch('<?= View::url('/admin/products') ?>', {
+                fetch('<?= View::url('/admin/products/store') ?>', {
                     method: 'POST',
                     body: formData
                 })
