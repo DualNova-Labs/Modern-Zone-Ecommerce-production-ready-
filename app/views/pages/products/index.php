@@ -227,18 +227,15 @@ $categoryFilter = $_GET['category'] ?? '';
                 <!-- Products Grid -->
                 <div class="products-grid" id="productsGrid">
                     <?php if (empty($products)): ?>
-                        <div class="no-products-wrapper">
-                            <div class="no-products-box">
-                                <div class="no-products-illustration">
-                                    <i class="fas fa-box-open"></i>
-                                </div>
-                                <h2 class="no-products-title">No Products Found</h2>
-                                <p class="no-products-text">We couldn't find any products matching your criteria. Try adjusting your filters or browse all products.</p>
-                                <a href="<?= View::url('/products') ?>" class="no-products-btn">
-                                    <i class="fas fa-arrow-left"></i>
-                                    Browse All Products
-                                </a>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="fas fa-box-open"></i>
                             </div>
+                            <h3 class="empty-state-title">No Products Found</h3>
+                            <p class="empty-state-text">We couldn't find any products matching your criteria. Try adjusting your filters or browse all products.</p>
+                            <a href="<?= View::url('/products') ?>" class="empty-state-btn">
+                                <i class="fas fa-arrow-left"></i> Browse All Products
+                            </a>
                         </div>
                     <?php else: ?>
                         <?php foreach ($products as $product): ?>
@@ -1371,59 +1368,70 @@ $categoryFilter = $_GET['category'] ?? '';
     font-weight: 600;
 }
 
-/* ===== No Products ===== */
-.no-products {
+/* ===== Empty State ===== */
+.empty-state {
     grid-column: 1 / -1;
     text-align: center;
-    padding: 4rem 2rem;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    padding: 3rem 2rem;
+    background: #ffffff;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
 }
 
-.no-products-icon {
-    width: 100px;
-    height: 100px;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+.empty-state-icon {
+    width: 80px;
+    height: 80px;
+    background: #f9fafb;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1.5rem;
+    margin: 0 auto 1.25rem;
+    border: 1px solid #e5e7eb;
 }
 
-.no-products-icon i {
-    font-size: 2.5rem;
-    color: #ccc;
+.empty-state-icon i {
+    font-size: 2rem;
+    color: #9ca3af;
 }
 
-.no-products h3 {
-    font-size: 1.5rem;
-    color: #1a1a2e;
+.empty-state-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
     margin: 0 0 0.5rem 0;
 }
 
-.no-products p {
-    color: #888;
+.empty-state-text {
+    font-size: 0.875rem;
+    color: #6b7280;
     margin: 0 0 1.5rem 0;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    line-height: 1.5;
 }
 
-.btn-reset {
+.empty-state-btn {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: #ff6b35;
+    padding: 0.625rem 1.25rem;
+    background: #1f2937;
     color: white;
-    border-radius: 50px;
+    border-radius: 6px;
     text-decoration: none;
-    font-weight: 600;
-    transition: all 0.3s;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: all 0.2s ease;
 }
 
-.btn-reset:hover {
-    background: #e55a2b;
-    transform: translateY(-2px);
+.empty-state-btn:hover {
+    background: #374151;
+}
+
+.empty-state-btn i {
+    font-size: 0.75rem;
 }
 
 /* ===== Pagination ===== */
