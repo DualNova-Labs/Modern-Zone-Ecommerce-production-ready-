@@ -1,0 +1,288 @@
+/* Mobile Navigation Close Button Fix */
+/* Position the X button to the right side when mobile nav is open */
+
+@media (max-width: 768px) {
+    .mobile-menu-toggle.active {
+        position: fixed !important;
+        top: 12px !important;
+        left: 265px !important;
+        /* Position at the right edge of the nav panel */
+        right: auto !important;
+        z-index: 1004 !important;
+    }
+}
+
+/* Adjust for screens where nav width is 85vw but less than 320px max-width */
+@media (max-width: 380px) {
+    .mobile-menu-toggle.active {
+        left: calc(85vw - 54px) !important;
+        /* 85% of viewport minus button width and padding */
+    }
+}
+
+/* ========================================
+   About Us Page Mobile Layout Fix
+   ======================================== */
+
+@media (max-width: 768px) {
+
+    /* Stack the grid vertically on mobile */
+    .about-content-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 24px !important;
+    }
+
+    /* Image wrapper - full width and proper height */
+    .about-image-wrapper {
+        width: 100% !important;
+        min-height: 250px !important;
+        max-height: 300px !important;
+        order: -1;
+        /* Image first */
+        border-radius: 12px;
+    }
+
+    /* Main image - cover the container properly */
+    .about-main-image {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center !important;
+    }
+
+    /* Text content - full width with proper padding */
+    .about-text-content {
+        width: 100% !important;
+        padding: 0 8px !important;
+    }
+
+    /* Title adjustments for mobile */
+    .about-section-title {
+        font-size: 1.5rem !important;
+        text-align: left !important;
+        margin-bottom: 16px !important;
+    }
+
+    /* Subsection titles */
+    .about-subsection-title {
+        font-size: 1.1rem !important;
+        margin-top: 20px !important;
+    }
+
+    /* Paragraphs - left align instead of justify for better readability */
+    .about-paragraph {
+        text-align: left !important;
+        font-size: 0.95rem !important;
+        line-height: 1.7 !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* Values banner adjustments */
+    .values-banner {
+        padding: 20px !important;
+        margin: 24px 0 !important;
+    }
+
+    .values-text {
+        font-size: 0.95rem !important;
+        text-align: center !important;
+    }
+
+    /* Values grid - 2 columns on mobile */
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    /* Category cards in values section */
+    .about-page .category-card {
+        padding: 16px 12px !important;
+    }
+
+    .about-page .category-card h3 {
+        font-size: 0.9rem !important;
+    }
+
+    .about-page .category-card p {
+        font-size: 0.75rem !important;
+    }
+}
+
+/* ========================================
+   Contact Page Mobile Layout Fix
+   ======================================== */
+
+@media (max-width: 768px) {
+
+    /* Quick Contact Cards - Stack vertically */
+    .quick-contact-cards {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    .quick-contact-card {
+        width: 100% !important;
+        padding: 20px 16px !important;
+    }
+
+    .quick-contact-icon {
+        width: 60px !important;
+        height: 60px !important;
+        font-size: 1.5rem !important;
+    }
+
+    .quick-contact-card h4 {
+        font-size: 1rem !important;
+    }
+
+    .quick-contact-card p {
+        font-size: 0.85rem !important;
+        word-break: break-word !important;
+    }
+
+    /* Get In Touch Section */
+    .info-card-modern-horizontal {
+        padding: 1.5rem !important;
+    }
+
+    .info-header-horizontal {
+        margin-bottom: 1.5rem !important;
+        padding-bottom: 1rem !important;
+    }
+
+    .info-header-horizontal h2 {
+        font-size: 1.4rem !important;
+    }
+
+    .info-header-horizontal p {
+        font-size: 0.9rem !important;
+    }
+
+    /* Branch Cards Grid - Single column */
+    .branches-grid-horizontal {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+
+    /* Branch Card styling */
+    .branch-card {
+        padding: 1.25rem !important;
+        margin-bottom: 0 !important;
+    }
+
+    .branch-header {
+        gap: 0.75rem !important;
+        margin-bottom: 1rem !important;
+        padding-bottom: 0.75rem !important;
+    }
+
+    .branch-header i {
+        width: 45px !important;
+        height: 45px !important;
+        font-size: 1.25rem !important;
+    }
+
+    .branch-header h3 {
+        font-size: 1.1rem !important;
+    }
+
+    /* Branch Details - Handle long text */
+    .branch-details {
+        gap: 0.75rem !important;
+    }
+
+    .detail-item {
+        padding: 0.5rem !important;
+        gap: 0.75rem !important;
+    }
+
+    .detail-item i {
+        width: 28px !important;
+        height: 28px !important;
+        font-size: 1rem !important;
+        flex-shrink: 0 !important;
+    }
+
+    .detail-item p {
+        font-size: 0.9rem !important;
+        word-break: break-word !important;
+        overflow-wrap: break-word !important;
+    }
+
+    .detail-item a {
+        word-break: break-all !important;
+        font-size: 0.85rem !important;
+    }
+
+    /* Social Section */
+    .social-section-horizontal {
+        margin-top: 1rem !important;
+        padding-top: 1rem !important;
+    }
+
+    .social-section-horizontal h4 {
+        font-size: 0.9rem !important;
+    }
+
+    .social-links-modern .social-link {
+        width: 40px !important;
+        height: 40px !important;
+        font-size: 1rem !important;
+    }
+
+    /* Contact Form Card */
+    .form-card-modern {
+        padding: 1.5rem !important;
+    }
+
+    .form-header h2 {
+        font-size: 1.3rem !important;
+    }
+
+    .form-header p {
+        font-size: 0.9rem !important;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr !important;
+        gap: 0 !important;
+    }
+
+    .form-group {
+        margin-bottom: 1rem !important;
+    }
+
+    .form-input,
+    .form-select,
+    .form-textarea {
+        font-size: 16px !important;
+        /* Prevents zoom on iOS */
+        padding: 12px !important;
+    }
+
+    /* Map Section */
+    .map-section h2 {
+        font-size: 1.3rem !important;
+        margin-bottom: 1rem !important;
+    }
+
+    .map-container iframe {
+        height: 300px !important;
+    }
+
+    /* Section Header */
+    .contact-page-modern .section-header {
+        margin-bottom: 2rem !important;
+    }
+
+    .contact-page-modern .section-title {
+        font-size: 1.5rem !important;
+    }
+
+    .contact-page-modern .section-subtitle {
+        font-size: 0.95rem !important;
+    }
+}
