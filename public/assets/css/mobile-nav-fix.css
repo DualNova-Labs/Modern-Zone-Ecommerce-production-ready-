@@ -19,3 +19,92 @@
         /* 85% of viewport minus button width and padding */
     }
 }
+
+/* ========================================
+   About Us Page Mobile Layout Fix
+   ======================================== */
+
+@media (max-width: 768px) {
+
+    /* Stack the grid vertically on mobile */
+    .about-content-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 24px !important;
+    }
+
+    /* Image wrapper - full width and proper height */
+    .about-image-wrapper {
+        width: 100% !important;
+        min-height: 250px !important;
+        max-height: 300px !important;
+        order: -1;
+        /* Image first */
+        border-radius: 12px;
+    }
+
+    /* Main image - cover the container properly */
+    .about-main-image {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        object-position: center !important;
+    }
+
+    /* Text content - full width with proper padding */
+    .about-text-content {
+        width: 100% !important;
+        padding: 0 8px !important;
+    }
+
+    /* Title adjustments for mobile */
+    .about-section-title {
+        font-size: 1.5rem !important;
+        text-align: left !important;
+        margin-bottom: 16px !important;
+    }
+
+    /* Subsection titles */
+    .about-subsection-title {
+        font-size: 1.1rem !important;
+        margin-top: 20px !important;
+    }
+
+    /* Paragraphs - left align instead of justify for better readability */
+    .about-paragraph {
+        text-align: left !important;
+        font-size: 0.95rem !important;
+        line-height: 1.7 !important;
+        margin-bottom: 12px !important;
+    }
+
+    /* Values banner adjustments */
+    .values-banner {
+        padding: 20px !important;
+        margin: 24px 0 !important;
+    }
+
+    .values-text {
+        font-size: 0.95rem !important;
+        text-align: center !important;
+    }
+
+    /* Values grid - 2 columns on mobile */
+    .values-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+    }
+
+    /* Category cards in values section */
+    .about-page .category-card {
+        padding: 16px 12px !important;
+    }
+
+    .about-page .category-card h3 {
+        font-size: 0.9rem !important;
+    }
+
+    .about-page .category-card p {
+        font-size: 0.75rem !important;
+    }
+}
