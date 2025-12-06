@@ -81,7 +81,7 @@ ob_start();
                                            onclick="return confirm('Are you sure you want to toggle this category status?')">
                                             <i class="fas fa-power-off"></i> Toggle
                                         </a>
-                                        <button onclick="deleteCategory(<?= $category['id'] ?>)" 
+                                        <button onclick="deleteCategory(<?= $category['id'] ?>, '<?= addslashes($category['name']) ?>', <?= $category['product_count'] ?>, <?= !empty($category['children_count']) ? 'true' : 'false' ?>)" 
                                                 class="btn btn-sm btn-danger" title="Delete">
                                             <i class="fas fa-trash"></i> Delete
                                         </button>
@@ -957,22 +957,59 @@ ob_start();
         });
     });
     
-    // Delete category
-    function deleteCategory(id) {
-        if (!confirm('Are you sure you want to delete this category? This action cannot be undone.')) {
+    // Delete category with detailed warnings
+    function deleteCategory(id, categoryName, productCount, hasChildren) {
+        // First confirmation with basic warning
+        let firstMessage = 'Are you sure you want to delete this category? This action cannot be undone.';
+        
+        if (!confirm(firstMessage)) {
             return;
         }
         
+        // Build detailed warning message
+        let warningMessage = '⚠️ IMPORTANT WARNING ⚠️\n\n';
+        warningMessage += 'This will permanently delete the category: "' + categoryName + '"\n\n';
+        
+        if (productCount > 0) {
+            warningMessage += '📦 This category contains ' + productCount + ' product(s).\n';
+            warningMessage += '   These products will also be DELETED!\n\n';
+        }
+        
+        if (hasChildren) {
+            warningMessage += '📁 This category has subcategories.\n';
+            warningMessage += '   They will become uncategorized.\n\n';
+        }
+        
+        warningMessage += 'This action is IRREVERSIBLE!\n\n';
+        warningMessage += 'Type "DELETE" to confirm this action:';
+        
+        // Second confirmation with detailed warning and text verification
+        let confirmation = prompt(warningMessage);
+        
+        if (confirmation === null || confirmation.toUpperCase() !== 'DELETE') {
+            if (confirmation !== null) {
+                alert('❌ Deletion cancelled. You must type "DELETE" exactly to proceed.');
+            }
+            return;
+        }
+        
+        // Perform the delete request with force_delete POST parameter
         fetch('<?= View::url('/admin/categories/') ?>' + id + '/delete', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
-            }
+                'X-Force-Delete': 'true'
+            },
+            body: 'force_delete=true'
         })
-        .then(() => location.reload())
+        .then(response => {
+            // Always reload - the server will set success/error messages in session
+            window.location.reload();
+        })
         .catch(error => {
             console.error('Error:', error);
-            alert('An error occurred while deleting the category');
+            alert('An error occurred while deleting the category. Please try again.');
+            window.location.reload();
         });
     }
 </script>

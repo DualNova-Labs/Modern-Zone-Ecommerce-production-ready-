@@ -97,14 +97,14 @@ class Category extends Model
     }
     
     /**
-     * Get product count
+     * Get product count (all products, not just active)
      */
     public function getProductCount()
     {
         $result = $this->db->selectOne(
             "SELECT COUNT(*) as count 
              FROM products 
-             WHERE category_id = :category_id AND status = 'active'",
+             WHERE category_id = :category_id",
             ['category_id' => $this->id]
         );
         

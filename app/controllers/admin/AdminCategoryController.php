@@ -231,6 +231,9 @@ class AdminCategoryController
      */
     public function destroy($id)
     {
+        // Debug: Log to file
+        error_log("DELETE CATEGORY: ID=$id, POST=" . json_encode($_POST) . ", HEADERS=" . json_encode(getallheaders()));
+        
         $category = Category::find($id);
         if (!$category) {
             $_SESSION['category_error'] = 'Category not found';
@@ -238,9 +241,15 @@ class AdminCategoryController
             exit;
         }
         
+        // Check if force delete is requested (via header or POST parameter)
+        $forceDelete = (isset($_SERVER['HTTP_X_FORCE_DELETE']) && $_SERVER['HTTP_X_FORCE_DELETE'] === 'true')
+                    || (isset($_POST['force_delete']) && $_POST['force_delete'] === 'true');
+        
+        error_log("FORCE DELETE: " . ($forceDelete ? 'YES' : 'NO'));
+        
         // Check if category has products
         $productCount = $category->getProductCount();
-        if ($productCount > 0) {
+        if ($productCount > 0 && !$forceDelete) {
             $_SESSION['category_error'] = "Cannot delete category. It has {$productCount} products.";
             header('Location: ' . View::url('/admin/categories'));
             exit;
@@ -248,7 +257,7 @@ class AdminCategoryController
         
         // Check if category has children
         $children = $category->children();
-        if (!empty($children)) {
+        if (!empty($children) && !$forceDelete) {
             $_SESSION['category_error'] = 'Cannot delete category. It has subcategories.';
             header('Location: ' . View::url('/admin/categories'));
             exit;
@@ -256,10 +265,47 @@ class AdminCategoryController
         
         try {
             $db = Database::getInstance();
-            $db->delete('categories', 'id = :id', ['id' => $id]);
             
-            $_SESSION['category_success'] = 'Category deleted successfully!';
+            // If force delete, also delete associated products and update children
+            if ($forceDelete) {
+                // First get all product IDs in this category (ALL products, not just active)
+                $products = $db->select(
+                    "SELECT id FROM products WHERE category_id = :category_id",
+                    ['category_id' => $id]
+                );
+                
+                error_log("Found " . count($products) . " products to delete");
+                
+                // Delete product images first (foreign key constraint)
+                foreach ($products as $product) {
+                    error_log("Deleting images for product ID: " . $product['id']);
+                    $db->delete('product_images', 'product_id = :product_id', ['product_id' => $product['id']]);
+                }
+                
+                // Delete ALL products in this category (not just based on productCount)
+                if (count($products) > 0) {
+                    error_log("Deleting all products in category");
+                    $db->delete('products', 'category_id = :category_id', ['category_id' => $id]);
+                }
+                
+                // Update child categories to have no parent
+                if (!empty($children)) {
+                    $db->update('categories', ['parent_id' => null], 'parent_id = :parent_id', ['parent_id' => $id]);
+                }
+            }
+            
+            // Delete the category
+            error_log("Attempting to delete category ID: $id");
+            $result = $db->delete('categories', 'id = :id', ['id' => $id]);
+            error_log("Delete result: " . json_encode($result));
+            
+            if ($forceDelete) {
+                $_SESSION['category_success'] = 'Category and all associated data deleted successfully!';
+            } else {
+                $_SESSION['category_success'] = 'Category deleted successfully!';
+            }
         } catch (Exception $e) {
+            error_log("Delete exception: " . $e->getMessage());
             $_SESSION['category_error'] = 'Failed to delete category: ' . $e->getMessage();
         }
         
