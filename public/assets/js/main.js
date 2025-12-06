@@ -77,57 +77,57 @@ function initHeroSlider() {
         track.style.transform = `translateX(-${index * 100}%)`;
     }
 
-/**
- * Mobile user panel toggle
- */
-function initMobileUserPanel() {
-    const toggles = document.querySelectorAll('[data-user-toggle]');
+    /**
+     * Mobile user panel toggle
+     */
+    function initMobileUserPanel() {
+        const toggles = document.querySelectorAll('[data-user-toggle]');
 
-    if (!toggles.length) return;
+        if (!toggles.length) return;
 
-    const closePanel = (toggle, panel) => {
-        if (!panel || !toggle) return;
-        panel.classList.remove('active');
-        panel.setAttribute('hidden', '');
-        toggle.setAttribute('aria-expanded', 'false');
-    };
+        const closePanel = (toggle, panel) => {
+            if (!panel || !toggle) return;
+            panel.classList.remove('active');
+            panel.setAttribute('hidden', '');
+            toggle.setAttribute('aria-expanded', 'false');
+        };
 
-    const openPanel = (toggle, panel) => {
-        if (!panel || !toggle) return;
-        panel.removeAttribute('hidden');
-        panel.classList.add('active');
-        panel.style.setProperty('--mobile-user-panel-height', panel.scrollHeight + 'px');
-        toggle.setAttribute('aria-expanded', 'true');
-    };
+        const openPanel = (toggle, panel) => {
+            if (!panel || !toggle) return;
+            panel.removeAttribute('hidden');
+            panel.classList.add('active');
+            panel.style.setProperty('--mobile-user-panel-height', panel.scrollHeight + 'px');
+            toggle.setAttribute('aria-expanded', 'true');
+        };
 
-    toggles.forEach(toggle => {
-        const shell = toggle.closest('.mobile-user-shell');
-        const panel = shell ? shell.querySelector('[data-user-panel]') : null;
-        if (!panel) return;
+        toggles.forEach(toggle => {
+            const shell = toggle.closest('.mobile-user-shell');
+            const panel = shell ? shell.querySelector('[data-user-panel]') : null;
+            if (!panel) return;
 
-        toggle.setAttribute('aria-expanded', 'false');
-        panel.setAttribute('hidden', '');
+            toggle.setAttribute('aria-expanded', 'false');
+            panel.setAttribute('hidden', '');
 
-        toggle.addEventListener('click', function (e) {
-            e.preventDefault();
+            toggle.addEventListener('click', function (e) {
+                e.preventDefault();
 
-            const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
+                const isExpanded = toggle.getAttribute('aria-expanded') === 'true';
 
-            // Close other panels
-            toggles.forEach(otherToggle => {
-                if (otherToggle === toggle) return;
-                const otherPanel = otherToggle.closest('.mobile-user-shell')?.querySelector('[data-user-panel]');
-                closePanel(otherToggle, otherPanel);
+                // Close other panels
+                toggles.forEach(otherToggle => {
+                    if (otherToggle === toggle) return;
+                    const otherPanel = otherToggle.closest('.mobile-user-shell')?.querySelector('[data-user-panel]');
+                    closePanel(otherToggle, otherPanel);
+                });
+
+                if (isExpanded) {
+                    closePanel(toggle, panel);
+                } else {
+                    openPanel(toggle, panel);
+                }
             });
-
-            if (isExpanded) {
-                closePanel(toggle, panel);
-            } else {
-                openPanel(toggle, panel);
-            }
         });
-    });
-}
+    }
 
     function nextSlide() {
         currentSlide = (currentSlide + 1) % totalSlides;
@@ -749,6 +749,61 @@ function updateCartCount(count) {
         element.classList.add('cart-count-updated');
         setTimeout(() => element.classList.remove('cart-count-updated'), 300);
     });
+
+    // Also refresh the mini-cart content
+    refreshMiniCartContent();
+}
+
+/**
+ * Refresh mini-cart HTML content from server
+ */
+function refreshMiniCartContent() {
+    const miniCartDropdown = document.getElementById('miniCartDropdown');
+    if (!miniCartDropdown) return;
+
+    fetch(getBaseUrl() + '/cart/mini', {
+        method: 'GET',
+        headers: {
+            'Accept': 'application/json',
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.html) {
+                // Create a temporary container to parse the new HTML
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data.html;
+
+                // Get the new mini-cart content
+                const newMiniCart = tempDiv.querySelector('.mini-cart-dropdown');
+                if (newMiniCart) {
+                    // Replace the inner content of the mini-cart
+                    miniCartDropdown.innerHTML = newMiniCart.innerHTML;
+
+                    // Re-attach close button event listener
+                    const miniCartClose = miniCartDropdown.querySelector('.mini-cart-close');
+                    if (miniCartClose) {
+                        miniCartClose.addEventListener('click', function () {
+                            const cartIcon = document.getElementById('cartIconBtn');
+                            if (cartIcon) {
+                                cartIcon.classList.remove('active');
+                            }
+                            document.body.style.overflow = '';
+                        });
+                    }
+                }
+
+                // Also update the mini-cart count display
+                const miniCartCountElem = miniCartDropdown.querySelector('.mini-cart-count');
+                if (miniCartCountElem && data.count !== undefined) {
+                    const countText = data.count === 1 ? '1 Item' : `${data.count} Items`;
+                    miniCartCountElem.textContent = countText;
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error refreshing mini cart:', error);
+        });
 }
 
 /**
@@ -923,7 +978,7 @@ if (cartIcon && miniCartDropdown && cartWrapper) {
         const mainNav = document.getElementById('mainNav');
         const menuToggle = document.getElementById('mobileMenuToggle');
         const mobileNavOverlay = document.getElementById('mobileNavOverlay');
-        
+
         if (mainNav) mainNav.classList.remove('active');
         if (menuToggle) menuToggle.classList.remove('active');
         if (mobileNavOverlay) mobileNavOverlay.classList.remove('active');
@@ -951,10 +1006,10 @@ if (cartIcon && miniCartDropdown && cartWrapper) {
         if (isMobile()) {
             e.preventDefault();
             e.stopPropagation();
-            
+
             // Close mobile menu first
             closeMobileMenuForCart();
-            
+
             cartIcon.classList.toggle('active');
 
             // Also toggle body overflow to prevent scrolling
@@ -1010,14 +1065,11 @@ function removeFromMiniCart(productId) {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                // Update cart count
+                // Update cart count (this also refreshes mini-cart content)
                 updateCartCount(data.cart_count);
 
-                // Reload page to update mini cart content
-                // (In a full SPA, you'd update the mini cart HTML directly)
-                setTimeout(() => {
-                    location.reload();
-                }, 300);
+                // Show success notification
+                showNotification(data.message || 'Item removed from cart', 'success');
             } else {
                 showNotification(data.error || 'Failed to remove item', 'error');
                 if (itemElement) {
@@ -1039,9 +1091,6 @@ function removeFromMiniCart(productId) {
  * Called after successful add to cart
  */
 function refreshMiniCart() {
-    // In a full implementation, you'd fetch updated mini cart HTML
-    // For now, we'll just reload the page
-    setTimeout(() => {
-        location.reload();
-    }, 1500);
+    // Use the new refreshMiniCartContent function instead of reloading
+    refreshMiniCartContent();
 }
