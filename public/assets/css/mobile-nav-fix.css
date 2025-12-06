@@ -1,0 +1,21 @@
+/* Mobile Navigation Close Button Fix */
+/* Position the X button to the right side when mobile nav is open */
+
+@media (max-width: 768px) {
+    .mobile-menu-toggle.active {
+        position: fixed !important;
+        top: 12px !important;
+        left: 265px !important;
+        /* Position at the right edge of the nav panel */
+        right: auto !important;
+        z-index: 1004 !important;
+    }
+}
+
+/* Adjust for screens where nav width is 85vw but less than 320px max-width */
+@media (max-width: 380px) {
+    .mobile-menu-toggle.active {
+        left: calc(85vw - 54px) !important;
+        /* 85% of viewport minus button width and padding */
+    }
+}
