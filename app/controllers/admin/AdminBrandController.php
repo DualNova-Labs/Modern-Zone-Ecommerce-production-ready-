@@ -397,8 +397,11 @@ class AdminBrandController
     {
         header('Content-Type: application/json');
         
-        // Validate CSRF token
-        if (!$this->security->validateCsrfToken()) {
+        // Validate CSRF token - check both token names for compatibility
+        $submittedToken = $_POST['csrf_token'] ?? $_POST['_csrf_token'] ?? null;
+        $sessionToken = $_SESSION['_csrf_token'] ?? null;
+        
+        if (!$submittedToken || !$sessionToken || !hash_equals($sessionToken, $submittedToken)) {
             echo json_encode([
                 'success' => false,
                 'message' => 'Invalid security token'
@@ -470,6 +473,18 @@ class AdminBrandController
     {
         header('Content-Type: application/json');
         
+        // Validate CSRF token - check both token names for compatibility
+        $submittedToken = $_POST['csrf_token'] ?? $_POST['_csrf_token'] ?? null;
+        $sessionToken = $_SESSION['_csrf_token'] ?? null;
+        
+        if (!$submittedToken || !$sessionToken || !hash_equals($sessionToken, $submittedToken)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid security token'
+            ]);
+            exit;
+        }
+        
         try {
             $db = Database::getInstance();
             
@@ -512,7 +527,11 @@ class AdminBrandController
     {
         header('Content-Type: application/json');
         
-        if (!$this->security->validateCsrfToken()) {
+        // Validate CSRF token - check both token names for compatibility
+        $submittedToken = $_POST['csrf_token'] ?? $_POST['_csrf_token'] ?? null;
+        $sessionToken = $_SESSION['_csrf_token'] ?? null;
+        
+        if (!$submittedToken || !$sessionToken || !hash_equals($sessionToken, $submittedToken)) {
             echo json_encode(['success' => false, 'message' => 'Invalid security token']);
             exit;
         }
@@ -577,7 +596,11 @@ class AdminBrandController
     {
         header('Content-Type: application/json');
         
-        if (!$this->security->validateCsrfToken()) {
+        // Validate CSRF token - check both token names for compatibility
+        $submittedToken = $_POST['csrf_token'] ?? $_POST['_csrf_token'] ?? null;
+        $sessionToken = $_SESSION['_csrf_token'] ?? null;
+        
+        if (!$submittedToken || !$sessionToken || !hash_equals($sessionToken, $submittedToken)) {
             echo json_encode(['success' => false, 'message' => 'Invalid security token']);
             exit;
         }
@@ -610,6 +633,15 @@ class AdminBrandController
     public function removeProduct($brandId, $productId)
     {
         header('Content-Type: application/json');
+        
+        // Validate CSRF token - check both token names for compatibility
+        $submittedToken = $_POST['csrf_token'] ?? $_POST['_csrf_token'] ?? null;
+        $sessionToken = $_SESSION['_csrf_token'] ?? null;
+        
+        if (!$submittedToken || !$sessionToken || !hash_equals($sessionToken, $submittedToken)) {
+            echo json_encode(['success' => false, 'message' => 'Invalid security token']);
+            exit;
+        }
         
         try {
             $db = Database::getInstance();

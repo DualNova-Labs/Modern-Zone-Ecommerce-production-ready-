@@ -608,6 +608,8 @@ ob_start();
     <div class="alert alert-error"><?= $error ?></div>
 <?php endif; ?>
 
+<input type="hidden" name="csrf_token" value="<?= $csrf_token ?>">
+
 <?php if (!empty($brands)): ?>
 <div class="brands-grid">
     <?php foreach ($brands as $brand): ?>
@@ -1416,8 +1418,6 @@ ob_start();
     // SUBSECTION MANAGEMENT FUNCTIONS
     // ==========================================
     
-    const csrfToken = '<?= $csrf_token ?>';
-    
     // Toggle subsections visibility
     function toggleSubsections(brandId) {
         const list = document.getElementById('subsections-' + brandId);
@@ -1437,6 +1437,8 @@ ob_start();
             input.focus();
             return;
         }
+        
+        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
         
         const formData = new FormData();
         formData.append('csrf_token', csrfToken);
@@ -1471,6 +1473,8 @@ ob_start();
         }
         if (newName.trim() === currentName) return; // No change
         
+        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+        
         const formData = new FormData();
         formData.append('csrf_token', csrfToken);
         formData.append('name', newName.trim());
@@ -1498,6 +1502,8 @@ ob_start();
         if (!confirm('Are you sure you want to delete this subsection?')) {
             return;
         }
+        
+        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
         
         const formData = new FormData();
         formData.append('csrf_token', csrfToken);
@@ -1587,6 +1593,8 @@ ob_start();
         let errors = [];
         
         selectedProducts.forEach(productId => {
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+            
             const formData = new FormData();
             formData.append('csrf_token', csrfToken);
             formData.append('product_id', productId);
