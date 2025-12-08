@@ -614,7 +614,7 @@ ob_start();
     <div class="brand-card">
         <div class="brand-header">
             <?php if (!empty($brand['logo'])): ?>
-                <img src="<?= BASE_URL . '/' . $brand['logo'] ?>" alt="<?= htmlspecialchars($brand['name']) ?>" class="brand-logo">
+                <img src="<?= View::url('/public/assets/images/brands/' . basename($brand['logo'])) ?>" alt="<?= htmlspecialchars($brand['name']) ?>" class="brand-logo">
             <?php else: ?>
                 <div class="brand-logo" style="display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: 700; color: #94a3b8;">
                     <?= strtoupper(substr($brand['name'], 0, 2)) ?>
