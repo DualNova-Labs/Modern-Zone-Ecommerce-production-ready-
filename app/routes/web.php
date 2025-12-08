@@ -98,6 +98,8 @@ $router->get('/admin/orders/export', 'admin/AdminOrderController@export');
 $router->get('/admin/categories', 'admin/AdminCategoryController@index');
 $router->get('/admin/categories/create', 'admin/AdminCategoryController@create');
 $router->post('/admin/categories/store', 'admin/AdminCategoryController@store');
+$router->get('/admin/categories/api/by-type', 'admin/AdminCategoryController@getSubcategoriesByType');
+$router->post('/admin/categories/api/create-inline', 'admin/AdminCategoryController@createSubcategoryInline');
 $router->get('/admin/categories/{id}/edit', 'admin/AdminCategoryController@edit');
 $router->post('/admin/categories/{id}/update', 'admin/AdminCategoryController@update');
 $router->post('/admin/categories/{id}/delete', 'admin/AdminCategoryController@destroy');
@@ -108,10 +110,22 @@ $router->get('/admin/brands', 'admin/AdminBrandController@index');
 $router->get('/admin/brands/create', 'admin/AdminBrandController@create');
 $router->post('/admin/brands', 'admin/AdminBrandController@store');
 $router->post('/admin/brands/store', 'admin/AdminBrandController@store');
+$router->post('/admin/brands/create-product', 'admin/AdminBrandController@createProduct'); // Must be before {id} routes
+$router->get('/admin/brands/{id}', 'admin/AdminBrandController@show');
 $router->get('/admin/brands/{id}/edit', 'admin/AdminBrandController@edit');
 $router->post('/admin/brands/{id}', 'admin/AdminBrandController@update');
 $router->post('/admin/brands/{id}/delete', 'admin/AdminBrandController@destroy');
 $router->post('/admin/brands/{id}/toggle-status', 'admin/AdminBrandController@toggleStatus');
+
+// Brand Subcategories Management
+$router->get('/admin/brands/{id}/subcategories', 'admin/AdminBrandController@getSubcategories');
+$router->post('/admin/brands/{id}/subcategories', 'admin/AdminBrandController@storeSubcategory');
+$router->post('/admin/brands/{id}/subcategories/{subcategoryId}', 'admin/AdminBrandController@updateSubcategory');
+$router->post('/admin/brands/{id}/subcategories/{subcategoryId}/delete', 'admin/AdminBrandController@deleteSubcategory');
+
+// Brand Product Assignment
+$router->post('/admin/brands/{id}/products', 'admin/AdminBrandController@assignProduct');
+$router->post('/admin/brands/{id}/products/{productId}/remove', 'admin/AdminBrandController@removeProduct');
 
 // Admin Banner Management
 $router->get('/admin/banners', 'admin/AdminBannerController@index');

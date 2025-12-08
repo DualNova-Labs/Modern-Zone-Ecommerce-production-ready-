@@ -38,7 +38,6 @@ ob_start();
                         <th>ID</th>
                         <th>Name</th>
                         <th>Type</th>
-                        <th>Slug</th>
                         <th>Parent</th>
                         <th>Products</th>
                         <th>Sort Order</th>
@@ -49,7 +48,7 @@ ob_start();
                 <tbody>
                     <?php if (empty($categories)): ?>
                         <tr>
-                            <td colspan="9" class="text-center">No categories found</td>
+                            <td colspan="8" class="text-center">No categories found</td>
                         </tr>
                     <?php else: ?>
                         <?php foreach ($categories as $category): ?>
@@ -61,7 +60,6 @@ ob_start();
                                         <?= htmlspecialchars(ucfirst(str_replace('-', ' ', $category['type'] ?? 'general'))) ?>
                                     </span>
                                 </td>
-                                <td><span class="product-sku"><?= htmlspecialchars($category['slug']) ?></span></td>
                                 <td><?= htmlspecialchars($category['parent_name'] ?? '-') ?></td>
                                 <td><?= $category['product_count'] ?></td>
                                 <td><?= $category['sort_order'] ?></td>
@@ -646,23 +644,21 @@ ob_start();
 
     /* Column widths using percentages for better fit */
     table th:nth-child(1),
-    table td:nth-child(1) { width: 5%; } /* ID */
+    table td:nth-child(1) { width: 6%; } /* ID */
     table th:nth-child(2),
-    table td:nth-child(2) { width: 15%; } /* Name */
+    table td:nth-child(2) { width: 20%; } /* Name */
     table th:nth-child(3),
-    table td:nth-child(3) { width: 10%; } /* Type */
+    table td:nth-child(3) { width: 12%; } /* Type */
     table th:nth-child(4),
-    table td:nth-child(4) { width: 12%; } /* Slug */
+    table td:nth-child(4) { width: 12%; } /* Parent */
     table th:nth-child(5),
-    table td:nth-child(5) { width: 10%; } /* Parent */
+    table td:nth-child(5) { width: 10%; text-align: center; } /* Products */
     table th:nth-child(6),
-    table td:nth-child(6) { width: 8%; text-align: center; } /* Products */
+    table td:nth-child(6) { width: 10%; text-align: center; } /* Sort Order */
     table th:nth-child(7),
-    table td:nth-child(7) { width: 8%; text-align: center; } /* Sort Order */
+    table td:nth-child(7) { width: 10%; text-align: center; } /* Status */
     table th:nth-child(8),
-    table td:nth-child(8) { width: 10%; text-align: center; } /* Status */
-    table th:nth-child(9),
-    table td:nth-child(9) { width: 22%; } /* Actions */
+    table td:nth-child(8) { width: 20%; } /* Actions */
     
     th {
         text-align: left;

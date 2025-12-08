@@ -61,19 +61,43 @@ class ProductController
             return;
         }
         
-        // Get products for this brand from database
-        $products = $this->getProductsByBrandFromDatabase($brand['id']);
+        // Check for subcategory filter
+        $subcategorySlug = Request::get('subcategory');
+        $currentSubcategory = null;
         
-        // Get product categories for this brand
+        if ($subcategorySlug) {
+            $currentSubcategory = $db->selectOne(
+                "SELECT * FROM brand_subcategories 
+                 WHERE brand_id = :brand_id AND slug = :slug AND status = 'active'",
+                ['brand_id' => $brand['id'], 'slug' => $subcategorySlug]
+            );
+        }
+        
+        // Get products for this brand (optionally filtered by subcategory)
+        $products = $this->getProductsByBrandFromDatabase($brand['id'], $currentSubcategory ? $currentSubcategory['id'] : null);
+        
+        // Get brand subcategories for sidebar filter
+        $brandSubcategories = $db->select(
+            "SELECT bs.*, 
+                    (SELECT COUNT(*) FROM products WHERE brand_subcategory_id = bs.id AND status = 'active') as product_count
+             FROM brand_subcategories bs
+             WHERE bs.brand_id = :brand_id AND bs.status = 'active'
+             ORDER BY bs.sort_order, bs.name",
+            ['brand_id' => $brand['id']]
+        );
+        
+        // Get product categories for this brand (legacy support)
         $brandCategories = $this->getBrandCategoriesFromDatabase($brand['id']);
         
         $data = [
-            'title' => $brand['name'] . ' Products - Modern Zone Trading | Authorized Distributor',
+            'title' => $brand['name'] . ($currentSubcategory ? ' - ' . $currentSubcategory['name'] : '') . ' Products - Modern Zone Trading | Authorized Distributor',
             'description' => 'Shop ' . $brand['name'] . ' industrial tools at Modern Zone Trading. Authorized distributor in Saudi Arabia offering genuine products with warranty.',
             'brand' => $brand,
             'products' => $products,
             'categories' => $this->getCategoriesFromDatabase(),
             'brand_categories' => $brandCategories,
+            'brand_subcategories' => $brandSubcategories,
+            'current_subcategory' => $currentSubcategory,
         ];
         
         View::render('pages/brands/detail', $data);
@@ -111,21 +135,34 @@ class ProductController
     }
     
     
-    private function getProductsByBrandFromDatabase($brandId)
+    private function getProductsByBrandFromDatabase($brandId, $subcategoryId = null)
     {
         $db = Database::getInstance();
         
-        // Get all products for this brand
-        $products = $db->select("
+        // Build query with optional subcategory filter
+        $sql = "
             SELECT p.*, 
                    c.name as category_name,
-                   c.slug as category_slug
+                   c.slug as category_slug,
+                   bs.name as subcategory_name,
+                   bs.slug as subcategory_slug
             FROM products p
             LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN brand_subcategories bs ON p.brand_subcategory_id = bs.id
             WHERE p.brand_id = :brand_id 
-            AND p.status = 'active'
-            ORDER BY c.name, p.name
-        ", ['brand_id' => $brandId]);
+            AND p.status = 'active'";
+        
+        $params = ['brand_id' => $brandId];
+        
+        // Add subcategory filter if provided
+        if ($subcategoryId) {
+            $sql .= " AND p.brand_subcategory_id = :subcategory_id";
+            $params['subcategory_id'] = $subcategoryId;
+        }
+        
+        $sql .= " ORDER BY bs.sort_order, bs.name, p.name";
+        
+        $products = $db->select($sql, $params);
         
         // Format products for display
         return array_map(function($product) {
@@ -149,6 +186,8 @@ class ProductController
                 'price' => $product['price'],
                 'category' => $product['category_slug'] ?? '',
                 'category_name' => $product['category_name'] ?? '',
+                'subcategory_name' => $product['subcategory_name'] ?? '',
+                'subcategory_slug' => $product['subcategory_slug'] ?? '',
                 'description' => $product['description'] ?? '',
                 'sku' => $product['sku'],
                 'stock' => $product['quantity'] > 0

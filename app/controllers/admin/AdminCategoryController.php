@@ -350,5 +350,114 @@ class AdminCategoryController
         $slug = preg_replace('/-+/', '-', $slug);
         return trim($slug, '-');
     }
+    
+    /**
+     * API: Get subcategories by parent type (general or our-products)
+     */
+    public function getSubcategoriesByType()
+    {
+        header('Content-Type: application/json');
+        
+        $type = Request::get('type', 'general');
+        
+        try {
+            $db = Database::getInstance();
+            $categories = $db->select(
+                "SELECT id, name, slug, type, description 
+                 FROM categories 
+                 WHERE type = :type AND status = 'active'
+                 ORDER BY sort_order, name",
+                ['type' => $type]
+            );
+            
+            echo json_encode([
+                'success' => true,
+                'categories' => $categories
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to fetch categories: ' . $e->getMessage()
+            ]);
+        }
+        exit;
+    }
+    
+    /**
+     * API: Create subcategory inline (for product form)
+     */
+    public function createSubcategoryInline()
+    {
+        header('Content-Type: application/json');
+        
+        // Validate CSRF token
+        if (!$this->security->validateCsrfToken()) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid security token. Please refresh the page.'
+            ]);
+            exit;
+        }
+        
+        $name = $this->security->cleanInput(Request::post('name'));
+        $type = Request::post('type', 'general');
+        
+        if (empty($name)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Category name is required'
+            ]);
+            exit;
+        }
+        
+        // Generate slug
+        $slug = $this->generateSlug($name);
+        
+        // Check if slug exists
+        $existingCategory = Category::findBySlug($slug);
+        if ($existingCategory) {
+            // Return the existing category instead of error
+            echo json_encode([
+                'success' => true,
+                'category' => [
+                    'id' => $existingCategory->id,
+                    'name' => $existingCategory->name,
+                    'slug' => $existingCategory->slug,
+                    'type' => $existingCategory->type
+                ],
+                'message' => 'Category already exists, using existing one'
+            ]);
+            exit;
+        }
+        
+        try {
+            $db = Database::getInstance();
+            $categoryId = $db->insert('categories', [
+                'name' => $name,
+                'slug' => $slug,
+                'type' => $type,
+                'parent_id' => null,
+                'status' => 'active',
+                'sort_order' => 0
+            ]);
+            
+            echo json_encode([
+                'success' => true,
+                'category' => [
+                    'id' => $categoryId,
+                    'name' => $name,
+                    'slug' => $slug,
+                    'type' => $type
+                ],
+                'message' => 'Category created successfully'
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to create category: ' . $e->getMessage()
+            ]);
+        }
+        exit;
+    }
 }
 ?>

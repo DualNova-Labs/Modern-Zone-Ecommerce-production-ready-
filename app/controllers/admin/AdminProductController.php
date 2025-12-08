@@ -278,11 +278,24 @@ class AdminProductController
                 // Table might not exist, ignore error
                 $images = [];
             }
+            
+            // Get category type for the product's category
+            $categoryType = 'general';
+            if ($product['category_id']) {
+                $category = $db->selectOne(
+                    "SELECT type FROM categories WHERE id = :id",
+                    ['id' => $product['category_id']]
+                );
+                if ($category && !empty($category['type'])) {
+                    $categoryType = $category['type'];
+                }
+            }
 
             echo json_encode([
                 'success' => true,
                 'product' => $product,
-                'images' => $images ?: []
+                'images' => $images ?: [],
+                'category_type' => $categoryType
             ]);
         } catch (Exception $e) {
             echo json_encode([

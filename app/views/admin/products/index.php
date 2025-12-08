@@ -1335,25 +1335,51 @@ ob_start();
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="category_id" class="form-label required">Category</label>
-                        <select id="category_id" name="category_id" class="form-select" required>
-                            <option value="">Select Category</option>
-                            <?php foreach ($categories as $cat): ?>
-                                <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                <!-- Parent Category Selection -->
+                <div class="form-group">
+                    <label class="form-label required">Parent Category</label>
+                    <div class="parent-category-selector">
+                        <label class="category-radio-option">
+                            <input type="radio" name="parent_category_type" value="general" checked onchange="loadSubcategories('general', 'create')">
+                            <span class="category-radio-label">
+                                <i class="fas fa-tools"></i>
+                                <strong>GENERAL CATEGORIES</strong>
+                                <small>Hand Tools, Safety Equipment, etc.</small>
+                            </span>
+                        </label>
+                        <label class="category-radio-option">
+                            <input type="radio" name="parent_category_type" value="our-products" onchange="loadSubcategories('our-products', 'create')">
+                            <span class="category-radio-label">
+                                <i class="fas fa-box"></i>
+                                <strong>OUR PRODUCTS</strong>
+                                <small>Ball Cages, Drill Bits, etc.</small>
+                            </span>
+                        </label>
                     </div>
+                </div>
 
+                <div class="form-row">
+                    <!-- Subcategory Selection -->
                     <div class="form-group">
-                        <label for="brand_id" class="form-label">Brand</label>
-                        <select id="brand_id" name="brand_id" class="form-select">
-                            <option value="">Select Brand (Optional)</option>
-                            <?php foreach ($brands as $brand): ?>
-                                <option value="<?= $brand['id'] ?>"><?= htmlspecialchars($brand['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                        <label for="category_id" class="form-label required">Subcategory</label>
+                        <div class="subcategory-selector">
+                            <select id="category_id" name="category_id" class="form-select" required>
+                                <option value="">Loading subcategories...</option>
+                            </select>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleNewCategoryForm('create')" title="Create new subcategory">
+                                <i class="fas fa-plus"></i> New
+                            </button>
+                        </div>
+                        <!-- Inline New Category Form -->
+                        <div id="newCategoryForm_create" class="new-category-inline" style="display: none;">
+                            <input type="text" id="newCategoryName_create" class="form-input" placeholder="Enter new subcategory name">
+                            <button type="button" class="btn btn-sm btn-success" onclick="createSubcategoryInline('create')">
+                                <i class="fas fa-check"></i> Create
+                            </button>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleNewCategoryForm('create')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -1536,6 +1562,105 @@ ob_start();
                         .remove-additional-image:hover {
                             background: #dc2626;
                         }
+
+                        /* Parent Category Selector Styles */
+                        .parent-category-selector {
+                            display: grid;
+                            grid-template-columns: 1fr 1fr;
+                            gap: 1rem;
+                            margin-top: 0.5rem;
+                        }
+
+                        .category-radio-option {
+                            cursor: pointer;
+                        }
+
+                        .category-radio-option input[type="radio"] {
+                            display: none;
+                        }
+
+                        .category-radio-label {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            padding: 1.25rem 1rem;
+                            border: 2px solid #e2e8f0;
+                            border-radius: 12px;
+                            background: #f8fafc;
+                            transition: all 0.3s ease;
+                            text-align: center;
+                        }
+
+                        .category-radio-label i {
+                            font-size: 1.5rem;
+                            color: #64748b;
+                            margin-bottom: 0.5rem;
+                        }
+
+                        .category-radio-label strong {
+                            color: #1e293b;
+                            font-size: 0.875rem;
+                            margin-bottom: 0.25rem;
+                        }
+
+                        .category-radio-label small {
+                            color: #64748b;
+                            font-size: 0.75rem;
+                        }
+
+                        .category-radio-option input[type="radio"]:checked + .category-radio-label {
+                            border-color: #6366f1;
+                            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
+                            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+                        }
+
+                        .category-radio-option input[type="radio"]:checked + .category-radio-label i {
+                            color: #6366f1;
+                        }
+
+                        .category-radio-option input[type="radio"]:checked + .category-radio-label strong {
+                            color: #6366f1;
+                        }
+
+                        .subcategory-selector {
+                            display: flex;
+                            gap: 0.5rem;
+                            align-items: center;
+                        }
+
+                        .subcategory-selector select {
+                            flex: 1;
+                        }
+
+                        .new-category-inline {
+                            display: flex;
+                            gap: 0.5rem;
+                            align-items: center;
+                            margin-top: 0.75rem;
+                            padding: 0.75rem;
+                            background: #f0fdf4;
+                            border: 1px solid #86efac;
+                            border-radius: 8px;
+                        }
+
+                        .new-category-inline input {
+                            flex: 1;
+                        }
+
+                        @media (max-width: 768px) {
+                            .parent-category-selector {
+                                grid-template-columns: 1fr;
+                            }
+                            
+                            .subcategory-selector {
+                                flex-direction: column;
+                                align-items: stretch;
+                            }
+                            
+                            .new-category-inline {
+                                flex-direction: column;
+                            }
+                        }
                     </style>
 
                     <script>
@@ -1691,32 +1816,59 @@ ob_start();
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="edit_category_id" class="form-label required">Category</label>
-                        <select id="edit_category_id" name="category_id" class="form-select" required>
-                            <option value="">Select Category</option>
-                            <?php foreach ($categories as $cat): ?>
-                                <option value="<?= $cat['id'] ?>"><?= htmlspecialchars($cat['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="edit_brand_id" class="form-label">Brand</label>
-                        <select id="edit_brand_id" name="brand_id" class="form-select">
-                            <option value="">Select Brand (Optional)</option>
-                            <?php foreach ($brands as $brand): ?>
-                                <option value="<?= $brand['id'] ?>"><?= htmlspecialchars($brand['name']) ?></option>
-                            <?php endforeach; ?>
-                        </select>
+                <!-- Parent Category Selection for Edit -->
+                <div class="form-group">
+                    <label class="form-label required">Parent Category</label>
+                    <div class="parent-category-selector">
+                        <label class="category-radio-option">
+                            <input type="radio" name="edit_parent_category_type" value="general" checked onchange="loadSubcategories('general', 'edit')">
+                            <span class="category-radio-label">
+                                <i class="fas fa-tools"></i>
+                                <strong>GENERAL CATEGORIES</strong>
+                                <small>Hand Tools, Safety Equipment, etc.</small>
+                            </span>
+                        </label>
+                        <label class="category-radio-option">
+                            <input type="radio" name="edit_parent_category_type" value="our-products" onchange="loadSubcategories('our-products', 'edit')">
+                            <span class="category-radio-label">
+                                <i class="fas fa-box"></i>
+                                <strong>OUR PRODUCTS</strong>
+                                <small>Ball Cages, Drill Bits, etc.</small>
+                            </span>
+                        </label>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="edit_description" class="form-label">Description</label>
-                    <textarea id="edit_description" name="description" class="form-textarea" rows="3"
-                        placeholder="Enter product description"></textarea>
+                <div class="form-row">
+                    <!-- Subcategory Selection for Edit -->
+                    <div class="form-group">
+                        <label for="edit_category_id" class="form-label required">Subcategory</label>
+                        <div class="subcategory-selector">
+                            <select id="edit_category_id" name="category_id" class="form-select" required>
+                                <option value="">Select subcategory...</option>
+                            </select>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleNewCategoryForm('edit')" title="Create new subcategory">
+                                <i class="fas fa-plus"></i> New
+                            </button>
+                        </div>
+                        <!-- Inline New Category Form for Edit -->
+                        <div id="newCategoryForm_edit" class="new-category-inline" style="display: none;">
+                            <input type="text" id="newCategoryName_edit" class="form-input" placeholder="Enter new subcategory name">
+                            <button type="button" class="btn btn-sm btn-success" onclick="createSubcategoryInline('edit')">
+                                <i class="fas fa-check"></i> Create
+                            </button>
+                            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleNewCategoryForm('edit')">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="edit_description" class="form-label">Description</label>
+                        <textarea id="edit_description" name="description" class="form-textarea" rows="3"
+                            placeholder="Enter product description"></textarea>
+                    </div>
+
                 </div>
 
                 <div class="form-row">
@@ -1829,10 +1981,131 @@ ob_start();
 </div>
 
 <script>
+    // Category Management Functions
+    let currentCategoryType = { create: 'general', edit: 'general' };
+    let categoriesCache = { general: null, 'our-products': null };
+
+    // Load subcategories by parent type
+    function loadSubcategories(type, mode, selectedCategoryId = null) {
+        currentCategoryType[mode] = type;
+        const selectId = mode === 'create' ? 'category_id' : 'edit_category_id';
+        const select = document.getElementById(selectId);
+        
+        if (!select) return;
+        
+        select.innerHTML = '<option value="">Loading...</option>';
+        
+        // Check cache first
+        if (categoriesCache[type]) {
+            populateSubcategorySelect(select, categoriesCache[type], selectedCategoryId);
+            return;
+        }
+        
+        fetch(`<?= View::url('/admin/categories/api/by-type') ?>?type=${type}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    categoriesCache[type] = data.categories;
+                    populateSubcategorySelect(select, data.categories, selectedCategoryId);
+                } else {
+                    select.innerHTML = '<option value="">Failed to load categories</option>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading categories:', error);
+                select.innerHTML = '<option value="">Error loading categories</option>';
+            });
+    }
+
+    function populateSubcategorySelect(select, categories, selectedId = null) {
+        select.innerHTML = '<option value="">Select subcategory...</option>';
+        
+        if (categories.length === 0) {
+            select.innerHTML += '<option value="" disabled>No subcategories found - Create one below</option>';
+        } else {
+            categories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                if (selectedId && cat.id == selectedId) {
+                    option.selected = true;
+                }
+                select.appendChild(option);
+            });
+        }
+    }
+
+    // Toggle new category form visibility
+    function toggleNewCategoryForm(mode) {
+        const form = document.getElementById(`newCategoryForm_${mode}`);
+        if (form) {
+            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
+            if (form.style.display === 'flex') {
+                document.getElementById(`newCategoryName_${mode}`).focus();
+            }
+        }
+    }
+
+    // Create subcategory inline
+    function createSubcategoryInline(mode) {
+        const nameInput = document.getElementById(`newCategoryName_${mode}`);
+        const name = nameInput.value.trim();
+        const type = currentCategoryType[mode];
+        
+        if (!name) {
+            alert('Please enter a subcategory name');
+            nameInput.focus();
+            return;
+        }
+        
+        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+        
+        fetch('<?= View::url('/admin/categories/api/create-inline') ?>', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `csrf_token=${encodeURIComponent(csrfToken)}&name=${encodeURIComponent(name)}&type=${encodeURIComponent(type)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Clear cache for this type
+                categoriesCache[type] = null;
+                
+                // Reload subcategories and select the new one
+                loadSubcategories(type, mode, data.category.id);
+                
+                // Hide the form and clear input
+                toggleNewCategoryForm(mode);
+                nameInput.value = '';
+                
+                // Show success message
+                showNotification(data.message || 'Subcategory created successfully!', 'success');
+            } else {
+                alert(data.message || 'Failed to create subcategory');
+            }
+        })
+        .catch(error => {
+            console.error('Error creating subcategory:', error);
+            alert('An error occurred while creating the subcategory');
+        });
+    }
+
+    // Initialize subcategories on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load general categories by default for create modal
+        loadSubcategories('general', 'create');
+    });
+
     // Modal Functions
     function openCreateModal() {
         console.log('Opening create modal');
         const modal = document.getElementById('createProductModal');
+        
+        // Reset to general category and load subcategories
+        document.querySelector('input[name="parent_category_type"][value="general"]').checked = true;
+        loadSubcategories('general', 'create');
         if (modal) {
             modal.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -1884,8 +2157,22 @@ ob_start();
                     document.getElementById('edit_product_id').value = product.id;
                     document.getElementById('edit_name').value = product.name || '';
                     document.getElementById('edit_sku').value = product.sku || '';
-                    document.getElementById('edit_category_id').value = product.category_id || '';
                     document.getElementById('edit_brand_id').value = product.brand_id || '';
+                    
+                    // Handle category - need to determine type and load subcategories
+                    if (product.category_id && data.category_type) {
+                        // Set the parent category radio button
+                        const radioBtn = document.querySelector(`input[name="edit_parent_category_type"][value="${data.category_type}"]`);
+                        if (radioBtn) {
+                            radioBtn.checked = true;
+                        }
+                        // Load subcategories for the correct type and select the current one
+                        loadSubcategories(data.category_type, 'edit', product.category_id);
+                    } else {
+                        // Default to general and load subcategories
+                        document.querySelector('input[name="edit_parent_category_type"][value="general"]').checked = true;
+                        loadSubcategories('general', 'edit', product.category_id);
+                    }
                     document.getElementById('edit_description').value = product.description || '';
                     document.getElementById('edit_price').value = product.price || '';
                     document.getElementById('edit_compare_price').value = product.compare_price || '';

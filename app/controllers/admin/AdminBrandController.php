@@ -33,9 +33,33 @@ class AdminBrandController
              ORDER BY b.name"
         );
         
+        // Fetch subcategories for each brand
+        $subcategoriesByBrand = [];
+        $subcategories = $db->select(
+            "SELECT bs.*, 
+                    (SELECT COUNT(*) FROM products WHERE brand_subcategory_id = bs.id) as product_count
+             FROM brand_subcategories bs
+             ORDER BY bs.brand_id, bs.sort_order, bs.name"
+        );
+        
+        foreach ($subcategories as $subcat) {
+            $brandId = $subcat['brand_id'];
+            if (!isset($subcategoriesByBrand[$brandId])) {
+                $subcategoriesByBrand[$brandId] = [];
+            }
+            $subcategoriesByBrand[$brandId][] = $subcat;
+        }
+        
+        // Get all products for assignment dropdown
+        $allProducts = $db->select(
+            "SELECT id, name, sku, brand_id, brand_subcategory_id FROM products ORDER BY name"
+        );
+        
         $data = [
             'title' => 'Brands Management',
             'brands' => $brands,
+            'subcategoriesByBrand' => $subcategoriesByBrand,
+            'allProducts' => $allProducts,
             'success' => $_SESSION['brand_success'] ?? null,
             'error' => $_SESSION['brand_error'] ?? null,
             'csrf_token' => $this->security->getCsrfToken(),
@@ -334,6 +358,402 @@ class AdminBrandController
         $slug = preg_replace('/[^a-z0-9-]/', '-', $slug);
         $slug = preg_replace('/-+/', '-', $slug);
         return trim($slug, '-');
+    }
+    
+    /**
+     * Get brand subcategories (API endpoint)
+     */
+    public function getSubcategories($brandId)
+    {
+        header('Content-Type: application/json');
+        
+        try {
+            $db = Database::getInstance();
+            $subcategories = $db->select(
+                "SELECT id, name, slug, description, status 
+                 FROM brand_subcategories 
+                 WHERE brand_id = :brand_id AND status = 'active'
+                 ORDER BY sort_order, name",
+                ['brand_id' => $brandId]
+            );
+            
+            echo json_encode([
+                'success' => true,
+                'subcategories' => $subcategories
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to fetch subcategories: ' . $e->getMessage()
+            ]);
+        }
+        exit;
+    }
+    
+    /**
+     * Store brand subcategory
+     */
+    public function storeSubcategory($brandId)
+    {
+        header('Content-Type: application/json');
+        
+        // Validate CSRF token
+        if (!$this->security->validateCsrfToken()) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Invalid security token'
+            ]);
+            exit;
+        }
+        
+        $name = $this->security->cleanInput(Request::post('name'));
+        
+        if (empty($name)) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Subcategory name is required'
+            ]);
+            exit;
+        }
+        
+        $slug = $this->generateSlug($name);
+        
+        try {
+            $db = Database::getInstance();
+            
+            // Check if slug exists for this brand
+            $existing = $db->selectOne(
+                "SELECT id FROM brand_subcategories WHERE brand_id = :brand_id AND slug = :slug",
+                ['brand_id' => $brandId, 'slug' => $slug]
+            );
+            
+            if ($existing) {
+                echo json_encode([
+                    'success' => true,
+                    'subcategory' => $existing,
+                    'message' => 'Subcategory already exists'
+                ]);
+                exit;
+            }
+            
+            $subcategoryId = $db->insert('brand_subcategories', [
+                'brand_id' => $brandId,
+                'name' => $name,
+                'slug' => $slug,
+                'description' => $this->security->cleanInput(Request::post('description', '')),
+                'status' => 'active',
+                'sort_order' => 0
+            ]);
+            
+            echo json_encode([
+                'success' => true,
+                'subcategory' => [
+                    'id' => $subcategoryId,
+                    'name' => $name,
+                    'slug' => $slug
+                ],
+                'message' => 'Subcategory created successfully'
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to create subcategory: ' . $e->getMessage()
+            ]);
+        }
+        exit;
+    }
+    
+    /**
+     * Delete brand subcategory
+     */
+    public function deleteSubcategory($brandId, $subcategoryId)
+    {
+        header('Content-Type: application/json');
+        
+        try {
+            $db = Database::getInstance();
+            
+            // Check if subcategory has products
+            $productCount = $db->selectOne(
+                "SELECT COUNT(*) as count FROM products WHERE brand_subcategory_id = :id",
+                ['id' => $subcategoryId]
+            );
+            
+            if ($productCount && $productCount['count'] > 0) {
+                echo json_encode([
+                    'success' => false,
+                    'message' => "Cannot delete subcategory. It has {$productCount['count']} products."
+                ]);
+                exit;
+            }
+            
+            $db->delete('brand_subcategories', 'id = :id AND brand_id = :brand_id', [
+                'id' => $subcategoryId,
+                'brand_id' => $brandId
+            ]);
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Subcategory deleted successfully'
+            ]);
+        } catch (Exception $e) {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to delete subcategory: ' . $e->getMessage()
+            ]);
+        }
+        exit;
+    }
+    
+    /**
+     * Update brand subcategory
+     */
+    public function updateSubcategory($brandId, $subcategoryId)
+    {
+        header('Content-Type: application/json');
+        
+        if (!$this->security->validateCsrfToken()) {
+            echo json_encode(['success' => false, 'message' => 'Invalid security token']);
+            exit;
+        }
+        
+        $name = $this->security->cleanInput(Request::post('name'));
+        
+        if (empty($name)) {
+            echo json_encode(['success' => false, 'message' => 'Subcategory name is required']);
+            exit;
+        }
+        
+        $slug = $this->generateSlug($name);
+        
+        try {
+            $db = Database::getInstance();
+            
+            // Check if slug exists for another subcategory in this brand
+            $existing = $db->selectOne(
+                "SELECT id FROM brand_subcategories WHERE brand_id = :brand_id AND slug = :slug AND id != :id",
+                ['brand_id' => $brandId, 'slug' => $slug, 'id' => $subcategoryId]
+            );
+            
+            if ($existing) {
+                echo json_encode(['success' => false, 'message' => 'A subcategory with this name already exists']);
+                exit;
+            }
+            
+            $db->update('brand_subcategories', [
+                'name' => $name,
+                'slug' => $slug,
+                'description' => $this->security->cleanInput(Request::post('description', ''))
+            ], 'id = :id AND brand_id = :brand_id', [
+                'id' => $subcategoryId,
+                'brand_id' => $brandId
+            ]);
+            
+            echo json_encode([
+                'success' => true,
+                'subcategory' => ['id' => $subcategoryId, 'name' => $name, 'slug' => $slug],
+                'message' => 'Subcategory updated successfully'
+            ]);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Failed to update subcategory: ' . $e->getMessage()]);
+        }
+        exit;
+    }
+    
+    /**
+     * Show brand details - redirects to index (subsections managed inline)
+     */
+    public function show($id)
+    {
+        // Subsection management is now inline on the brands index page
+        header('Location: ' . View::url('/admin/brands'));
+        exit;
+    }
+    
+    /**
+     * Assign product to brand with subcategory
+     */
+    public function assignProduct($brandId)
+    {
+        header('Content-Type: application/json');
+        
+        if (!$this->security->validateCsrfToken()) {
+            echo json_encode(['success' => false, 'message' => 'Invalid security token']);
+            exit;
+        }
+        
+        $productId = Request::post('product_id');
+        $subcategoryId = Request::post('subcategory_id');
+        
+        if (empty($productId)) {
+            echo json_encode(['success' => false, 'message' => 'Product ID is required']);
+            exit;
+        }
+        
+        try {
+            $db = Database::getInstance();
+            $db->update('products', [
+                'brand_id' => $brandId,
+                'brand_subcategory_id' => $subcategoryId ?: null
+            ], 'id = :id', ['id' => $productId]);
+            
+            echo json_encode(['success' => true, 'message' => 'Product assigned to brand successfully']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Failed to assign product: ' . $e->getMessage()]);
+        }
+        exit;
+    }
+    
+    /**
+     * Remove product from brand
+     */
+    public function removeProduct($brandId, $productId)
+    {
+        header('Content-Type: application/json');
+        
+        try {
+            $db = Database::getInstance();
+            $db->update('products', [
+                'brand_id' => null,
+                'brand_subcategory_id' => null
+            ], 'id = :id AND brand_id = :brand_id', [
+                'id' => $productId,
+                'brand_id' => $brandId
+            ]);
+            
+            echo json_encode(['success' => true, 'message' => 'Product removed from brand']);
+        } catch (Exception $e) {
+            echo json_encode(['success' => false, 'message' => 'Failed to remove product: ' . $e->getMessage()]);
+        }
+        exit;
+    }
+    
+    /**
+     * Create new product directly from brand/subcategory page
+     */
+    public function createProduct()
+    {
+        // Validate CSRF token - check both token names for compatibility
+        $submittedToken = $_POST['csrf_token'] ?? $_POST['_csrf_token'] ?? null;
+        $sessionToken = $_SESSION['_csrf_token'] ?? null;
+        
+        if (!$submittedToken || !$sessionToken || !hash_equals($sessionToken, $submittedToken)) {
+            $_SESSION['brand_error'] = 'Invalid security token. Please refresh the page and try again.';
+            header('Location: ' . View::url('/admin/brands'));
+            exit;
+        }
+        
+        $db = Database::getInstance();
+        
+        // Get and sanitize input
+        $data = [
+            'name' => $this->security->cleanInput(Request::post('name')),
+            'sku' => $this->security->cleanInput(Request::post('sku')),
+            'description' => $this->security->cleanInput(Request::post('description')),
+            'price' => floatval(Request::post('price', 0)),
+            'compare_price' => floatval(Request::post('compare_price', 0)) ?: null,
+            'quantity' => intval(Request::post('quantity', 0)),
+            'min_quantity' => intval(Request::post('min_quantity', 1)),
+            'category_id' => null, // Not used for brand subcategory products
+            'brand_id' => Request::post('brand_id'),
+            'brand_subcategory_id' => Request::post('brand_subcategory_id'),
+            'status' => Request::post('status', 'active'),
+            'featured' => Request::post('featured') ? 1 : 0,
+            'best_seller' => Request::post('best_seller') ? 1 : 0,
+            'new_arrival' => Request::post('new_arrival') ? 1 : 0,
+        ];
+        
+        // Validation
+        $errors = [];
+        
+        if (empty($data['name'])) {
+            $errors[] = 'Product name is required';
+        }
+        
+        if (empty($data['sku'])) {
+            $errors[] = 'SKU is required';
+        } else {
+            // Check if SKU already exists
+            $existing = $db->selectOne("SELECT id FROM products WHERE sku = :sku", ['sku' => $data['sku']]);
+            if ($existing) {
+                $errors[] = 'SKU already exists';
+            }
+        }
+        
+        if ($data['price'] <= 0) {
+            $errors[] = 'Price must be greater than 0';
+        }
+        
+        if (empty($data['brand_id'])) {
+            $errors[] = 'Brand ID is required';
+        }
+        
+        if (!empty($errors)) {
+            $_SESSION['brand_error'] = implode('<br>', $errors);
+            header('Location: ' . View::url('/admin/brands'));
+            exit;
+        }
+        
+        // Generate slug
+        $data['slug'] = $this->generateSlug($data['name']);
+        
+        // Handle main image upload
+        if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
+            $uploadDir = PUBLIC_PATH . '/assets/images/products/';
+            
+            if (!is_dir($uploadDir)) {
+                mkdir($uploadDir, 0777, true);
+            }
+            
+            $fileExt = strtolower(pathinfo($_FILES['image']['name'], PATHINFO_EXTENSION));
+            $fileName = time() . '_' . uniqid() . '.' . $fileExt;
+            $targetPath = $uploadDir . $fileName;
+            
+            if (move_uploaded_file($_FILES['image']['tmp_name'], $targetPath)) {
+                $data['image'] = 'public/assets/images/products/' . $fileName;
+            }
+        }
+        
+        // Create product
+        try {
+            $productId = $db->insert('products', $data);
+            
+            // Handle additional images
+            if (isset($_FILES['additional_images']) && !empty($_FILES['additional_images']['name'][0])) {
+                $uploadDir = PUBLIC_PATH . '/assets/images/products/';
+                
+                if (!is_dir($uploadDir)) {
+                    mkdir($uploadDir, 0777, true);
+                }
+                
+                $sortOrder = 1;
+                foreach ($_FILES['additional_images']['tmp_name'] as $key => $tmpName) {
+                    if ($_FILES['additional_images']['error'][$key] === UPLOAD_ERR_OK) {
+                        $fileExt = strtolower(pathinfo($_FILES['additional_images']['name'][$key], PATHINFO_EXTENSION));
+                        $fileName = time() . '_' . uniqid() . '_' . $sortOrder . '.' . $fileExt;
+                        $targetPath = $uploadDir . $fileName;
+                        
+                        if (move_uploaded_file($tmpName, $targetPath)) {
+                            $db->insert('product_images', [
+                                'product_id' => $productId,
+                                'image_path' => 'public/assets/images/products/' . $fileName,
+                                'sort_order' => $sortOrder,
+                                'alt_text' => $data['name'] . ' - Image ' . $sortOrder
+                            ]);
+                            $sortOrder++;
+                        }
+                    }
+                }
+            }
+            
+            $_SESSION['brand_success'] = 'Product "' . htmlspecialchars($data['name']) . '" created successfully!';
+            header('Location: ' . View::url('/admin/brands'));
+            exit;
+        } catch (Exception $e) {
+            $_SESSION['brand_error'] = 'Failed to create product: ' . $e->getMessage();
+            header('Location: ' . View::url('/admin/brands'));
+            exit;
+        }
     }
 }
 ?>

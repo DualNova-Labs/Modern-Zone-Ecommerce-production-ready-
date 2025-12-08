@@ -19,6 +19,11 @@ ob_start();
                 </div>
             </div>
             <h1 class="brand-name"><?= htmlspecialchars($brand['name']) ?></h1>
+            <?php if (isset($current_subcategory) && $current_subcategory): ?>
+                <div class="brand-subcategory-badge">
+                    <i class="fas fa-filter"></i> <?= htmlspecialchars($current_subcategory['name']) ?>
+                </div>
+            <?php endif; ?>
             <p class="brand-tagline"><?= htmlspecialchars($brand['description'] ?? 'Premium quality industrial tools and equipment') ?></p>
             <div class="brand-meta">
                 <?php if (isset($brand['country'])): ?>
@@ -50,9 +55,34 @@ ob_start();
 <section class="brand-products">
     <div class="container">
         <div class="section-header">
-            <h2 class="section-title"><?= htmlspecialchars($brand['name']) ?> Products</h2>
+            <h2 class="section-title">
+                <?= htmlspecialchars($brand['name']) ?> 
+                <?php if (isset($current_subcategory) && $current_subcategory): ?>
+                    - <?= htmlspecialchars($current_subcategory['name']) ?>
+                <?php endif; ?>
+                Products
+            </h2>
             <p class="section-subtitle">Discover our range of <?= htmlspecialchars($brand['name']) ?> tools and equipment</p>
         </div>
+        
+        <?php if (!empty($brand_subcategories)): ?>
+            <!-- Subcategory Filter Tabs -->
+            <div class="subcategory-filter">
+                <a href="<?= View::url('/products?brand=' . $brand['slug']) ?>" 
+                   class="subcategory-chip <?= empty($current_subcategory) ? 'active' : '' ?>">
+                    <i class="fas fa-th-large"></i> All Products
+                </a>
+                <?php foreach ($brand_subcategories as $subcat): ?>
+                    <a href="<?= View::url('/products?brand=' . $brand['slug'] . '&subcategory=' . $subcat['slug']) ?>" 
+                       class="subcategory-chip <?= (isset($current_subcategory) && $current_subcategory && $current_subcategory['id'] == $subcat['id']) ? 'active' : '' ?>">
+                        <?= htmlspecialchars($subcat['name']) ?>
+                        <?php if ($subcat['product_count'] > 0): ?>
+                            <span class="chip-count"><?= $subcat['product_count'] ?></span>
+                        <?php endif; ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
+        <?php endif; ?>
         
         <?php if (!empty($products)): ?>
             <div class="brand-products-layout">
@@ -72,7 +102,11 @@ ob_start();
                                 <div class="product-card">
                                     <div class="product-image">
                                         <img src="<?= $product['image'] ?>" alt="<?= htmlspecialchars($product['title']) ?>" loading="lazy">
-                                        <div class="product-badge brand-badge"><?= htmlspecialchars($brand['name']) ?></div>
+                                        <?php if (!empty($product['subcategory_name'])): ?>
+                                            <div class="product-badge subcategory-badge"><?= htmlspecialchars($product['subcategory_name']) ?></div>
+                                        <?php else: ?>
+                                            <div class="product-badge brand-badge"><?= htmlspecialchars($brand['name']) ?></div>
+                                        <?php endif; ?>
                                         <div class="product-actions">
                                             <button class="product-action-btn" title="Quick View" onclick="event.preventDefault(); event.stopPropagation();">
                                                 <i class="far fa-eye"></i>
@@ -94,17 +128,23 @@ ob_start();
                 </div>
             </div>
             
-            <div class="section-footer">
-                <a href="<?= View::url('/products?brand=' . $brand['slug']) ?>" class="btn btn-secondary btn-lg">
-                    View All <?= htmlspecialchars($brand['name']) ?> Products
-                    <i class="fas fa-arrow-right"></i>
-                </a>
-            </div>
+            <?php if (isset($current_subcategory) && $current_subcategory): ?>
+                <div class="section-footer">
+                    <a href="<?= View::url('/products?brand=' . $brand['slug']) ?>" class="btn btn-secondary btn-lg">
+                        View All <?= htmlspecialchars($brand['name']) ?> Products
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            <?php endif; ?>
         <?php else: ?>
             <div class="no-products">
                 <i class="fas fa-box-open"></i>
-                <p>No products available for this brand at the moment.</p>
-                <a href="<?= View::url('/products') ?>" class="btn btn-primary">Browse All Products</a>
+                <p>No products available <?= isset($current_subcategory) && $current_subcategory ? 'in this category' : 'for this brand' ?> at the moment.</p>
+                <?php if (isset($current_subcategory) && $current_subcategory): ?>
+                    <a href="<?= View::url('/products?brand=' . $brand['slug']) ?>" class="btn btn-primary">View All <?= htmlspecialchars($brand['name']) ?> Products</a>
+                <?php else: ?>
+                    <a href="<?= View::url('/products') ?>" class="btn btn-primary">Browse All Products</a>
+                <?php endif; ?>
             </div>
         <?php endif; ?>
     </div>
@@ -176,8 +216,26 @@ ob_start();
 .brand-name {
     font-size: 3rem;
     font-weight: 700;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
     text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.brand-subcategory-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    padding: 8px 20px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.brand-subcategory-badge i {
+    font-size: 0.85rem;
 }
 
 .brand-tagline {
@@ -185,6 +243,63 @@ ob_start();
     line-height: 1.8;
     margin-bottom: 30px;
     opacity: 0.95;
+}
+
+/* Subcategory Filter Chips */
+.subcategory-filter {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 40px;
+    padding: 20px;
+    background: var(--gray-100);
+    border-radius: 16px;
+}
+
+.subcategory-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: white;
+    border: 2px solid var(--gray-200);
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--gray-700);
+    text-decoration: none;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.subcategory-chip:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.subcategory-chip.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 15px rgba(232, 93, 18, 0.3);
+}
+
+.subcategory-chip .chip-count {
+    background: rgba(0, 0, 0, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+}
+
+.subcategory-chip.active .chip-count {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+.subcategory-badge {
+    background: #10b981 !important;
 }
 
 .brand-meta {
@@ -509,6 +624,11 @@ ob_start();
         font-size: 2rem;
     }
     
+    .brand-subcategory-badge {
+        font-size: 0.85rem;
+        padding: 6px 16px;
+    }
+    
     .brand-tagline {
         font-size: 1rem;
     }
@@ -524,6 +644,27 @@ ob_start();
     
     .section-title {
         font-size: 1.75rem;
+    }
+    
+    .subcategory-filter {
+        padding: 15px;
+        gap: 8px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+    }
+    
+    .subcategory-filter::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .subcategory-chip {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+        white-space: nowrap;
+        flex-shrink: 0;
     }
     
     .products-grid {

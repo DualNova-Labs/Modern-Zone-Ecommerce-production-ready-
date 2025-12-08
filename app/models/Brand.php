@@ -102,4 +102,58 @@ class Brand extends Model
             ['brand_id' => $this->id]
         );
     }
+    
+    /**
+     * Get subcategories for this brand from brand_subcategories table
+     */
+    public function getSubcategories()
+    {
+        return $this->db->select(
+            "SELECT * FROM brand_subcategories 
+             WHERE brand_id = :brand_id 
+             AND status = 'active'
+             ORDER BY sort_order, name",
+            ['brand_id' => $this->id]
+        );
+    }
+    
+    /**
+     * Get all active brands with their subcategories (for navbar)
+     * Returns brands array with subcategories nested inside each brand
+     */
+    public static function getActiveWithSubcategories()
+    {
+        $db = Database::getInstance();
+        
+        // Get all active brands
+        $brands = $db->select(
+            "SELECT * FROM brands 
+             WHERE status = 'active' 
+             ORDER BY sort_order, name"
+        );
+        
+        // Get all active subcategories
+        $subcategories = $db->select(
+            "SELECT * FROM brand_subcategories 
+             WHERE status = 'active' 
+             ORDER BY sort_order, name"
+        );
+        
+        // Group subcategories by brand_id
+        $subcatByBrand = [];
+        foreach ($subcategories as $subcat) {
+            $brandId = $subcat['brand_id'];
+            if (!isset($subcatByBrand[$brandId])) {
+                $subcatByBrand[$brandId] = [];
+            }
+            $subcatByBrand[$brandId][] = $subcat;
+        }
+        
+        // Attach subcategories to each brand
+        foreach ($brands as &$brand) {
+            $brand['subcategories'] = $subcatByBrand[$brand['id']] ?? [];
+        }
+        
+        return $brands;
+    }
 }

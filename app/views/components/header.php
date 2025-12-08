@@ -119,20 +119,18 @@
                             <div class="main-nav-dropdown-menu">
                                 <?php 
                                 require_once APP_PATH . '/models/Brand.php';
-                                $navBrands = Brand::getActive();
+                                $navBrands = Brand::getActiveWithSubcategories();
                                 foreach ($navBrands as $brandData):
-                                    $brandObj = new Brand();
-                                    $brandObj->id = $brandData['id'];
-                                    $brandCategories = $brandObj->getCategories();
+                                    $brandSubcategories = $brandData['subcategories'] ?? [];
                                     
-                                    if (!empty($brandCategories)):
+                                    if (!empty($brandSubcategories)):
                                 ?>
                                     <div class="main-nav-dropdown-item has-submenu">
                                         <span><?= htmlspecialchars($brandData['name']) ?> <i class="fas fa-chevron-right"></i></span>
                                         <div class="main-nav-submenu">
-                                            <?php foreach ($brandCategories as $cat): ?>
-                                                <a href="<?= View::url('products?brand=' . $brandData['slug'] . '&category=' . $cat['slug']) ?>" class="main-nav-submenu-item">
-                                                    <?= htmlspecialchars($cat['name']) ?>
+                                            <?php foreach ($brandSubcategories as $subcat): ?>
+                                                <a href="<?= View::url('products?brand=' . $brandData['slug'] . '&subcategory=' . $subcat['slug']) ?>" class="main-nav-submenu-item">
+                                                    <?= htmlspecialchars($subcat['name']) ?>
                                                 </a>
                                             <?php endforeach; ?>
                                         </div>

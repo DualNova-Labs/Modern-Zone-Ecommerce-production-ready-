@@ -1,8 +1,8 @@
 -- =============================================================================
 -- Modern Zone Trading - Complete Database Schema
 -- =============================================================================
--- Version: 1.1
--- Last Updated: 2025-11-29
+-- Version: 1.2
+-- Last Updated: 2025-12-08
 -- Description: Complete database schema with all tables and enhancements
 -- Supports: MySQL 5.7+ / MariaDB 10.2+
 -- =============================================================================
@@ -17,6 +17,7 @@ DROP TABLE IF EXISTS cart_items;
 DROP TABLE IF EXISTS product_reviews;
 DROP TABLE IF EXISTS product_images;
 DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS brand_subcategories;
 DROP TABLE IF EXISTS categories;
 DROP TABLE IF EXISTS banners;
 DROP TABLE IF EXISTS brands;
@@ -100,6 +101,24 @@ CREATE TABLE brands (
     INDEX idx_sort_order (sort_order)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Brand subcategories table (for organizing products within brands)
+CREATE TABLE brand_subcategories (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    brand_id INT NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) NOT NULL,
+    description TEXT,
+    image VARCHAR(500),
+    sort_order INT DEFAULT 0,
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_brand_subcategory_slug (brand_id, slug),
+    INDEX idx_brand_subcategory_status (status),
+    INDEX idx_brand_subcategory_sort (sort_order)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Banners table (Hero Slider Management)
 CREATE TABLE banners (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -145,8 +164,9 @@ CREATE TABLE categories (
 -- Products table
 CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    category_id INT NOT NULL,
+    category_id INT NULL,
     brand_id INT,
+    brand_subcategory_id INT,
     sku VARCHAR(50) UNIQUE NOT NULL,
     name VARCHAR(200) NOT NULL,
     slug VARCHAR(200) UNIQUE NOT NULL,
@@ -171,10 +191,12 @@ CREATE TABLE products (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE RESTRICT,
     FOREIGN KEY (brand_id) REFERENCES brands(id) ON DELETE SET NULL,
+    FOREIGN KEY (brand_subcategory_id) REFERENCES brand_subcategories(id) ON DELETE SET NULL,
     INDEX idx_slug (slug),
     INDEX idx_sku (sku),
     INDEX idx_category (category_id),
     INDEX idx_brand (brand_id),
+    INDEX idx_brand_subcategory (brand_id, brand_subcategory_id),
     INDEX idx_status (status),
     INDEX idx_featured (featured),
     INDEX idx_best_seller (best_seller),
@@ -319,21 +341,26 @@ ON DUPLICATE KEY UPDATE
 --    - 'general': For general categories (Hand Tools, Safety, etc.)
 --    - 'our-products': For specialized product categories (Ball Cages, Drill Bits, etc.)
 --
--- 2. Default Admin Credentials:
+-- 2. Brand Subcategories:
+--    - Each brand can have its own subcategories for organizing products
+--    - Products can be assigned to a brand + brand subcategory
+--    - Used for "Products by Brand" section in admin
+--
+-- 3. Default Admin Credentials:
 --    - Email: admin@modernzonetrading.com
 --    - Password: Admin@123
 --    - IMPORTANT: Change this password after first login!
 --
--- 3. Database Character Set:
+-- 4. Database Character Set:
 --    - UTF8MB4 for full Unicode support (including emojis)
 --    - Collation: utf8mb4_unicode_ci for proper sorting
 --
--- 4. Indexes:
+-- 5. Indexes:
 --    - All foreign keys have indexes for better JOIN performance
 --    - FULLTEXT index on products for search functionality
 --    - Additional indexes on frequently queried columns
 --
--- 5. Timestamps:
+-- 6. Timestamps:
 --    - All tables have created_at timestamps
 --    - Most tables have updated_at with auto-update on modification
 --

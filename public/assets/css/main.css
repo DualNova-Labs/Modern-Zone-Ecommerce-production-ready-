@@ -784,6 +784,30 @@ section {
     padding-left: calc(var(--spacing-lg) + 5px)
 }
 
+/* "View All" submenu item - highlighted */
+.main-nav-submenu-all {
+    background: var(--gray-50);
+    font-weight: 600;
+    border-bottom: 2px solid var(--gray-200) !important;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.main-nav-submenu-all i {
+    color: var(--primary-color);
+    font-size: 0.8rem;
+}
+
+.main-nav-submenu-all:hover {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+.main-nav-submenu-all:hover i {
+    color: #fff;
+}
+
 .dropdown-divider {
     height: 1px;
     background: var(--gray-300);
