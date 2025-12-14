@@ -440,8 +440,8 @@ ob_start();
 
 .brand-item-modern {
     flex: 0 0 auto;
-    width: 140px;
-    height: 140px;
+    width: 160px;
+    height: 160px;
     background: #fff;
     border: 2px solid #e9ecef;
     border-radius: 50%;
@@ -452,6 +452,7 @@ ob_start();
     cursor: pointer;
     text-decoration: none;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
 }
 
 .brand-item-modern:hover {
@@ -461,14 +462,15 @@ ob_start();
 }
 
 .brand-logo-modern {
-    width: 90px;
-    height: 90px;
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    background: #f8fafc;
+    background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px;
+    padding: 0;
+    overflow: hidden;
 }
 
 .brand-logo-modern img {
@@ -479,7 +481,7 @@ ob_start();
 }
 
 .brand-item-modern:hover .brand-logo-modern img {
-    transform: scale(1.07);
+    transform: scale(1.03);
 }
 
 /* Featured Products Modern */
