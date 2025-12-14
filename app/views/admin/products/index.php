@@ -525,6 +525,16 @@ ob_start();
         }
     }
 
+    @keyframes spin {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
     @keyframes slideIn {
         from {
             opacity: 0;
@@ -1019,7 +1029,7 @@ ob_start();
                     <line x1="15" y1="9" x2="9" y2="15"></line>
                     <line x1="9" y1="9" x2="15" y2="15"></line>
                 </svg>
-                <?= htmlspecialchars($error) ?>
+                <?= $error ?>
             </div>
         <?php endif; ?>
 
@@ -1318,7 +1328,8 @@ ob_start();
             </button>
         </div>
 
-        <form id="createProductForm" method="POST" action="<?= View::url('/admin/products/store') ?>" enctype="multipart/form-data">
+        <form id="createProductForm" method="POST" action="<?= View::url('/admin/products/store') ?>"
+            enctype="multipart/form-data">
             <?= View::csrfField() ?>
 
             <div class="modal-body">
@@ -1335,12 +1346,14 @@ ob_start();
                     </div>
                 </div>
 
-                <!-- Parent Category Selection -->
+                <!-- Category Type Selection -->
                 <div class="form-group">
-                    <label class="form-label required">Parent Category</label>
+                    <label class="form-label required">Category Type</label>
+                    <input type="hidden" id="category_type" name="category_type" value="general">
                     <div class="parent-category-selector">
                         <label class="category-radio-option">
-                            <input type="radio" name="parent_category_type" value="general" checked onchange="loadSubcategories('general', 'create')">
+                            <input type="radio" name="category_type_radio" value="general" checked
+                                onchange="document.getElementById('category_type').value='general'; loadCategoriesForCreate('general');">
                             <span class="category-radio-label">
                                 <i class="fas fa-tools"></i>
                                 <strong>GENERAL CATEGORIES</strong>
@@ -1348,7 +1361,8 @@ ob_start();
                             </span>
                         </label>
                         <label class="category-radio-option">
-                            <input type="radio" name="parent_category_type" value="our-products" onchange="loadSubcategories('our-products', 'create')">
+                            <input type="radio" name="category_type_radio" value="our-products"
+                                onchange="document.getElementById('category_type').value='our-products'; loadCategoriesForCreate('our-products');">
                             <span class="category-radio-label">
                                 <i class="fas fa-box"></i>
                                 <strong>OUR PRODUCTS</strong>
@@ -1358,28 +1372,14 @@ ob_start();
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <!-- Subcategory Selection -->
-                    <div class="form-group">
-                        <label for="category_id" class="form-label required">Subcategory</label>
-                        <div class="subcategory-selector">
-                            <select id="category_id" name="category_id" class="form-select" required>
-                                <option value="">Loading subcategories...</option>
-                            </select>
-                            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleNewCategoryForm('create')" title="Create new subcategory">
-                                <i class="fas fa-plus"></i> New
-                            </button>
-                        </div>
-                        <!-- Inline New Category Form -->
-                        <div id="newCategoryForm_create" class="new-category-inline" style="display: none;">
-                            <input type="text" id="newCategoryName_create" class="form-input" placeholder="Enter new subcategory name">
-                            <button type="button" class="btn btn-sm btn-success" onclick="createSubcategoryInline('create')">
-                                <i class="fas fa-check"></i> Create
-                            </button>
-                            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleNewCategoryForm('create')">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
+                <div class="form-group">
+                    <label for="category_id" class="form-label required">Category</label>
+                    <select id="category_id" name="category_id" class="form-select" required>
+                        <option value="">Select category</option>
+                    </select>
+                    <div style="margin-top: 0.5rem; display: flex; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary btn-sm"
+                            onclick="openCreateCategoryModal('create')">Add Category</button>
                     </div>
                 </div>
 
@@ -1608,57 +1608,23 @@ ob_start();
                             font-size: 0.75rem;
                         }
 
-                        .category-radio-option input[type="radio"]:checked + .category-radio-label {
+                        .category-radio-option input[type="radio"]:checked+.category-radio-label {
                             border-color: #6366f1;
                             background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%);
                             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
                         }
 
-                        .category-radio-option input[type="radio"]:checked + .category-radio-label i {
+                        .category-radio-option input[type="radio"]:checked+.category-radio-label i {
                             color: #6366f1;
                         }
 
-                        .category-radio-option input[type="radio"]:checked + .category-radio-label strong {
+                        .category-radio-option input[type="radio"]:checked+.category-radio-label strong {
                             color: #6366f1;
-                        }
-
-                        .subcategory-selector {
-                            display: flex;
-                            gap: 0.5rem;
-                            align-items: center;
-                        }
-
-                        .subcategory-selector select {
-                            flex: 1;
-                        }
-
-                        .new-category-inline {
-                            display: flex;
-                            gap: 0.5rem;
-                            align-items: center;
-                            margin-top: 0.75rem;
-                            padding: 0.75rem;
-                            background: #f0fdf4;
-                            border: 1px solid #86efac;
-                            border-radius: 8px;
-                        }
-
-                        .new-category-inline input {
-                            flex: 1;
                         }
 
                         @media (max-width: 768px) {
                             .parent-category-selector {
                                 grid-template-columns: 1fr;
-                            }
-                            
-                            .subcategory-selector {
-                                flex-direction: column;
-                                align-items: stretch;
-                            }
-                            
-                            .new-category-inline {
-                                flex-direction: column;
                             }
                         }
                     </style>
@@ -1720,9 +1686,9 @@ ob_start();
                                             const reader = new FileReader();
                                             reader.onload = function (event) {
                                                 slot.innerHTML = `
-                                                <img src="${event.target.result}" alt="Additional Image ${index}">
-                                                <button type="button" class="remove-additional-image" onclick="removeAdditionalImageModal(${index})">×</button>
-                                            `;
+                                            <img src="${event.target.result}" alt="Additional Image ${index}">
+                                            <button type="button" class="remove-additional-image" onclick="removeAdditionalImageModal(${index})">×</button>
+                                        `;
                                                 slot.classList.add('has-image');
                                             };
                                             reader.readAsDataURL(file);
@@ -1730,7 +1696,6 @@ ob_start();
                                     });
                                 }
                             }
-                        }
                     </script>
 
                     <div class="form-group">
@@ -1816,12 +1781,14 @@ ob_start();
                     </div>
                 </div>
 
-                <!-- Parent Category Selection for Edit -->
+                <!-- Category Type Selection for Edit -->
                 <div class="form-group">
-                    <label class="form-label required">Parent Category</label>
+                    <label class="form-label required">Category Type</label>
+                    <input type="hidden" id="edit_category_type" name="category_type" value="general">
                     <div class="parent-category-selector">
                         <label class="category-radio-option">
-                            <input type="radio" name="edit_parent_category_type" value="general" checked onchange="loadSubcategories('general', 'edit')">
+                            <input type="radio" name="edit_category_type_radio" value="general" checked
+                                onchange="document.getElementById('edit_category_type').value='general'; loadCategoriesForEdit('general');">
                             <span class="category-radio-label">
                                 <i class="fas fa-tools"></i>
                                 <strong>GENERAL CATEGORIES</strong>
@@ -1829,7 +1796,8 @@ ob_start();
                             </span>
                         </label>
                         <label class="category-radio-option">
-                            <input type="radio" name="edit_parent_category_type" value="our-products" onchange="loadSubcategories('our-products', 'edit')">
+                            <input type="radio" name="edit_category_type_radio" value="our-products"
+                                onchange="document.getElementById('edit_category_type').value='our-products'; loadCategoriesForEdit('our-products');">
                             <span class="category-radio-label">
                                 <i class="fas fa-box"></i>
                                 <strong>OUR PRODUCTS</strong>
@@ -1839,30 +1807,18 @@ ob_start();
                     </div>
                 </div>
 
-                <div class="form-row">
-                    <!-- Subcategory Selection for Edit -->
-                    <div class="form-group">
-                        <label for="edit_category_id" class="form-label required">Subcategory</label>
-                        <div class="subcategory-selector">
-                            <select id="edit_category_id" name="category_id" class="form-select" required>
-                                <option value="">Select subcategory...</option>
-                            </select>
-                            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleNewCategoryForm('edit')" title="Create new subcategory">
-                                <i class="fas fa-plus"></i> New
-                            </button>
-                        </div>
-                        <!-- Inline New Category Form for Edit -->
-                        <div id="newCategoryForm_edit" class="new-category-inline" style="display: none;">
-                            <input type="text" id="newCategoryName_edit" class="form-input" placeholder="Enter new subcategory name">
-                            <button type="button" class="btn btn-sm btn-success" onclick="createSubcategoryInline('edit')">
-                                <i class="fas fa-check"></i> Create
-                            </button>
-                            <button type="button" class="btn btn-sm btn-secondary" onclick="toggleNewCategoryForm('edit')">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
+                <div class="form-group">
+                    <label for="edit_category_id" class="form-label required">Category</label>
+                    <select id="edit_category_id" name="category_id" class="form-select" required>
+                        <option value="">Select category</option>
+                    </select>
+                    <div style="margin-top: 0.5rem; display: flex; justify-content: flex-end;">
+                        <button type="button" class="btn btn-secondary btn-sm"
+                            onclick="openCreateCategoryModal('edit')">Add Category</button>
                     </div>
+                </div>
 
+                <div class="form-row">
                     <div class="form-group">
                         <label for="edit_description" class="form-label">Description</label>
                         <textarea id="edit_description" name="description" class="form-textarea" rows="3"
@@ -1919,260 +1875,223 @@ ob_start();
                             </div>
                         </label>
                     </div>
-                </div>
 
-                <!-- Existing Additional Images -->
-                <div id="edit_existingImages" class="form-group" style="display: none;">
-                    <label class="form-label">Current Additional Images</label>
-                    <div id="edit_existingImagesGrid" class="existing-images-grid"></div>
-                </div>
+                    <!-- Existing Additional Images -->
+                    <div id="edit_existingImages" class="form-group" style="display: none;">
+                        <label class="form-label">Current Additional Images</label>
+                        <div id="edit_existingImagesGrid" class="existing-images-grid"></div>
+                    </div>
 
-                <!-- Add More Images -->
-                <div class="form-group">
-                    <label for="edit_additional_images" class="form-label">Add More Product Images</label>
-                    <input type="file" id="edit_additional_images" name="additional_images[]" accept="image/*" multiple
-                        class="form-input">
-                    <div class="form-help">You can select multiple images at once (PNG, JPG, GIF up to 10MB each)</div>
-                    <div id="edit_additionalImagesPreview" class="additional-images-preview"></div>
-                </div>
+                    <!-- Add More Images -->
+                    <div class="form-group">
+                        <label for="edit_additional_images" class="form-label">Add More Product Images</label>
+                        <input type="file" id="edit_additional_images" name="additional_images[]" accept="image/*"
+                            multiple class="form-input">
+                        <div class="form-help">You can select multiple images at once (PNG, JPG, GIF up to 10MB each)
+                        </div>
+                        <div id="edit_additionalImagesPreview" class="additional-images-preview"></div>
+                    </div>
 
-                <div class="form-group">
-                    <label for="edit_status" class="form-label">Status</label>
-                    <select id="edit_status" name="status" class="form-select">
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="out_of_stock">Out of Stock</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label for="edit_status" class="form-label">Status</label>
+                        <select id="edit_status" name="status" class="form-select">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="out_of_stock">Out of Stock</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label class="form-label">Product Attributes</label>
-                    <div style="display: flex; gap: 1rem;">
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" id="edit_featured" name="featured" value="1">
-                            <span>⭐ Featured Product</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" id="edit_best_seller" name="best_seller" value="1">
-                            <span>🔥 Best Seller</span>
-                        </label>
-                        <label style="display: flex; align-items: center; gap: 0.5rem;">
-                            <input type="checkbox" id="edit_new_arrival" name="new_arrival" value="1">
-                            <span>✨ New Arrival</span>
-                        </label>
+                    <div class="form-group">
+                        <label class="form-label">Product Attributes</label>
+                        <div style="display: flex; gap: 1rem;">
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="edit_featured" name="featured" value="1">
+                                <span>⭐ Featured Product</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="edit_best_seller" name="best_seller" value="1">
+                                <span>🔥 Best Seller</span>
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 0.5rem;">
+                                <input type="checkbox" id="edit_new_arrival" name="new_arrival" value="1">
+                                <span>✨ New Arrival</span>
+                            </label>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
-                    Cancel
-                </button>
-                <button type="submit" id="editSubmitBtn" class="btn btn-primary">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                    </svg>
-                    Update Product
-                </button>
-            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" onclick="closeEditModal()">
+                        Cancel
+                    </button>
+                    <button type="submit" id="editSubmitBtn" class="btn btn-primary">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                        </svg>
+                        Update Product
+                    </button>
+                </div>
         </form>
     </div>
 </div>
 
 <script>
-    // Category Management Functions
-    let currentCategoryType = { create: 'general', edit: 'general' };
-    let categoriesCache = { general: null, 'our-products': null };
-
-    // Load subcategories by parent type
-    function loadSubcategories(type, mode, selectedCategoryId = null) {
-        currentCategoryType[mode] = type;
-        const selectId = mode === 'create' ? 'category_id' : 'edit_category_id';
-        const select = document.getElementById(selectId);
-        
-        if (!select) return;
-        
-        select.innerHTML = '<option value="">Loading...</option>';
-        
-        // Check cache first
-        if (categoriesCache[type]) {
-            populateSubcategorySelect(select, categoriesCache[type], selectedCategoryId);
-            return;
-        }
-        
-        fetch(`<?= View::url('/admin/categories/api/by-type') ?>?type=${type}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    categoriesCache[type] = data.categories;
-                    populateSubcategorySelect(select, data.categories, selectedCategoryId);
-                } else {
-                    select.innerHTML = '<option value="">Failed to load categories</option>';
-                }
-            })
-            .catch(error => {
-                console.error('Error loading categories:', error);
-                select.innerHTML = '<option value="">Error loading categories</option>';
-            });
-    }
-
-    function populateSubcategorySelect(select, categories, selectedId = null) {
-        select.innerHTML = '<option value="">Select subcategory...</option>';
-        
-        if (categories.length === 0) {
-            select.innerHTML += '<option value="" disabled>No subcategories found - Create one below</option>';
-        } else {
-            categories.forEach(cat => {
-                const option = document.createElement('option');
-                option.value = cat.id;
-                option.textContent = cat.name;
-                if (selectedId && cat.id == selectedId) {
-                    option.selected = true;
-                }
-                select.appendChild(option);
-            });
-        }
-    }
-
-    // Toggle new category form visibility
-    function toggleNewCategoryForm(mode) {
-        const form = document.getElementById(`newCategoryForm_${mode}`);
-        if (form) {
-            form.style.display = form.style.display === 'none' ? 'flex' : 'none';
-            if (form.style.display === 'flex') {
-                document.getElementById(`newCategoryName_${mode}`).focus();
-            }
-        }
-    }
-
-    // Create subcategory inline
-    function createSubcategoryInline(mode) {
-        const nameInput = document.getElementById(`newCategoryName_${mode}`);
-        const name = nameInput.value.trim();
-        const type = currentCategoryType[mode];
-        
-        if (!name) {
-            alert('Please enter a subcategory name');
-            nameInput.focus();
-            return;
-        }
-        
-        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
-        
-        fetch('<?= View::url('/admin/categories/api/create-inline') ?>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `csrf_token=${encodeURIComponent(csrfToken)}&name=${encodeURIComponent(name)}&type=${encodeURIComponent(type)}`
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                // Clear cache for this type
-                categoriesCache[type] = null;
-                
-                // Reload subcategories and select the new one
-                loadSubcategories(type, mode, data.category.id);
-                
-                // Hide the form and clear input
-                toggleNewCategoryForm(mode);
-                nameInput.value = '';
-                
-                // Show success message
-                showNotification(data.message || 'Subcategory created successfully!', 'success');
-            } else {
-                alert(data.message || 'Failed to create subcategory');
-            }
-        })
-        .catch(error => {
-            console.error('Error creating subcategory:', error);
-            alert('An error occurred while creating the subcategory');
-        });
-    }
-
-    // Initialize subcategories on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        // Load general categories by default for create modal
-        loadSubcategories('general', 'create');
-    });
-
-    // Modal Functions
-    function openCreateModal() {
-        console.log('Opening create modal');
-        const modal = document.getElementById('createProductModal');
-        
-        // Reset to general category and load subcategories
-        document.querySelector('input[name="parent_category_type"][value="general"]').checked = true;
-        loadSubcategories('general', 'create');
-        if (modal) {
-            modal.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        } else {
-            console.error('Create modal not found');
-        }
-    }
-
-    function closeCreateModal() {
-        const modal = document.getElementById('createProductModal');
-        if (modal) {
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-            // Reset form
-            document.getElementById('createProductForm').reset();
-        }
-    }
-
-    function openEditModal(productId) {
-        console.log('Opening edit modal for product:', productId);
-        const modal = document.getElementById('editProductModal');
-        if (!modal) {
-            console.error('Edit modal not found');
-            return;
+        function getCsrfToken() {
+            const tokenInput = document.querySelector('input[name="csrf_token"]') || document.querySelector('input[name="_csrf_token"]');
+            return tokenInput ? tokenInput.value : '';
         }
 
-        const url = `<?= View::url('/admin/products/') ?>${productId}/edit`;
-        console.log('Fetching product data from:', url);
+        function loadCategories(type, selectId, selectedId = null) {
+            const selectEl = document.getElementById(selectId);
+            if (!selectEl) return;
 
-        // Fetch product data
-        fetch(url)
-            .then(response => {
-                console.log('Response status:', response.status);
-                return response.text().then(text => {
-                    try {
-                        return JSON.parse(text);
-                    } catch (e) {
-                        console.error('Failed to parse JSON:', text);
-                        throw new Error('Invalid JSON response');
+            selectEl.innerHTML = '<option value="">Loading...</option>';
+
+            fetch('<?= View::url('/admin/categories/api/by-type') ?>?type=' + encodeURIComponent(type))
+                .then(r => r.json())
+                .then(data => {
+                    console.log('Categories API response:', data);
+
+                    if (!data || !data.success || !Array.isArray(data.categories)) {
+                        console.error('Invalid API response:', data);
+                        selectEl.innerHTML = '<option value="">Error loading categories</option>';
+                        return;
                     }
+
+                    if (data.categories.length === 0) {
+                        selectEl.innerHTML = '<option value="">No categories found - Click "Add Category" to create one</option>';
+                        return;
+                    }
+
+                    const options = ['<option value="">Select category</option>'];
+                    data.categories.forEach(c => {
+                        const isSelected = selectedId !== null && String(c.id) === String(selectedId);
+                        options.push(`<option value="${c.id}" ${isSelected ? 'selected' : ''}>${c.name}</option>`);
+                    });
+                    selectEl.innerHTML = options.join('');
+                })
+                .catch((err) => {
+                    console.error('Error loading categories:', err);
+                    selectEl.innerHTML = '<option value="">Error loading categories</option>';
                 });
+        }
+
+        function openCreateCategoryModal(context) {
+            const type = context === 'edit'
+                ? (document.getElementById('edit_category_type')?.value || 'general')
+                : (document.getElementById('category_type')?.value || 'general');
+
+            const name = window.prompt('Enter new category name');
+            if (!name) return;
+
+            const csrfToken = getCsrfToken();
+            if (!csrfToken) {
+                alert('CSRF token not found. Please refresh the page.');
+                return;
+            }
+
+            fetch('<?= View::url('/admin/categories/api/create-inline') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                body: `csrf_token=${encodeURIComponent(csrfToken)}&name=${encodeURIComponent(name)}&type=${encodeURIComponent(type)}`
             })
-            .then(data => {
-                console.log('Product data:', data);
-                if (data.success && data.product) {
+                .then(r => r.json())
+                .then(data => {
+                    if (!data || !data.success || !data.category) {
+                        alert((data && data.message) ? data.message : 'Failed to create category');
+                        return;
+                    }
+
+                    const category = data.category;
+
+                    if (context === 'edit') {
+                        loadCategoriesForEdit(type, category.id);
+                    } else {
+                        loadCategoriesForCreate(type);
+                        const selectEl = document.getElementById('category_id');
+                        if (selectEl) {
+                            const opt = document.createElement('option');
+                            opt.value = category.id;
+                            opt.textContent = category.name;
+                            opt.selected = true;
+                            selectEl.appendChild(opt);
+                        }
+                    }
+
+                    alert(data.message || 'Category created');
+                })
+                .catch(() => {
+                    alert('Failed to create category');
+                });
+        }
+
+        function loadCategoriesForCreate(type) {
+            loadCategories(type, 'category_id');
+        }
+
+        function loadCategoriesForEdit(type, selectedId = null) {
+            loadCategories(type, 'edit_category_id', selectedId);
+        }
+
+        function openCreateModal() {
+            const modal = document.getElementById('createProductModal');
+
+            const generalRadio = document.querySelector('input[name="category_type_radio"][value="general"]');
+            if (generalRadio) {
+                generalRadio.checked = true;
+                const hiddenType = document.getElementById('category_type');
+                if (hiddenType) hiddenType.value = 'general';
+            }
+
+            loadCategoriesForCreate('general');
+
+            if (modal) {
+                modal.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function closeCreateModal() {
+            const modal = document.getElementById('createProductModal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+
+                const form = document.getElementById('createProductForm');
+                if (form) form.reset();
+            }
+        }
+
+        function openEditModal(productId) {
+            const modal = document.getElementById('editProductModal');
+            if (!modal) return;
+
+            fetch(`<?= View::url('/admin/products/') ?>${productId}/edit`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data || !data.success || !data.product) {
+                        alert('Failed to load product data');
+                        return;
+                    }
+
                     const product = data.product;
 
-                    // Populate form fields
                     document.getElementById('edit_product_id').value = product.id;
                     document.getElementById('edit_name').value = product.name || '';
                     document.getElementById('edit_sku').value = product.sku || '';
-                    document.getElementById('edit_brand_id').value = product.brand_id || '';
-                    
-                    // Handle category - need to determine type and load subcategories
-                    if (product.category_id && data.category_type) {
-                        // Set the parent category radio button
-                        const radioBtn = document.querySelector(`input[name="edit_parent_category_type"][value="${data.category_type}"]`);
-                        if (radioBtn) {
-                            radioBtn.checked = true;
-                        }
-                        // Load subcategories for the correct type and select the current one
-                        loadSubcategories(data.category_type, 'edit', product.category_id);
-                    } else {
-                        // Default to general and load subcategories
-                        document.querySelector('input[name="edit_parent_category_type"][value="general"]').checked = true;
-                        loadSubcategories('general', 'edit', product.category_id);
+
+                    const categoryType = data.category_type || product.category_type || 'general';
+                    const radioBtn = document.querySelector(`input[name="edit_category_type_radio"][value="${categoryType}"]`);
+                    if (radioBtn) {
+                        radioBtn.checked = true;
                     }
+                    document.getElementById('edit_category_type').value = categoryType;
+
+                    loadCategoriesForEdit(categoryType, product.category_id || null);
+
                     document.getElementById('edit_description').value = product.description || '';
                     document.getElementById('edit_price').value = product.price || '';
                     document.getElementById('edit_compare_price').value = product.compare_price || '';
@@ -2180,15 +2099,14 @@ ob_start();
                     document.getElementById('edit_min_quantity').value = product.min_quantity || 1;
                     document.getElementById('edit_status').value = product.status || 'active';
 
-                    // Set checkboxes
                     document.getElementById('edit_featured').checked = product.featured == 1;
                     document.getElementById('edit_best_seller').checked = product.best_seller == 1;
                     document.getElementById('edit_new_arrival').checked = product.new_arrival == 1;
 
-                    // Show current main image if exists
                     const currentImageDiv = document.getElementById('edit_currentImage');
-                    if (product.image) {
-                        currentImageDiv.innerHTML = `
+                    if (currentImageDiv) {
+                        if (product.image) {
+                            currentImageDiv.innerHTML = `
                         <div style="margin-bottom: 1rem;">
                             <label class="form-label">Current Main Image</label>
                             <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; background: #f8fafc;">
@@ -2196,235 +2114,230 @@ ob_start();
                             </div>
                         </div>
                     `;
-                    } else {
-                        currentImageDiv.innerHTML = '';
+                        } else {
+                            currentImageDiv.innerHTML = '';
+                        }
                     }
 
-                    // Display existing additional images
                     const existingImagesContainer = document.getElementById('edit_existingImages');
                     const existingImagesGrid = document.getElementById('edit_existingImagesGrid');
-
-                    if (data.images && data.images.length > 0) {
-                        existingImagesContainer.style.display = 'block';
-                        existingImagesGrid.innerHTML = data.images.map(img => `
+                    if (existingImagesContainer && existingImagesGrid) {
+                        if (data.images && data.images.length > 0) {
+                            existingImagesContainer.style.display = 'block';
+                            existingImagesGrid.innerHTML = data.images.map(img => `
                         <div class="existing-image-item" data-image-id="${img.id}">
                             <img src="<?= BASE_URL ?>/${img.image_path}" alt="${img.alt_text || 'Product image'}">
-                            <button type="button" class="existing-image-delete" onclick="deleteProductImage(${img.id}, this)" title="Delete image">
-                                ×
-                            </button>
+                            <button type="button" class="existing-image-delete" onclick="deleteProductImage(${img.id}, this)" title="Delete image">×</button>
                         </div>
                     `).join('');
-                    } else {
-                        existingImagesContainer.style.display = 'none';
-                        existingImagesGrid.innerHTML = '';
+                        } else {
+                            existingImagesContainer.style.display = 'none';
+                            existingImagesGrid.innerHTML = '';
+                        }
                     }
 
-                    // Clear additional images preview
-                    document.getElementById('edit_additionalImagesPreview').innerHTML = '';
-                    document.getElementById('edit_additional_images').value = '';
+                    const editAdditionalPreview = document.getElementById('edit_additionalImagesPreview');
+                    if (editAdditionalPreview) editAdditionalPreview.innerHTML = '';
+                    const editAdditionalInput = document.getElementById('edit_additional_images');
+                    if (editAdditionalInput) editAdditionalInput.value = '';
 
-                    // Update form action
                     document.getElementById('editProductForm').action = `<?= View::url('/admin/products/') ?>${productId}`;
 
-                    // Show modal
                     modal.classList.add('active');
                     document.body.style.overflow = 'hidden';
-                } else {
-                    alert('Failed to load product data: ' + (data.message || 'Unknown error'));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while loading product data. Check console for details.');
-            });
-    }
-
-    // Add file preview for additional images
-    document.addEventListener('DOMContentLoaded', function () {
-        const editAdditionalImagesInput = document.getElementById('edit_additional_images');
-        if (editAdditionalImagesInput) {
-            editAdditionalImagesInput.addEventListener('change', function (e) {
-                const preview = document.getElementById('edit_additionalImagesPreview');
-                preview.innerHTML = '';
-
-                if (this.files && this.files.length > 0) {
-                    Array.from(this.files).forEach((file, index) => {
-                        const reader = new FileReader();
-                        reader.onload = function (event) {
-                            const div = document.createElement('div');
-                            div.className = 'additional-image-preview';
-                            div.innerHTML = `<img src="${event.target.result}" alt="Preview ${index + 1}">`;
-                            preview.appendChild(div);
-                        };
-                        reader.readAsDataURL(file);
-                    });
-                }
-            });
-        }
-    });
-
-    // Function to delete individual product image
-    function deleteProductImage(imageId, button) {
-        if (!confirm('Are you sure you want to delete this image?')) {
-            return;
+                })
+                .catch(() => {
+                    alert('An error occurred while loading product data.');
+                });
         }
 
-        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+        // Add file preview for additional images
+        document.addEventListener('DOMContentLoaded', function () {
+            const editAdditionalImagesInput = document.getElementById('edit_additional_images');
+            if (editAdditionalImagesInput) {
+                editAdditionalImagesInput.addEventListener('change', function (e) {
+                    const preview = document.getElementById('edit_additionalImagesPreview');
 
-        fetch('<?= View::url('/admin/products/images/delete') ?>', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `csrf_token=${encodeURIComponent(csrfToken)}&image_id=${imageId}`
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    // Remove the image element from DOM
-                    const imageItem = button.closest('.existing-image-item');
-                    if (imageItem) {
-                        imageItem.remove();
+                    preview.innerHTML = '';
+
+                    if (this.files && this.files.length > 0) {
+                        Array.from(this.files).forEach((file, index) => {
+                            const reader = new FileReader();
+                            reader.onload = function (event) {
+                                const div = document.createElement('div');
+                                div.className = 'additional-image-preview';
+                                div.innerHTML = `<img src="${event.target.result}" alt="Preview ${index + 1}">`;
+                                preview.appendChild(div);
+                            };
+                            reader.readAsDataURL(file);
+                        });
                     }
+                });
+            }
+        });
 
-                    // Check if there are any images left
-                    const grid = document.getElementById('edit_existingImagesGrid');
-                    if (grid && grid.children.length === 0) {
-                        document.getElementById('edit_existingImages').style.display = 'none';
-                    }
+        // Function to delete individual product image
+        function deleteProductImage(imageId, button) {
+            if (!confirm('Are you sure you want to delete this image?')) {
+                return;
+            }
 
-                    alert(data.message || 'Image deleted successfully');
-                } else {
-                    alert(data.error || 'Failed to delete image');
-                }
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+
+            fetch('<?= View::url('/admin/products/images/delete') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `csrf_token=${encodeURIComponent(csrfToken)}&image_id=${imageId}`
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while deleting the image');
-            });
-    }
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Remove the image element from DOM
+                        const imageItem = button.closest('.existing-image-item');
+                        if (imageItem) {
+                            imageItem.remove();
+                        }
 
-    function closeEditModal() {
-        const modal = document.getElementById('editProductModal');
-        if (modal) {
-            modal.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    }
+                        // Check if there are any images left
+                        const grid = document.getElementById('edit_existingImagesGrid');
+                        if (grid && grid.children.length === 0) {
+                            document.getElementById('edit_existingImages').style.display = 'none';
+                        }
 
-    function deleteProduct(productId) {
-        if (!confirm('Are you sure you want to delete this product?')) {
-            return;
-        }
-
-        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
-
-        fetch(`<?= View::url('/admin/products/') ?>${productId}/delete`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `csrf_token=${encodeURIComponent(csrfToken)}`
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(data.message || 'Product deleted successfully');
-                    location.reload();
-                } else {
-                    alert(data.error || 'Failed to delete product');
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred while deleting the product');
-            });
-    }
-
-    function toggleFeatured(productId, button) {
-        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
-
-        fetch(`<?= View::url('/admin/products/') ?>${productId}/toggle-featured`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `csrf_token=${encodeURIComponent(csrfToken)}`
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (data.featured) {
-                        button.classList.add('active');
+                        alert(data.message || 'Image deleted successfully');
                     } else {
-                        button.classList.remove('active');
+                        alert(data.error || 'Failed to delete image');
                     }
-                } else {
-                    alert(data.error || 'Failed to update featured status');
-                }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the image');
+                });
+        }
+
+        function closeEditModal() {
+            const modal = document.getElementById('editProductModal');
+            if (modal) {
+                modal.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        }
+
+        function deleteProduct(productId) {
+            if (!confirm('Are you sure you want to delete this product?')) {
+                return;
+            }
+
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+
+            fetch(`<?= View::url('/admin/products/') ?>${productId}/delete`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `csrf_token=${encodeURIComponent(csrfToken)}`
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred');
-            });
-    }
-
-    function toggleBestSeller(productId, button) {
-        const csrfToken = document.querySelector('input[name="csrf_token"]').value;
-
-        // Fixed URL to match route: toggle-bestseller instead of toggle-best-seller
-        fetch(`<?= View::url('/admin/products/') ?>${productId}/toggle-bestseller`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: `csrf_token=${encodeURIComponent(csrfToken)}`
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    if (data.best_seller) {
-                        button.classList.add('active');
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert(data.message || 'Product deleted successfully');
+                        location.reload();
                     } else {
-                        button.classList.remove('active');
+                        alert(data.error || 'Failed to delete product');
                     }
-                } else {
-                    alert(data.error || 'Failed to update best seller status');
-                }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred while deleting the product');
+                });
+        }
+
+        function toggleFeatured(productId, button) {
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
+
+            fetch(`<?= View::url('/admin/products/') ?>${productId}/toggle-featured`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `csrf_token=${encodeURIComponent(csrfToken)}`
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('An error occurred');
-            });
-    }
-
-    // Close modals when clicking outside
-    document.addEventListener('click', function (e) {
-        const createModal = document.getElementById('createProductModal');
-        const editModal = document.getElementById('editProductModal');
-
-        if (e.target === createModal) {
-            closeCreateModal();
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.featured) {
+                            button.classList.add('active');
+                        } else {
+                            button.classList.remove('active');
+                        }
+                    } else {
+                        alert(data.error || 'Failed to update featured status');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
         }
-        if (e.target === editModal) {
-            closeEditModal();
-        }
-    });
 
-    // Close modals with Escape key
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            closeCreateModal();
-            closeEditModal();
-        }
-    });
+        function toggleBestSeller(productId, button) {
+            const csrfToken = document.querySelector('input[name="csrf_token"]').value;
 
-    // Notification helper function
-    function showNotification(message, type = 'success') {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.innerHTML = message;
-        notification.style.cssText = `
+            // Fixed URL to match route: toggle-bestseller instead of toggle-best-seller
+            fetch(`<?= View::url('/admin/products/') ?>${productId}/toggle-bestseller`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `csrf_token=${encodeURIComponent(csrfToken)}`
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        if (data.best_seller) {
+                            button.classList.add('active');
+                        } else {
+                            button.classList.remove('active');
+                        }
+                    } else {
+                        alert(data.error || 'Failed to update best seller status');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred');
+                });
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', function (e) {
+            const createModal = document.getElementById('createProductModal');
+            const editModal = document.getElementById('editProductModal');
+
+            if (e.target === createModal) {
+                closeCreateModal();
+            }
+            if (e.target === editModal) {
+                closeEditModal();
+            }
+        });
+
+        // Close modals with Escape key
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                closeCreateModal();
+                closeEditModal();
+            }
+        });
+
+        // Notification helper function
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = message;
+            notification.style.cssText = `
         position: fixed;
         top: 20px;
         right: 20px;
@@ -2435,100 +2348,69 @@ ob_start();
         z-index: 10000;
         animation: slideIn 0.3s ease-out;
     `;
-        document.body.appendChild(notification);
+            document.body.appendChild(notification);
 
-        setTimeout(() => {
-            notification.style.animation = 'slideOut 0.3s ease-out';
-            setTimeout(() => notification.remove(), 300);
-        }, 3000);
-    }
-
-    // Form submission handlers
-    document.addEventListener('DOMContentLoaded', function () {
-        // Create form submission
-        const createForm = document.getElementById('createProductForm');
-        if (createForm) {
-            createForm.addEventListener('submit', function (e) {
-                e.preventDefault();
-
-                const formData = new FormData(this);
-                const submitBtn = document.getElementById('createSubmitBtn');
-                const originalText = submitBtn.innerHTML;
-
-                submitBtn.innerHTML = 'Creating...';
-                submitBtn.disabled = true;
-
-                fetch('<?= View::url('/admin/products/store') ?>', {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => response.text())
-                    .then(data => {
-                        window.location.reload();
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred. Please try again.');
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                    });
-            });
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
         }
 
-        // Edit form submission
-        const editForm = document.getElementById('editProductForm');
-        if (editForm) {
-            editForm.addEventListener('submit', function (e) {
-                e.preventDefault();
+        // Form submission handlers
+        document.addEventListener('DOMContentLoaded', function () {
+            // Create form submission - use standard form submission to properly show server errors
+            const createForm = document.getElementById('createProductForm');
+            if (createForm) {
+                createForm.addEventListener('submit', function (e) {
+                    // Validate required fields before submission
+                    const categoryId = document.getElementById('category_id').value;
+                    if (!categoryId) {
+                        e.preventDefault();
+                        alert('Please select a category. If no categories are available, click "Add Category" to create one first.');
+                        return false;
+                    }
 
-                const formData = new FormData(this);
-                const submitBtn = document.getElementById('editSubmitBtn');
-                const originalText = submitBtn.innerHTML;
-                const productId = document.getElementById('edit_product_id').value;
+                    const submitBtn = document.getElementById('createSubmitBtn');
+                    submitBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px; animation: spin 1s linear infinite;"><circle cx="12" cy="12" r="10" stroke-dasharray="32" stroke-dashoffset="32"></circle></svg> Creating...';
+                    submitBtn.disabled = true;
 
-                submitBtn.innerHTML = '<span class="animate-spin">⟳</span> Updating...';
-                submitBtn.disabled = true;
+                    // Allow normal form submission to handle errors properly via session flash
+                    return true;
+                });
+            }
 
-                fetch('<?= View::url('/admin/products/') ?>' + productId, {
-                    method: 'POST',
-                    body: formData
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.text();
-                    })
-                    .then(data => {
-                        if (data.includes('product_success') || !data.includes('error')) {
-                            showNotification('Product updated successfully!', 'success');
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1000);
-                        } else {
-                            throw new Error('Update failed');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('An error occurred while updating. Please try again.');
-                        submitBtn.innerHTML = originalText;
-                        submitBtn.disabled = false;
-                    });
-            });
-        }
+            // Edit form submission - use standard form submission
+            const editForm = document.getElementById('editProductForm');
+            if (editForm) {
+                editForm.addEventListener('submit', function (e) {
+                    // Validate required fields before submission
+                    const categoryId = document.getElementById('edit_category_id').value;
+                    if (!categoryId) {
+                        e.preventDefault();
+                        alert('Please select a category. If no categories are available, click "Add Category" to create one first.');
+                        return false;
+                    }
 
-        // Image upload preview for create modal
-        const imageInput = document.getElementById('image');
-        if (imageInput) {
-            imageInput.addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                const uploadLabel = document.querySelector('#createProductModal .file-upload-label');
+                    const submitBtn = document.getElementById('editSubmitBtn');
+                    submitBtn.innerHTML = '<span style="animation: spin 1s linear infinite; display: inline-block;">⟳</span> Updating...';
+                    submitBtn.disabled = true;
 
-                if (file && uploadLabel) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        uploadLabel.innerHTML = `
+                    // Allow normal form submission
+                    return true;
+                });
+            }
+
+            // Image upload preview for create modal
+            const imageInput = document.getElementById('image');
+            if (imageInput) {
+                imageInput.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    const uploadLabel = document.querySelector('#createProductModal .file-upload-label');
+
+                    if (file && uploadLabel) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            uploadLabel.innerHTML = `
                         <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: contain;">
                         <div style="margin-top: 1rem; font-size: 0.875rem; color: #64748b;">
                             <strong>${file.name}</strong><br>
@@ -2538,25 +2420,25 @@ ob_start();
                             </button>
                         </div>
                     `;
-                        uploadLabel.style.border = '2px solid #10b981';
-                        uploadLabel.style.background = 'rgba(16, 185, 129, 0.05)';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
+                            uploadLabel.style.border = '2px solid #10b981';
+                            uploadLabel.style.background = 'rgba(16, 185, 129, 0.05)';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
 
-        // Image upload preview for edit modal
-        const editImageInput = document.getElementById('edit_image');
-        if (editImageInput) {
-            editImageInput.addEventListener('change', function (e) {
-                const file = e.target.files[0];
-                const uploadLabel = document.querySelector('#editProductModal .file-upload-label');
+            // Image upload preview for edit modal
+            const editImageInput = document.getElementById('edit_image');
+            if (editImageInput) {
+                editImageInput.addEventListener('change', function (e) {
+                    const file = e.target.files[0];
+                    const uploadLabel = document.querySelector('#editProductModal .file-upload-label');
 
-                if (file && uploadLabel) {
-                    const reader = new FileReader();
-                    reader.onload = function (e) {
-                        uploadLabel.innerHTML = `
+                    if (file && uploadLabel) {
+                        const reader = new FileReader();
+                        reader.onload = function (e) {
+                            uploadLabel.innerHTML = `
                         <img src="${e.target.result}" alt="Preview" style="max-width: 100%; max-height: 200px; border-radius: 8px; object-fit: contain;">
                         <div style="margin-top: 1rem; font-size: 0.875rem; color: #64748b;">
                             <strong>${file.name}</strong><br>
@@ -2566,26 +2448,26 @@ ob_start();
                             </button>
                         </div>
                     `;
-                        uploadLabel.style.border = '2px solid #10b981';
-                        uploadLabel.style.background = 'rgba(16, 185, 129, 0.05)';
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
-        }
-    });
+                            uploadLabel.style.border = '2px solid #10b981';
+                            uploadLabel.style.background = 'rgba(16, 185, 129, 0.05)';
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                });
+            }
+        });
 
-    // Clear image upload for create modal
-    function clearImageUpload() {
-        const fileInput = document.getElementById('image');
-        const uploadLabel = document.querySelector('#createProductModal .file-upload-label');
+        // Clear image upload for create modal
+        function clearImageUpload() {
+            const fileInput = document.getElementById('image');
+            const uploadLabel = document.querySelector('#createProductModal .file-upload-label');
 
-        if (fileInput) {
-            fileInput.value = '';
-        }
+            if (fileInput) {
+                fileInput.value = '';
+            }
 
-        if (uploadLabel) {
-            uploadLabel.innerHTML = `
+            if (uploadLabel) {
+                uploadLabel.innerHTML = `
             <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -2596,22 +2478,22 @@ ob_start();
                 <small>PNG, JPG, GIF up to 10MB (Optional)</small>
             </div>
         `;
-            uploadLabel.style.border = '2px dashed #e2e8f0';
-            uploadLabel.style.background = '#f8fafc';
-        }
-    }
-
-    // Clear image upload for edit modal
-    function clearEditImageUpload() {
-        const fileInput = document.getElementById('edit_image');
-        const uploadLabel = document.querySelector('#editProductModal .file-upload-label');
-
-        if (fileInput) {
-            fileInput.value = '';
+                uploadLabel.style.border = '2px dashed #e2e8f0';
+                uploadLabel.style.background = '#f8fafc';
+            }
         }
 
-        if (uploadLabel) {
-            uploadLabel.innerHTML = `
+        // Clear image upload for edit modal
+        function clearEditImageUpload() {
+            const fileInput = document.getElementById('edit_image');
+            const uploadLabel = document.querySelector('#editProductModal .file-upload-label');
+
+            if (fileInput) {
+                fileInput.value = '';
+            }
+
+            if (uploadLabel) {
+                uploadLabel.innerHTML = `
             <svg class="file-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
                 <circle cx="8.5" cy="8.5" r="1.5"></circle>
@@ -2622,10 +2504,10 @@ ob_start();
                 <small>PNG, JPG, GIF up to 10MB (Optional - leave empty to keep current image)</small>
             </div>
         `;
-            uploadLabel.style.border = '2px dashed #e2e8f0';
-            uploadLabel.style.background = '#f8fafc';
+                uploadLabel.style.border = '2px dashed #e2e8f0';
+                uploadLabel.style.background = '#f8fafc';
+            }
         }
-    }
 </script>
 
 <!-- Add base URL meta tag for JavaScript -->

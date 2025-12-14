@@ -13,13 +13,13 @@ require_once APP_PATH . '/models/Category.php';
 class AdminCategoryController
 {
     private $security;
-    
+
     public function __construct()
     {
         AdminMiddleware::check();
         $this->security = Security::getInstance();
     }
-    
+
     /**
      * List all categories
      */
@@ -34,21 +34,21 @@ class AdminCategoryController
              LEFT JOIN categories p ON c.parent_id = p.id
              ORDER BY c.sort_order, c.name"
         );
-        
+
         $data = [
             'title' => 'Categories Management',
             'categories' => $categories,
             'success' => $_SESSION['category_success'] ?? null,
             'error' => $_SESSION['category_error'] ?? null,
         ];
-        
+
         // Clear flash messages
         unset($_SESSION['category_success']);
         unset($_SESSION['category_error']);
-        
+
         View::render('admin/categories/index', $data);
     }
-    
+
     /**
      * Show create category form - redirects to index with modal
      */
@@ -58,7 +58,7 @@ class AdminCategoryController
         header('Location: ' . View::url('/admin/categories'));
         exit;
     }
-    
+
     /**
      * Store new category
      */
@@ -70,7 +70,7 @@ class AdminCategoryController
             header('Location: ' . View::url('/admin/categories'));
             exit;
         }
-        
+
         // Get and sanitize input
         $data = [
             'parent_id' => Request::post('parent_id') ?: null,
@@ -79,26 +79,26 @@ class AdminCategoryController
             'slug' => $this->security->cleanInput(Request::post('slug')),
             'description' => $this->security->cleanInput(Request::post('description')),
             'icon' => $this->security->cleanInput(Request::post('icon')),
-            'sort_order' => (int)Request::post('sort_order', 0),
+            'sort_order' => (int) Request::post('sort_order', 0),
             'status' => Request::post('status', 'active'),
         ];
-        
+
         // Validation
         $errors = [];
-        
+
         if (empty($data['name'])) {
             $errors['name'] = 'Category name is required';
         }
-        
+
         if (empty($data['slug'])) {
             $data['slug'] = $this->generateSlug($data['name']);
         }
-        
+
         // Check if slug exists
         if (Category::findBySlug($data['slug'])) {
             $errors['slug'] = 'Slug already exists';
         }
-        
+
         if (!empty($errors)) {
             $_SESSION['category_errors'] = $errors;
             $_SESSION['category_old'] = $data;
@@ -106,12 +106,12 @@ class AdminCategoryController
             header('Location: ' . View::url('/admin/categories'));
             exit;
         }
-        
+
         // Create category
         try {
             $db = Database::getInstance();
             $db->insert('categories', $data);
-            
+
             $_SESSION['category_success'] = 'Category created successfully!';
             header('Location: ' . View::url('/admin/categories'));
             exit;
@@ -121,7 +121,7 @@ class AdminCategoryController
             exit;
         }
     }
-    
+
     /**
      * Show edit category form
      */
@@ -133,13 +133,13 @@ class AdminCategoryController
             header('Location: ' . View::url('/admin/categories'));
             exit;
         }
-        
+
         $db = Database::getInstance();
         $parentCategories = $db->select(
             "SELECT * FROM categories WHERE parent_id IS NULL AND id != :id AND status = 'active' ORDER BY name",
             ['id' => $id]
         );
-        
+
         $data = [
             'title' => 'Edit Category',
             'category' => $category,
@@ -148,14 +148,14 @@ class AdminCategoryController
             'errors' => $_SESSION['category_errors'] ?? [],
             'old' => $_SESSION['category_old'] ?? [],
         ];
-        
+
         // Clear flash data
         unset($_SESSION['category_errors']);
         unset($_SESSION['category_old']);
-        
+
         View::render('admin/categories/edit', $data);
     }
-    
+
     /**
      * Update category
      */
@@ -167,14 +167,14 @@ class AdminCategoryController
             header('Location: ' . View::url('/admin/categories'));
             exit;
         }
-        
+
         // Validate CSRF token
         if (!$this->security->validateCsrfToken()) {
             $_SESSION['category_error'] = 'Invalid security token. Please try again.';
             header('Location: ' . View::url('/admin/categories'));
             exit;
         }
-        
+
         // Get and sanitize input
         $data = [
             'parent_id' => Request::post('parent_id') ?: null,
@@ -183,39 +183,39 @@ class AdminCategoryController
             'slug' => $this->security->cleanInput(Request::post('slug')),
             'description' => $this->security->cleanInput(Request::post('description')),
             'icon' => $this->security->cleanInput(Request::post('icon')),
-            'sort_order' => (int)Request::post('sort_order', 0),
+            'sort_order' => (int) Request::post('sort_order', 0),
             'status' => Request::post('status', 'active'),
         ];
-        
+
         // Validation
         $errors = [];
-        
+
         if (empty($data['name'])) {
             $errors['name'] = 'Category name is required';
         }
-        
+
         if (empty($data['slug'])) {
             $data['slug'] = $this->generateSlug($data['name']);
         }
-        
+
         // Check if slug exists (excluding current category)
         $existingCategory = Category::findBySlug($data['slug']);
         if ($existingCategory && $existingCategory->id != $id) {
             $errors['slug'] = 'Slug already exists';
         }
-        
+
         if (!empty($errors)) {
             $_SESSION['category_errors'] = $errors;
             $_SESSION['category_old'] = $data;
             header('Location: ' . View::url("/admin/categories/{$id}/edit"));
             exit;
         }
-        
+
         // Update category
         try {
             $db = Database::getInstance();
             $db->update('categories', $data, 'id = :id', ['id' => $id]);
-            
+
             $_SESSION['category_success'] = 'Category updated successfully!';
             header('Location: ' . View::url('/admin/categories'));
             exit;
@@ -225,7 +225,7 @@ class AdminCategoryController
             exit;
         }
     }
-    
+
     /**
      * Delete category
      */
@@ -233,20 +233,20 @@ class AdminCategoryController
     {
         // Debug: Log to file
         error_log("DELETE CATEGORY: ID=$id, POST=" . json_encode($_POST) . ", HEADERS=" . json_encode(getallheaders()));
-        
+
         $category = Category::find($id);
         if (!$category) {
             $_SESSION['category_error'] = 'Category not found';
             header('Location: ' . View::url('/admin/categories'));
             exit;
         }
-        
+
         // Check if force delete is requested (via header or POST parameter)
         $forceDelete = (isset($_SERVER['HTTP_X_FORCE_DELETE']) && $_SERVER['HTTP_X_FORCE_DELETE'] === 'true')
-                    || (isset($_POST['force_delete']) && $_POST['force_delete'] === 'true');
-        
+            || (isset($_POST['force_delete']) && $_POST['force_delete'] === 'true');
+
         error_log("FORCE DELETE: " . ($forceDelete ? 'YES' : 'NO'));
-        
+
         // Check if category has products
         $productCount = $category->getProductCount();
         if ($productCount > 0 && !$forceDelete) {
@@ -254,7 +254,7 @@ class AdminCategoryController
             header('Location: ' . View::url('/admin/categories'));
             exit;
         }
-        
+
         // Check if category has children
         $children = $category->children();
         if (!empty($children) && !$forceDelete) {
@@ -262,10 +262,10 @@ class AdminCategoryController
             header('Location: ' . View::url('/admin/categories'));
             exit;
         }
-        
+
         try {
             $db = Database::getInstance();
-            
+
             // If force delete, also delete associated products and update children
             if ($forceDelete) {
                 // First get all product IDs in this category (ALL products, not just active)
@@ -273,32 +273,32 @@ class AdminCategoryController
                     "SELECT id FROM products WHERE category_id = :category_id",
                     ['category_id' => $id]
                 );
-                
+
                 error_log("Found " . count($products) . " products to delete");
-                
+
                 // Delete product images first (foreign key constraint)
                 foreach ($products as $product) {
                     error_log("Deleting images for product ID: " . $product['id']);
                     $db->delete('product_images', 'product_id = :product_id', ['product_id' => $product['id']]);
                 }
-                
+
                 // Delete ALL products in this category (not just based on productCount)
                 if (count($products) > 0) {
                     error_log("Deleting all products in category");
                     $db->delete('products', 'category_id = :category_id', ['category_id' => $id]);
                 }
-                
+
                 // Update child categories to have no parent
                 if (!empty($children)) {
                     $db->update('categories', ['parent_id' => null], 'parent_id = :parent_id', ['parent_id' => $id]);
                 }
             }
-            
+
             // Delete the category
             error_log("Attempting to delete category ID: $id");
             $result = $db->delete('categories', 'id = :id', ['id' => $id]);
             error_log("Delete result: " . json_encode($result));
-            
+
             if ($forceDelete) {
                 $_SESSION['category_success'] = 'Category and all associated data deleted successfully!';
             } else {
@@ -308,11 +308,11 @@ class AdminCategoryController
             error_log("Delete exception: " . $e->getMessage());
             $_SESSION['category_error'] = 'Failed to delete category: ' . $e->getMessage();
         }
-        
+
         header('Location: ' . View::url('/admin/categories'));
         exit;
     }
-    
+
     /**
      * Toggle category status
      */
@@ -324,22 +324,22 @@ class AdminCategoryController
             header('Location: ' . View::url('/admin/categories'));
             exit;
         }
-        
+
         $newStatus = $category->status === 'active' ? 'inactive' : 'active';
-        
+
         try {
             $db = Database::getInstance();
             $db->update('categories', ['status' => $newStatus], 'id = :id', ['id' => $id]);
-            
+
             $_SESSION['category_success'] = 'Category status updated successfully!';
         } catch (Exception $e) {
             $_SESSION['category_error'] = 'Failed to update category status: ' . $e->getMessage();
         }
-        
+
         header('Location: ' . View::url('/admin/categories'));
         exit;
     }
-    
+
     /**
      * Generate slug from name
      */
@@ -350,18 +350,20 @@ class AdminCategoryController
         $slug = preg_replace('/-+/', '-', $slug);
         return trim($slug, '-');
     }
-    
+
     /**
      * API: Get subcategories by parent type (general or our-products)
      */
     public function getSubcategoriesByType()
     {
         header('Content-Type: application/json');
-        
+
         $type = Request::get('type', 'general');
-        
+
         try {
             $db = Database::getInstance();
+
+            // First try to get categories by type
             $categories = $db->select(
                 "SELECT id, name, slug, type, description 
                  FROM categories 
@@ -369,10 +371,21 @@ class AdminCategoryController
                  ORDER BY sort_order, name",
                 ['type' => $type]
             );
-            
+
+            // If no categories found for this type, get all active categories as fallback
+            if (empty($categories)) {
+                $categories = $db->select(
+                    "SELECT id, name, slug, type, description 
+                     FROM categories 
+                     WHERE status = 'active'
+                     ORDER BY type, sort_order, name"
+                );
+            }
+
             echo json_encode([
                 'success' => true,
-                'categories' => $categories
+                'categories' => $categories,
+                'type_queried' => $type
             ]);
         } catch (Exception $e) {
             echo json_encode([
@@ -382,14 +395,14 @@ class AdminCategoryController
         }
         exit;
     }
-    
+
     /**
      * API: Create subcategory inline (for product form)
      */
     public function createSubcategoryInline()
     {
         header('Content-Type: application/json');
-        
+
         // Validate CSRF token
         if (!$this->security->validateCsrfToken()) {
             echo json_encode([
@@ -398,10 +411,10 @@ class AdminCategoryController
             ]);
             exit;
         }
-        
+
         $name = $this->security->cleanInput(Request::post('name'));
         $type = Request::post('type', 'general');
-        
+
         if (empty($name)) {
             echo json_encode([
                 'success' => false,
@@ -409,10 +422,10 @@ class AdminCategoryController
             ]);
             exit;
         }
-        
+
         // Generate slug
         $slug = $this->generateSlug($name);
-        
+
         // Check if slug exists
         $existingCategory = Category::findBySlug($slug);
         if ($existingCategory) {
@@ -429,7 +442,7 @@ class AdminCategoryController
             ]);
             exit;
         }
-        
+
         try {
             $db = Database::getInstance();
             $categoryId = $db->insert('categories', [
@@ -440,7 +453,7 @@ class AdminCategoryController
                 'status' => 'active',
                 'sort_order' => 0
             ]);
-            
+
             echo json_encode([
                 'success' => true,
                 'category' => [

@@ -1,0 +1,11 @@
+2025-12-14 20:13:06 - Store method called
+CSRF token validation failed
+2025-12-14 20:15:59 - Store method called
+CSRF token validation failed
+2025-12-14 20:17:57 - Store method called
+Session CSRF: NO_SESSION_TOKEN
+POST CSRF: NO_POST_TOKEN
+CSRF token validation failed
+2025-12-14 21:24:16 - Store method called
+Session CSRF: NO_SESSION_TOKEN
+POST CSRF: NO_POST_TOKEN

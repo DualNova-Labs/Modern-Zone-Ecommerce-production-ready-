@@ -127,9 +127,19 @@ class AdminProductController
      */
     public function store()
     {
+        // DEBUG: Write to file to confirm this method is called
+        file_put_contents(PUBLIC_PATH . '/store_debug.txt', date('Y-m-d H:i:s') . " - Store method called\n", FILE_APPEND);
+
+        // DEBUG: Check CSRF tokens
+        $sessionToken = $_SESSION['csrf_token'] ?? 'NO_SESSION_TOKEN';
+        $postToken = $_POST['csrf_token'] ?? 'NO_POST_TOKEN';
+        file_put_contents(PUBLIC_PATH . '/store_debug.txt', "Session CSRF: " . $sessionToken . "\n", FILE_APPEND);
+        file_put_contents(PUBLIC_PATH . '/store_debug.txt', "POST CSRF: " . $postToken . "\n", FILE_APPEND);
+
         // Validate CSRF token
         if (!$this->security->validateCsrfToken()) {
-            $_SESSION['product_error'] = 'Invalid security token. Please try again.';
+            file_put_contents(PUBLIC_PATH . '/store_debug.txt', "CSRF token validation failed\n", FILE_APPEND);
+            $_SESSION['product_error'] = '<strong>CSRF Token Validation Failed</strong><br>Session Token: ' . substr($sessionToken, 0, 20) . '...<br>POST Token: ' . substr($postToken, 0, 20) . '...';
             header('Location: ' . View::url('/admin/products'));
             exit;
         }
@@ -137,10 +147,30 @@ class AdminProductController
         // Get and validate input
         $data = $this->validateProductData();
 
+        // DEBUG: Log what we received
+        error_log("=== PRODUCT CREATE DEBUG ===");
+        error_log("POST Data: " . print_r(Request::all(), true));
+        error_log("Validation Errors: " . print_r($data['errors'], true));
+        error_log("Product Data: " . print_r($data['product'], true));
+
         if (!empty($data['errors'])) {
             $_SESSION['product_errors'] = $data['errors'];
             $_SESSION['product_old'] = Request::all();
-            $_SESSION['product_error'] = implode('<br>', $data['errors']);
+
+            // Show detailed error
+            $errorDetails = "<strong>Validation Errors:</strong><br>";
+            foreach ($data['errors'] as $field => $error) {
+                $errorDetails .= "• <strong>" . ucfirst($field) . ":</strong> " . $error . "<br>";
+            }
+            $errorDetails .= "<br><strong>Received Data:</strong><br>";
+            $errorDetails .= "• Name: " . Request::post('name') . "<br>";
+            $errorDetails .= "• SKU: " . Request::post('sku') . "<br>";
+            $errorDetails .= "• Category Type: " . Request::post('category_type') . "<br>";
+            $errorDetails .= "• Price: " . Request::post('price') . "<br>";
+            $errorDetails .= "• Quantity: " . Request::post('quantity') . "<br>";
+
+            $_SESSION['product_error'] = $errorDetails;
+            error_log("Validation failed, redirecting...");
             header('Location: ' . View::url('/admin/products'));
             exit;
         }
@@ -172,10 +202,10 @@ class AdminProductController
 
         // Build product data array for direct insert (bypass fill to ensure image is saved)
         $productData = [
+            'category_id' => $data['product']['category_id'],
             'name' => $data['product']['name'],
             'sku' => $data['product']['sku'],
             'slug' => $this->generateSlug($data['product']['name']),
-            'category_id' => $data['product']['category_id'],
             'brand_id' => $data['product']['brand_id'],
             'description' => $data['product']['description'] ?? null,
             'specifications' => $data['product']['specifications'] ?? null,
@@ -194,9 +224,24 @@ class AdminProductController
             'updated_at' => date('Y-m-d H:i:s')
         ];
 
+        // Try to add category_type if the column exists
         try {
+            $columnCheck = $db->selectOne("SHOW COLUMNS FROM products LIKE 'category_type'");
+            if ($columnCheck) {
+                $productData['category_type'] = $data['product']['category_type'] ?? 'general';
+            }
+        } catch (Exception $e) {
+            // Column doesn't exist, skip it
+        }
+
+        try {
+            // DEBUG: Log what we're about to insert
+            error_log("Product data to insert: " . print_r($productData, true));
+
             // Insert product directly to ensure all fields are saved
             $productId = $db->insert('products', $productData);
+
+            error_log("Insert result - Product ID: " . ($productId ? $productId : 'FAILED'));
 
             if ($productId) {
                 // Handle additional images
@@ -231,13 +276,15 @@ class AdminProductController
                 $_SESSION['product_success'] = 'Product created successfully';
                 header('Location: ' . View::url('/admin/products'));
             } else {
-                $_SESSION['product_error'] = 'Failed to create product';
+                $_SESSION['product_error'] = '<strong>Database Insert Failed</strong><br>The product ID returned was empty. Check database constraints and logs.';
                 $_SESSION['product_old'] = Request::all();
+                error_log("Product insert returned false/null");
                 header('Location: ' . View::url('/admin/products'));
             }
         } catch (Exception $e) {
-            $_SESSION['product_error'] = 'Error creating product: ' . $e->getMessage();
+            $_SESSION['product_error'] = '<strong>Database Error:</strong><br>' . $e->getMessage() . '<br><br><strong>File:</strong> ' . $e->getFile() . '<br><strong>Line:</strong> ' . $e->getLine();
             $_SESSION['product_old'] = Request::all();
+            error_log("Exception during product insert: " . $e->getMessage());
             header('Location: ' . View::url('/admin/products'));
         }
         exit;
@@ -278,18 +325,9 @@ class AdminProductController
                 // Table might not exist, ignore error
                 $images = [];
             }
-            
-            // Get category type for the product's category
-            $categoryType = 'general';
-            if ($product['category_id']) {
-                $category = $db->selectOne(
-                    "SELECT type FROM categories WHERE id = :id",
-                    ['id' => $product['category_id']]
-                );
-                if ($category && !empty($category['type'])) {
-                    $categoryType = $category['type'];
-                }
-            }
+
+            // Get category type from the product directly
+            $categoryType = $product['category_type'] ?? 'general';
 
             echo json_encode([
                 'success' => true,
@@ -372,10 +410,10 @@ class AdminProductController
 
         // Build update data
         $updateData = [
+            'category_id' => $data['product']['category_id'],
             'name' => $data['product']['name'],
             'sku' => $data['product']['sku'],
             'slug' => $slug,
-            'category_id' => $data['product']['category_id'],
             'brand_id' => $data['product']['brand_id'],
             'description' => $data['product']['description'] ?? null,
             'specifications' => $data['product']['specifications'] ?? null,
@@ -392,6 +430,16 @@ class AdminProductController
             'status' => $data['product']['status'] ?? 'active',
             'updated_at' => date('Y-m-d H:i:s')
         ];
+
+        // Try to update category_type if the column exists
+        try {
+            $columnCheck = $db->selectOne("SHOW COLUMNS FROM products LIKE 'category_type'");
+            if ($columnCheck) {
+                $updateData['category_type'] = $data['product']['category_type'] ?? 'general';
+            }
+        } catch (Exception $e) {
+            // Column doesn't exist, skip it
+        }
 
         try {
             // Update product directly
@@ -510,6 +558,7 @@ class AdminProductController
         // Get input
         $name = $this->security->cleanInput(Request::post('name'));
         $sku = $this->security->cleanInput(Request::post('sku'));
+        $categoryType = Request::post('category_type', 'general'); // Use category_type instead of category_id
         $categoryId = Request::post('category_id');
         $brandId = Request::post('brand_id');
         $price = Request::post('price');
@@ -551,8 +600,34 @@ class AdminProductController
             }
         }
 
+        // Validate category_type (must be 'general' or 'our-products')
+        if (empty($categoryType) || !in_array($categoryType, ['general', 'our-products'])) {
+            $errors['category_type'] = 'Valid category type is required';
+        }
+
+        // Validate category_id
         if (empty($categoryId)) {
             $errors['category_id'] = 'Category is required';
+        } else {
+            try {
+                $db = Database::getInstance();
+                $categoryRow = $db->selectOne(
+                    "SELECT id, type FROM categories WHERE id = :id AND status = 'active'",
+                    ['id' => $categoryId]
+                );
+
+                if (!$categoryRow) {
+                    $errors['category_id'] = 'Selected category is invalid or inactive';
+                } else {
+                    // If category has a type, update the product's category_type to match
+                    // This ensures consistency when categories are selected from fallback
+                    if (!empty($categoryRow['type'])) {
+                        $categoryType = $categoryRow['type'];
+                    }
+                }
+            } catch (Exception $e) {
+                $errors['category_id'] = 'Failed to validate category';
+            }
         }
 
         if (empty($price) || $price <= 0) {
@@ -568,7 +643,8 @@ class AdminProductController
             'product' => [
                 'name' => $name,
                 'sku' => $sku,
-                'category_id' => $categoryId,
+                'category_type' => $categoryType,  // Use category_type instead of category_id
+                'category_id' => $categoryId ? (int) $categoryId : null,
                 'brand_id' => $brandId ?: null,
                 'price' => $price,
                 'compare_price' => $comparePrice ?: null,
