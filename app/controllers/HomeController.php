@@ -9,12 +9,12 @@ require_once APP_PATH . '/models/Product.php';
 class HomeController
 {
     private $bannerModel;
-    
+
     public function __construct()
     {
         $this->bannerModel = new Banner();
     }
-    
+
     public function index()
     {
         $data = [
@@ -26,16 +26,16 @@ class HomeController
             'categories' => $this->getCategories(),
             'brands' => $this->getBrands(),
         ];
-        
+
         View::render('pages/home', $data);
     }
-    
+
     private function getFeaturedProducts()
     {
         $products = Product::getFeaturedProducts(8);
-        
+
         // Format products for display
-        return array_map(function($product) {
+        return array_map(function ($product) {
             // Handle image path - if it starts with 'public/', use BASE_URL, otherwise use View::asset
             $imagePath = '';
             if (!empty($product['image'])) {
@@ -50,7 +50,7 @@ class HomeController
                 // No image, use placeholder
                 $imagePath = View::asset('images/placeholder.svg');
             }
-            
+
             return [
                 'id' => $product['id'],
                 'title' => $product['name'],
@@ -63,7 +63,7 @@ class HomeController
             ];
         }, $products);
     }
-    
+
     private function getCategories()
     {
         return [
@@ -97,21 +97,21 @@ class HomeController
             ],
         ];
     }
-    
+
     private function getBestSellingProducts()
     {
         $products = Product::getBestSellingProducts(8);
-        
+
         // Format products for display
-        return array_map(function($product) {
-            $originalPrice = !empty($product['compare_price']) && $product['compare_price'] > $product['price'] 
-                ? $product['compare_price'] 
+        return array_map(function ($product) {
+            $originalPrice = !empty($product['compare_price']) && $product['compare_price'] > $product['price']
+                ? $product['compare_price']
                 : null;
-            
-            $discount = $originalPrice 
-                ? round((($originalPrice - $product['price']) / $originalPrice) * 100) 
+
+            $discount = $originalPrice
+                ? round((($originalPrice - $product['price']) / $originalPrice) * 100)
                 : null;
-            
+
             // Handle image path - if it starts with 'public/', use BASE_URL, otherwise use View::asset
             $imagePath = '';
             if (!empty($product['image'])) {
@@ -126,7 +126,7 @@ class HomeController
                 // No image, use placeholder
                 $imagePath = View::asset('images/placeholder.svg');
             }
-            
+
             return [
                 'id' => $product['id'],
                 'title' => $product['name'],
@@ -141,7 +141,7 @@ class HomeController
             ];
         }, $products);
     }
-    
+
     private function getBrands()
     {
         $db = Database::getInstance();
@@ -151,9 +151,9 @@ class HomeController
              WHERE status = 'active' 
              ORDER BY sort_order ASC, name ASC"
         );
-        
+
         // Format brands for display
-        return array_map(function($brand) {
+        return array_map(function ($brand) {
             // Handle logo path
             $logoPath = '';
             if (!empty($brand['logo'])) {
@@ -165,7 +165,7 @@ class HomeController
             } else {
                 $logoPath = View::asset('images/placeholder.svg');
             }
-            
+
             return [
                 'id' => $brand['id'],
                 'name' => $brand['name'],
@@ -175,7 +175,7 @@ class HomeController
             ];
         }, $brands);
     }
-    
+
     private function getProducts()
     {
         $productsFile = __DIR__ . '/../data/products.json';

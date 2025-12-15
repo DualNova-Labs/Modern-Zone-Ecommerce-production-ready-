@@ -15,12 +15,14 @@ $user = Auth::getInstance()->user();
 <aside class="sidebar" id="sidebar">
     <div class="sidebar-header">
         <div class="logo">
-            <img src="<?= View::url('/public/assets/images/logo_header.png') ?>" alt="Modern Zone Trading" class="logo-image">
+            <img src="<?= View::url('/public/assets/images/logo_header.png') ?>" alt="Modern Zone Trading"
+                class="logo-image">
         </div>
     </div>
 
     <nav class="sidebar-nav">
-        <a href="<?= View::url('/admin') ?>" class="nav-item <?= strpos($currentPath, '/admin') !== false && strpos($currentPath, '/admin/') === false ? 'active' : '' ?>">
+        <a href="<?= View::url('/admin') ?>"
+            class="nav-item <?= strpos($currentPath, '/admin') !== false && strpos($currentPath, '/admin/') === false ? 'active' : '' ?>">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="3" y="3" width="7" height="7"></rect>
                 <rect x="14" y="3" width="7" height="7"></rect>
@@ -30,16 +32,20 @@ $user = Auth::getInstance()->user();
             <span>Dashboard</span>
         </a>
 
-        <a href="<?= View::url('/admin/products') ?>" class="nav-item <?= strpos($currentPath, '/admin/products') !== false ? 'active' : '' ?>">
+        <a href="<?= View::url('/admin/products') ?>"
+            class="nav-item <?= strpos($currentPath, '/admin/products') !== false ? 'active' : '' ?>">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <path
+                    d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z">
+                </path>
                 <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
                 <line x1="12" y1="22.08" x2="12" y2="12"></line>
             </svg>
             <span>Products</span>
         </a>
 
-        <a href="<?= View::url('/admin/orders') ?>" class="nav-item <?= strpos($currentPath, '/admin/orders') !== false ? 'active' : '' ?>">
+        <a href="<?= View::url('/admin/orders') ?>"
+            class="nav-item <?= strpos($currentPath, '/admin/orders') !== false ? 'active' : '' ?>">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="9" cy="21" r="1"></circle>
                 <circle cx="20" cy="21" r="1"></circle>
@@ -48,7 +54,8 @@ $user = Auth::getInstance()->user();
             <span>Orders</span>
         </a>
 
-        <a href="<?= View::url('/admin/analytics') ?>" class="nav-item <?= strpos($currentPath, '/admin/analytics') !== false ? 'active' : '' ?>">
+        <a href="<?= View::url('/admin/analytics') ?>"
+            class="nav-item <?= strpos($currentPath, '/admin/analytics') !== false ? 'active' : '' ?>">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <line x1="12" y1="20" x2="12" y2="10"></line>
                 <line x1="18" y1="20" x2="18" y2="4"></line>
@@ -57,7 +64,8 @@ $user = Auth::getInstance()->user();
             <span>Analytics</span>
         </a>
 
-        <a href="<?= View::url('/admin/banners') ?>" class="nav-item <?= strpos($currentPath, '/admin/banners') !== false ? 'active' : '' ?>">
+        <a href="<?= View::url('/admin/banners') ?>"
+            class="nav-item <?= strpos($currentPath, '/admin/banners') !== false ? 'active' : '' ?>">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
                 <line x1="8" y1="21" x2="16" y2="21"></line>
@@ -66,7 +74,8 @@ $user = Auth::getInstance()->user();
             <span>Banners</span>
         </a>
 
-        <a href="<?= View::url('/admin/brands') ?>" class="nav-item <?= strpos($currentPath, '/admin/brands') !== false ? 'active' : '' ?>">
+        <a href="<?= View::url('/admin/brands') ?>"
+            class="nav-item <?= strpos($currentPath, '/admin/brands') !== false ? 'active' : '' ?>">
             <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -107,42 +116,42 @@ $user = Auth::getInstance()->user();
 </aside>
 
 <script>
-// Mobile menu functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const mobileToggle = document.getElementById('mobileMenuToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('sidebarOverlay');
-    
-    function toggleSidebar() {
-        sidebar.classList.toggle('active');
-        overlay.classList.toggle('active');
-        mobileToggle.classList.toggle('active');
-        document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
-    }
-    
-    mobileToggle.addEventListener('click', toggleSidebar);
-    overlay.addEventListener('click', toggleSidebar);
-    
-    // Close sidebar when clicking nav links on mobile
-    const navLinks = sidebar.querySelectorAll('.nav-item');
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            if (window.innerWidth <= 768) {
-                toggleSidebar();
+    // Mobile menu functionality
+    document.addEventListener('DOMContentLoaded', function () {
+        const mobileToggle = document.getElementById('mobileMenuToggle');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+
+        function toggleSidebar() {
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+            mobileToggle.classList.toggle('active');
+            document.body.style.overflow = sidebar.classList.contains('active') ? 'hidden' : '';
+        }
+
+        mobileToggle.addEventListener('click', toggleSidebar);
+        overlay.addEventListener('click', toggleSidebar);
+
+        // Close sidebar when clicking nav links on mobile
+        const navLinks = sidebar.querySelectorAll('.nav-item');
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            });
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+                overlay.classList.remove('active');
+                mobileToggle.classList.remove('active');
+                document.body.style.overflow = '';
             }
         });
     });
-    
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        if (window.innerWidth > 768) {
-            sidebar.classList.remove('active');
-            overlay.classList.remove('active');
-            mobileToggle.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-    });
-});
 </script>
 
 <style>
@@ -181,18 +190,18 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 48px;
         height: 48px;
     }
-    
+
     .mobile-menu-toggle:hover {
         background: #f8fafc;
         transform: translateY(-1px);
         box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
     }
-    
+
     .mobile-menu-toggle:active {
         transform: translateY(0);
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
-    
+
     .mobile-menu-toggle span {
         display: block;
         width: 20px;
@@ -202,19 +211,19 @@ document.addEventListener('DOMContentLoaded', function() {
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         border-radius: 1px;
     }
-    
+
     .mobile-menu-toggle.active span:nth-child(1) {
         transform: rotate(45deg) translate(5px, 5px);
     }
-    
+
     .mobile-menu-toggle.active span:nth-child(2) {
         opacity: 0;
     }
-    
+
     .mobile-menu-toggle.active span:nth-child(3) {
         transform: rotate(-45deg) translate(7px, -6px);
     }
-    
+
     .sidebar-overlay {
         display: none;
         position: fixed;
@@ -228,7 +237,7 @@ document.addEventListener('DOMContentLoaded', function() {
         transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         backdrop-filter: blur(2px);
     }
-    
+
     .sidebar-overlay.active {
         display: block;
         opacity: 1;
@@ -275,15 +284,15 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollbar-width: thin;
         scrollbar-color: #cbd5e1 #f1f5f9;
     }
-    
+
     .sidebar-nav::-webkit-scrollbar {
         width: 6px;
     }
-    
+
     .sidebar-nav::-webkit-scrollbar-track {
         background: #f1f5f9;
     }
-    
+
     .sidebar-nav::-webkit-scrollbar-thumb {
         background: #cbd5e1;
         border-radius: 3px;
@@ -304,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() {
         position: relative;
         overflow: hidden;
     }
-    
+
     .nav-item::before {
         content: '';
         position: absolute;
@@ -315,7 +324,7 @@ document.addEventListener('DOMContentLoaded', function() {
         background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
         transition: left 0.5s;
     }
-    
+
     .nav-item:hover::before {
         left: 100%;
     }
@@ -333,7 +342,7 @@ document.addEventListener('DOMContentLoaded', function() {
         box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
         transform: translateX(4px);
     }
-    
+
     .nav-item.active::before {
         display: none;
     }
@@ -426,41 +435,41 @@ document.addEventListener('DOMContentLoaded', function() {
         width: 18px;
         height: 18px;
     }
-    
+
     /* Mobile Responsive */
     @media (max-width: 768px) {
         .mobile-menu-toggle {
             display: flex !important;
         }
-        
+
         .sidebar {
             transform: translateX(-100%);
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
         }
-        
+
         .sidebar.active {
             transform: translateX(0);
         }
     }
-    
+
     @media (max-width: 480px) {
         .sidebar {
             width: 100vw;
         }
-        
+
         .logo-text {
             font-size: 1.125rem;
         }
-        
+
         .nav-item {
             padding: 1rem;
             font-size: 1rem;
         }
-        
+
         .sidebar-header {
             padding: 1rem;
         }
-        
+
         .sidebar-footer {
             padding: 1rem;
         }
