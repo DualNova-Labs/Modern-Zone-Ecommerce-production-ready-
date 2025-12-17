@@ -1621,8 +1621,22 @@ ob_start();
             });
     });
 
-    function deleteBrand(id) {
-        if (!confirm('Are you sure you want to delete this brand?')) {
+    function deleteBrand(id, brandName, productCount, subsectionCount) {
+        // Build warning message based on what will be deleted
+        let warningMessage = `Are you sure you want to delete "${brandName}"?`;
+
+        if (subsectionCount > 0 || productCount > 0) {
+            warningMessage += '\n\n⚠️ WARNING: This will also delete:';
+            if (subsectionCount > 0) {
+                warningMessage += `\n• ${subsectionCount} subsection${subsectionCount > 1 ? 's' : ''}`;
+            }
+            if (productCount > 0) {
+                warningMessage += `\n• ${productCount} product${productCount > 1 ? 's' : ''} associated with this brand`;
+            }
+            warningMessage += '\n\nThis action cannot be undone!';
+        }
+
+        if (!confirm(warningMessage)) {
             return;
         }
 
