@@ -857,16 +857,16 @@ ob_start();
                         </svg>
                         Manage Subsections
                     </button>
-                    <?php if ($brand['product_count'] == 0): ?>
-                        <button onclick="deleteBrand(<?= $brand['id'] ?>)" class="btn btn-danger btn-sm">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                style="width: 16px; height: 16px;">
-                                <polyline points="3 6 5 6 21 6"></polyline>
-                                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-                            </svg>
-                            Delete
-                        </button>
-                    <?php endif; ?>
+                    <button
+                        onclick="deleteBrand(<?= $brand['id'] ?>, '<?= htmlspecialchars($brand['name'], ENT_QUOTES) ?>', <?= $brand['product_count'] ?>, <?= $brandSubcatCount ?>)"
+                        class="btn btn-danger btn-sm">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="width: 16px; height: 16px;">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                        Delete
+                    </button>
                 </div>
             </div>
         <?php endforeach; ?>
@@ -2633,10 +2633,10 @@ $content = ob_get_clean();
                 if (data.success && data.products && data.products.length > 0) {
                     container.innerHTML = data.products.map(product => `
                     <div class="product-list-item">
-                        <img src="${product.image || '/public/assets/images/placeholder.png'}" 
+                        <img src="${product.image ? '<?= BASE_URL ?>/' + product.image : '<?= BASE_URL ?>/public/assets/images/placeholder.svg'}" 
                              alt="${product.name}" 
                              class="product-image-thumb"
-                             onerror="this.src='/public/assets/images/placeholder.png'">
+                             onerror="this.src='<?= BASE_URL ?>/public/assets/images/placeholder.svg'">
                         <div class="product-details">
                             <div class="product-name">${product.name}</div>
                             <div class="product-sku">SKU: ${product.sku}</div>
@@ -2648,7 +2648,7 @@ $content = ob_get_clean();
                         </div>
                         <div class="product-actions">
                             <button class="product-action-btn product-action-btn-edit" 
-                                    onclick="window.open('<?= View::url('/admin/products/') ?>${product.id}', '_blank')">
+                                    onclick="openEditProductModal(${product.id})">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -2684,7 +2684,264 @@ $content = ob_get_clean();
     document.getElementById('viewProductsModal')?.addEventListener('click', function (e) {
         if (e.target === this) closeViewProductsModal();
     });
+
+    // ==========================================
+    // EDIT PRODUCT MODAL FUNCTIONS
+    // ==========================================
+
+    function openEditProductModal(productId) {
+        console.log('Opening edit modal for product:', productId);
+
+        const modal = document.getElementById('editProductInBrandModal');
+        if (!modal) {
+            alert('Edit modal not found');
+            return;
+        }
+
+        // Show loading state
+        document.getElementById('editProductFormContainer').innerHTML = '<div style="text-align:center;padding:3rem;color:#64748b;"><div style="font-size:2rem;margin-bottom:1rem;">⏳</div><div>Loading product data...</div></div>';
+
+        modal.classList.add('active');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+
+        // Fetch product data
+        fetch(`<?= View::url('/admin/products/') ?>${productId}/edit`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success && data.product) {
+                    populateEditProductForm(data.product);
+                } else {
+                    document.getElementById('editProductFormContainer').innerHTML = '<div style="text-align:center;padding:3rem;color:#ef4444;"><div style="font-size:2rem;margin-bottom:1rem;">⚠️</div><div>Failed to load product data</div></div>';
+                }
+            })
+            .catch(error => {
+                console.error('Error loading product:', error);
+                document.getElementById('editProductFormContainer').innerHTML = '<div style="text-align:center;padding:3rem;color:#ef4444;"><div style="font-size:2rem;margin-bottom:1rem;">⚠️</div><div>Error loading product</div></div>';
+            });
+    }
+
+    function populateEditProductForm(product) {
+        const container = document.getElementById('editProductFormContainer');
+        container.innerHTML = `
+            <input type="hidden" id="edit_brand_product_id" name="id" value="${product.id}">
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="edit_brand_product_name" class="form-label required">Product Name</label>
+                    <input type="text" id="edit_brand_product_name" name="name" class="form-input" required 
+                           value="${escapeHtml(product.name)}" placeholder="Enter product name">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_brand_product_sku" class="form-label required">SKU</label>
+                    <input type="text" id="edit_brand_product_sku" name="sku" class="form-input" required 
+                           value="${escapeHtml(product.sku)}" placeholder="e.g., PROD-001">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit_brand_product_description" class="form-label">Description</label>
+                <textarea id="edit_brand_product_description" name="description" class="form-textarea" rows="3" 
+                          placeholder="Enter product description">${escapeHtml(product.description || '')}</textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="edit_brand_product_price" class="form-label required">Price (SAR)</label>
+                    <input type="number" id="edit_brand_product_price" name="price" class="form-input" required 
+                           min="0" step="0.01" value="${product.price}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_brand_product_compare_price" class="form-label">Compare Price</label>
+                    <input type="number" id="edit_brand_product_compare_price" name="compare_price" class="form-input" 
+                           min="0" step="0.01" value="${product.compare_price || ''}">
+                    <small class="form-help">Original price (for showing discounts)</small>
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="edit_brand_product_quantity" class="form-label required">Stock Quantity</label>
+                    <input type="number" id="edit_brand_product_quantity" name="quantity" class="form-input" required 
+                           min="0" value="${product.quantity}">
+                </div>
+                
+                <div class="form-group">
+                    <label for="edit_brand_product_min_quantity" class="form-label">Min. Order Quantity</label>
+                    <input type="number" id="edit_brand_product_min_quantity" name="min_quantity" class="form-input" 
+                           min="1" value="${product.min_quantity || 1}">
+                </div>
+            </div>
+            
+            ${product.image ? `
+            <div class="form-group">
+                <label class="form-label">Current Image</label>
+                <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 1rem; background: #f8fafc;">
+                    <img src="<?= BASE_URL ?>/${product.image}" alt="${escapeHtml(product.name)}" 
+                         style="max-width: 150px; max-height: 150px; object-fit: contain;">
+                </div>
+            </div>
+            ` : ''}
+            
+            <div class="form-group">
+                <label for="edit_brand_product_image" class="form-label">Update Image</label>
+                <input type="file" id="edit_brand_product_image" name="image" class="form-input" accept="image/*">
+                <small class="form-help">Leave empty to keep current image</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="edit_brand_product_status" class="form-label">Status</label>
+                <select id="edit_brand_product_status" name="status" class="form-select">
+                    <option value="active" ${product.status === 'active' ? 'selected' : ''}>Active</option>
+                    <option value="inactive" ${product.status === 'inactive' ? 'selected' : ''}>Inactive</option>
+                    <option value="out_of_stock" ${product.status === 'out_of_stock' ? 'selected' : ''}>Out of Stock</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Product Attributes</label>
+                <div class="product-flags-container">
+                    <label class="product-flag-option">
+                        <input type="checkbox" name="featured" value="1" ${product.featured == 1 ? 'checked' : ''}>
+                        <span class="flag-icon">⭐</span>
+                        <span class="flag-label">Featured Product</span>
+                    </label>
+                    <label class="product-flag-option">
+                        <input type="checkbox" name="best_seller" value="1" ${product.best_seller == 1 ? 'checked' : ''}>
+                        <span class="flag-icon">🔥</span>
+                        <span class="flag-label">Best Seller</span>
+                    </label>
+                    <label class="product-flag-option">
+                        <input type="checkbox" name="new_arrival" value="1" ${product.new_arrival == 1 ? 'checked' : ''}>
+                        <span class="flag-icon">✨</span>
+                        <span class="flag-label">New Arrival</span>
+                    </label>
+                </div>
+            </div>
+        `;
+    }
+
+    function closeEditProductModal() {
+        const modal = document.getElementById('editProductInBrandModal');
+        if (modal) {
+            modal.classList.remove('active');
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+    }
+
+    function submitEditProduct(event) {
+        event.preventDefault();
+
+        const form = document.getElementById('editProductInBrandForm');
+        const productId = document.getElementById('edit_brand_product_id').value;
+        const submitBtn = document.getElementById('editProductSubmitBtn');
+
+        submitBtn.innerHTML = '<span style="animation: spin 1s linear infinite; display: inline-block;">⟳</span> Saving...';
+        submitBtn.disabled = true;
+
+        const formData = new FormData(form);
+
+        fetch(`<?= View::url('/admin/products/') ?>${productId}`, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Product updated successfully!');
+                    closeEditProductModal();
+                    // Refresh the products list in the view products modal if it's open
+                    const brandId = document.getElementById('view_products_brand_id')?.value;
+                    const subcatId = document.getElementById('view_products_subcat_id')?.value;
+                    if (brandId && subcatId) {
+                        viewSubsectionProducts(brandId, subcatId, '', document.getElementById('viewProductsTitle')?.textContent?.replace('Products in ', '') || '');
+                    }
+                } else {
+                    alert(data.message || 'Failed to update product');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating the product');
+            })
+            .finally(() => {
+                submitBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg> Save Changes';
+                submitBtn.disabled = false;
+            });
+    }
+
+    document.getElementById('editProductInBrandModal')?.addEventListener('click', function (e) {
+        if (e.target === this) closeEditProductModal();
+    });
 </script>
+
+<!-- Edit Product in Brand Modal -->
+<div id="editProductInBrandModal" class="modal-overlay" style="z-index: 100002;">
+    <div class="modal-container" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="width: 24px; height: 24px;">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                Edit Product
+            </h3>
+            <button class="modal-close" onclick="closeEditProductModal()">&times;</button>
+        </div>
+
+        <form id="editProductInBrandForm" onsubmit="submitEditProduct(event)" enctype="multipart/form-data">
+            <div class="modal-body" style="max-height: 60vh; overflow-y: auto;">
+                <?= View::csrfField() ?>
+                <div id="editProductFormContainer">
+                    <!-- Form content loaded dynamically -->
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-modal-primary" id="editProductSubmitBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        style="width: 16px; height: 16px;">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                        <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                        <polyline points="7 3 7 8 15 8"></polyline>
+                    </svg>
+                    Save Changes
+                </button>
+                <button type="button" class="btn-modal-secondary" onclick="closeEditProductModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    #editProductInBrandModal.modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 100002 !important;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+
+    #editProductInBrandModal.modal-overlay.active {
+        display: flex !important;
+    }
+</style>
 
 
 <?php require_once APP_PATH . '/views/admin/layouts/main.php'; ?>

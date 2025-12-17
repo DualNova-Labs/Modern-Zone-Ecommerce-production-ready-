@@ -349,8 +349,22 @@ class AdminProductController
      */
     public function update($id)
     {
+        // Detect if this is an AJAX request
+        $isAjax = !empty($_SERVER['HTTP_X_REQUESTED_WITH']) &&
+            strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest';
+
+        // Also check if request expects JSON
+        if (!$isAjax && isset($_SERVER['HTTP_ACCEPT']) && strpos($_SERVER['HTTP_ACCEPT'], 'application/json') !== false) {
+            $isAjax = true;
+        }
+
         // Validate CSRF token
         if (!$this->security->validateCsrfToken()) {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Invalid security token. Please refresh the page.']);
+                exit;
+            }
             $_SESSION['product_error'] = 'Invalid security token. Please try again.';
             header('Location: ' . View::url('/admin/products/' . $id . '/edit'));
             exit;
@@ -361,6 +375,11 @@ class AdminProductController
         $existingProduct = $db->selectOne("SELECT * FROM products WHERE id = :id", ['id' => $id]);
 
         if (!$existingProduct) {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Product not found']);
+                exit;
+            }
             $_SESSION['product_error'] = 'Product not found';
             header('Location: ' . View::url('/admin/products'));
             exit;
@@ -370,6 +389,11 @@ class AdminProductController
         $data = $this->validateProductData(true);
 
         if (!empty($data['errors'])) {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => implode(', ', $data['errors']), 'errors' => $data['errors']]);
+                exit;
+            }
             $_SESSION['product_errors'] = $data['errors'];
             header('Location: ' . View::url('/admin/products/' . $id . '/edit'));
             exit;
@@ -482,9 +506,19 @@ class AdminProductController
                 }
             }
 
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => true, 'message' => 'Product updated successfully']);
+                exit;
+            }
             $_SESSION['product_success'] = 'Product updated successfully';
             header('Location: ' . View::url('/admin/products'));
         } catch (Exception $e) {
+            if ($isAjax) {
+                header('Content-Type: application/json');
+                echo json_encode(['success' => false, 'message' => 'Error updating product: ' . $e->getMessage()]);
+                exit;
+            }
             $_SESSION['product_error'] = 'Error updating product: ' . $e->getMessage();
             header('Location: ' . View::url('/admin/products/' . $id . '/edit'));
         }
