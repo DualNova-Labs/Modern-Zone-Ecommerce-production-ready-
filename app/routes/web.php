@@ -122,6 +122,7 @@ $router->get('/admin/brands/{id}/subcategories', 'admin/AdminBrandController@get
 $router->post('/admin/brands/{id}/subcategories', 'admin/AdminBrandController@storeSubcategory');
 $router->post('/admin/brands/{id}/subcategories/{subcategoryId}', 'admin/AdminBrandController@updateSubcategory');
 $router->post('/admin/brands/{id}/subcategories/{subcategoryId}/delete', 'admin/AdminBrandController@deleteSubcategory');
+$router->get('/admin/brands/{id}/subcategories/{subcategoryId}/products', 'admin/AdminBrandController@getSubcategoryProducts');
 
 // Brand Product Assignment
 $router->post('/admin/brands/{id}/products', 'admin/AdminBrandController@assignProduct');

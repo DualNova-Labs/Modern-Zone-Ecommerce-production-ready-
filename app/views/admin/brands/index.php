@@ -1454,6 +1454,15 @@ ob_start();
                     <div class="subsection-modal-meta">${subcat.product_count || 0} products</div>
                 </div>
                 <div class="subsection-modal-actions">
+                    ${subcat.product_count > 0 ? `
+                        <button class="subsection-modal-btn subsection-modal-btn-view" onclick="viewSubsectionProducts(${brandId}, ${subcat.id}, '${escapeHtml(brandsData.find(b => b.id == brandId)?.name)}', '${escapeHtml(subcat.name)}')">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            View Products
+                        </button>
+                    ` : ''}
                     <button class="subsection-modal-btn subsection-modal-btn-add" onclick="openAddProductModal(${brandId}, ${subcat.id}, '${escapeHtml(brandsData.find(b => b.id == brandId)?.name)}', '${escapeHtml(subcat.name)}')">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -2108,6 +2117,17 @@ $content = ob_get_clean();
         font-size: 0.875rem;
     }
     
+    
+    .subsection-modal-btn-view {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+    }
+    
+    .subsection-modal-btn-view:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+    }
+    
     @media (max-width: 768px) {
         .subsection-modal-item {
             flex-direction: column;
@@ -2117,13 +2137,272 @@ $content = ob_get_clean();
         
         .subsection-modal-actions {
             justify-content: stretch;
+            flex-wrap: wrap;
         }
         
         .subsection-modal-btn {
             flex: 1;
             justify-content: center;
+            min-width: 120px;
         }
     }
 </style>
+
+
+<!-- View Subsection Products Modal (placed outside content) -->
+<div id="viewProductsModal" class="modal-overlay" style="z-index: 100001;">
+    <div class="modal-container" style="max-width: 900px;">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                </svg>
+                <span id="viewProductsTitle">Products</span>
+            </h3>
+            <button class="modal-close" onclick="closeViewProductsModal()">&times;</button>
+        </div>
+        
+        <div class="modal-body">
+            <input type="hidden" id="view_products_brand_id">
+            <input type="hidden" id="view_products_subcat_id">
+            
+            <div id="productsListContainer" style="display: flex; flex-direction: column; gap: 1rem; max-height: 500px; overflow-y: auto;">
+                <!-- Products loaded dynamically -->
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="button" class="btn-modal-secondary" onclick="closeViewProductsModal()">Close</button>
+        </div>
+    </div>
+</div>
+
+<style>
+    #viewProductsModal.modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        width: 100vw; height: 100vh;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(4px);
+        z-index: 100001 !important;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+    }
+    
+    #viewProductsModal.modal-overlay.active {
+        display: flex !important;
+    }
+    
+    .product-list-item {
+        background: white;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.25rem;
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+        transition: all 0.3s;
+    }
+    
+    .product-list-item:hover {
+        border-color: #6366f1;
+        box-shadow: 0 2px 12px rgba(99, 102, 241, 0.15);
+        transform: translateY(-1px);
+    }
+    
+    .product-image-thumb {
+        width: 80px;
+        height: 80px;
+        border-radius: 8px;
+        object-fit: cover;
+        background: #f1f5f9;
+        flex-shrink: 0;
+    }
+    
+    .product-details {
+        flex: 1;
+        min-width: 0;
+    }
+    
+    .product-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin-bottom: 0.25rem;
+    }
+    
+    .product-sku {
+        font-size: 0.75rem;
+        color: #94a3b8;
+        margin-bottom: 0.5rem;
+    }
+    
+    .product-meta-row {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+        font-size: 0.8125rem;
+    }
+    
+    .product-price {
+        color: #10b981;
+        font-weight: 600;
+    }
+    
+    .product-stock {
+        color: #64748b;
+    }
+    
+    .product-status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.6875rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    
+    .product-status-badge.active {
+        background: #d1fae5;
+        color: #065f46;
+    }
+    
+    .product-status-badge.inactive {
+        background: #fee2e2;
+        color: #991b1b;
+    }
+    
+    .product-actions {
+        display: flex;
+        gap: 0.5rem;
+        flex-shrink: 0;
+    }
+    
+    .product-action-btn {
+        padding: 0.5rem 0.75rem;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        font-weight: 600;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.375rem;
+        white-space: nowrap;
+    }
+    
+    .product-action-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .product-action-btn-edit {
+        background: #e0e7ff;
+        color: #4338ca;
+    }
+    
+    .product-action-btn-edit:hover {
+        background: #c7d2fe;
+        transform: translateY(-1px);
+    }
+    
+    .product-action-btn-remove {
+        background: #fee2e2;
+        color: #dc2626;
+    }
+    
+    .product-action-btn-remove:hover {
+        background: #fecaca;
+        transform: translateY(-1px);
+    }
+    
+    .products-empty-state {
+        text-align: center;
+        padding: 4rem 1rem;
+        color: #94a3b8;
+    }
+</style>
+
+<script>
+// Replace viewSubsectionProducts function
+function viewSubsectionProducts(brandId, subcatId, brandName, subcatName) {
+    console.log('Opening view products modal', brandId, subcatId);
+    
+    const modal = document.getElementById('viewProductsModal');
+    if (!modal) {
+        alert('Error: Modal not found. Please refresh the page.');
+        return;
+    }
+    
+    document.getElementById('view_products_brand_id').value = brandId;
+    document.getElementById('view_products_subcat_id').value = subcatId;
+    document.getElementById('viewProductsTitle').textContent = `Products in ${subcatName}`;
+    
+    // Load products
+    const container = document.getElementById('productsListContainer');
+    container.innerHTML = '<div style="text-align:center;padding:3rem;color:#64748b;"><div style="font-size:2rem;margin-bottom:1rem;">⏳</div><div>Loading products...</div></div>';
+    
+    fetch(`<?= View::url('/admin/brands/') ?>${brandId}/subcategories/${subcatId}/products`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.products && data.products.length > 0) {
+                container.innerHTML = data.products.map(product => `
+                    <div class="product-list-item">
+                        <img src="${product.image || '/public/assets/images/placeholder.png'}" 
+                             alt="${product.name}" 
+                             class="product-image-thumb"
+                             onerror="this.src='/public/assets/images/placeholder.png'">
+                        <div class="product-details">
+                            <div class="product-name">${product.name}</div>
+                            <div class="product-sku">SKU: ${product.sku}</div>
+                            <div class="product-meta-row">
+                                <span class="product-price">SAR ${parseFloat(product.price).toFixed(2)}</span>
+                                <span class="product-stock">Stock: ${product.quantity}</span>
+                                <span class="product-status-badge ${product.status}">${product.status}</span>
+                            </div>
+                        </div>
+                        <div class="product-actions">
+                            <button class="product-action-btn product-action-btn-edit" 
+                                    onclick="window.open('<?= View::url('/admin/products/') ?>${product.id}', '_blank')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                </svg>
+                                Edit
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                container.innerHTML = '<div class="products-empty-state"><div style="font-size:4rem;margin-bottom:1rem;">📦</div><div>No products in this subsection yet.</div></div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            container.innerHTML = '<div style="text-align:center;padding:3rem;color:#ef4444;"><div style="font-size:2rem;margin-bottom:1rem;">⚠️</div><div>Error loading products</div></div>';
+        });
+    
+    modal.classList.add('active');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeViewProductsModal() {
+    const modal = document.getElementById('viewProductsModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        document.body.style.overflow = '';
+    }
+}
+
+document.getElementById('viewProductsModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeViewProductsModal();
+});
+</script>
+
 
 <?php require_once APP_PATH . '/views/admin/layouts/main.php'; ?>
