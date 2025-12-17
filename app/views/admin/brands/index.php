@@ -2469,6 +2469,66 @@ $content = ob_get_clean();
     </div>
 </div>
 
+<!-- Edit Product Modal (Inline Editing) -->
+<div id="editProductModal" class="modal-overlay" style="z-index: 100002;">
+    <div class="modal-container" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3 class="modal-title">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 24px; height: 24px;">
+                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                </svg>
+                <span>Edit Product</span>
+            </h3>
+            <button class="modal-close" onclick="closeEditProductModal()">&times;</button>
+        </div>
+        
+        <form id="editProductForm" onsubmit="saveProductEdit(event)">
+            <div class="modal-body">
+                <input type="hidden" id="edit_product_id">
+                <input type="hidden" id="edit_product_brand_id">
+                <input type="hidden" id="edit_product_subcat_id">
+                
+                <div class="form-group">
+                    <label class="form-label">Product Name*</label>
+                    <input type="text" id="edit_product_name" class="form-input" required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">SKU*</label>
+                    <input type="text" id="edit_product_sku" class="form-input" required>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label class="form-label">Price (SAR)*</label>
+                        <input type="number" step="0.01" id="edit_product_price" class="form-input" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Stock Quantity*</label>
+                        <input type="number" id="edit_product_quantity" class="form-input" required>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Status</label>
+                    <select id="edit_product_status" class="form-input">
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                        <option value="out_of_stock">Out of Stock</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button type="submit" class="btn-modal-primary">Save Changes</button>
+                <button type="button" class="btn-modal-secondary" onclick="closeEditProductModal()">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <style>
     #viewProductsModal.modal-overlay {
         display: none;
@@ -2647,10 +2707,13 @@ $content = ob_get_clean();
                 if (data.success && data.products && data.products.length > 0) {
                     container.innerHTML = data.products.map(product => `
                     <div class="product-list-item">
+<<<<<<< HEAD
                         <img src="${product.image ? '<?= BASE_URL ?>/' + product.image : '<?= BASE_URL ?>/public/assets/images/placeholder.svg'}" 
                              alt="${product.name}" 
                              class="product-image-thumb"
                              onerror="this.src='<?= BASE_URL ?>/public/assets/images/placeholder.svg'">
+=======
+>>>>>>> ff5e29ffedac52692fa3dba04090c49e23d342f0
                         <div class="product-details">
                             <div class="product-name">${product.name}</div>
                             <div class="product-sku">SKU: ${product.sku}</div>
@@ -2662,7 +2725,11 @@ $content = ob_get_clean();
                         </div>
                         <div class="product-actions">
                             <button class="product-action-btn product-action-btn-edit" 
+<<<<<<< HEAD
                                     onclick="openEditProductModal(${product.id})">
+=======
+                                    onclick="openEditProductModal(${product.id}, ${brandId}, ${subcatId})">
+>>>>>>> ff5e29ffedac52692fa3dba04090c49e23d342f0
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
                                     <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
@@ -2686,6 +2753,104 @@ $content = ob_get_clean();
         document.body.style.overflow = 'hidden';
     }
 
+<<<<<<< HEAD
+document.getElementById('viewProductsModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeViewProductsModal();
+});
+
+// Edit Product Modal Functions
+function openEditProductModal(productId, brandId, subcatId) {
+    console.log('Opening edit product modal', productId);
+    
+    // Fetch product details
+    fetch(`<?= View::url('/admin/products/') ?>${productId}/data`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.success && data.product) {
+                const product = data.product;
+                
+                // Populate form
+                document.getElementById('edit_product_id').value = product.id;
+                document.getElementById('edit_product_brand_id').value = brandId;
+                document.getElementById('edit_product_subcat_id').value = subcatId;
+                document.getElementById('edit_product_name').value = product.name;
+                document.getElementById('edit_product_sku').value = product.sku;
+                document.getElementById('edit_product_price').value = product.price;
+                document.getElementById('edit_product_quantity').value = product.quantity;
+                document.getElementById('edit_product_status').value = product.status;
+                
+                // Show modal
+                const modal = document.getElementById('editProductModal');
+                modal.classList.add('active');
+                modal.style.display = 'flex';
+            } else {
+                alert('Failed to load product details');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error loading product data');
+        });
+}
+
+function closeEditProductModal() {
+    const modal = document.getElementById('editProductModal');
+    if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none';
+        document.getElementById('editProductForm').reset();
+    }
+}
+
+function saveProductEdit(event) {
+    event.preventDefault();
+    
+    const productId = document.getElementById('edit_product_id').value;
+    const brandId = document.getElementById('edit_product_brand_id').value;
+    const subcatId = document.getElementById('edit_product_subcat_id').value;
+    
+    const data = {
+        name: document.getElementById('edit_product_name').value,
+        sku: document.getElementById('edit_product_sku').value,
+        price: document.getElementById('edit_product_price').value,
+        quantity: document.getElementById('edit_product_quantity').value,
+        status: document.getElementById('edit_product_status').value,
+        csrf_token: document.querySelector('input[name="csrf_token"]').value
+    };
+    
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    submitBtn.textContent = 'Saving...';
+    submitBtn.disabled = true;
+    
+    fetch(`<?= View::url('/admin/products/') ?>${productId}/quick-update`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            closeEditProductModal();
+            // Reload the products list
+            viewSubsectionProducts(brandId, subcatId, '', '');
+        } else {
+            alert(data.message || 'Failed to update product');
+            submitBtn.textContent = 'Save Changes';
+            submitBtn.disabled = false;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error updating product');
+        submitBtn.textContent = 'Save Changes';
+        submitBtn.disabled = false;
+    });
+}
+
+document.getElementById('editProductModal')?.addEventListener('click', function(e) {
+    if (e.target === this) closeEditProductModal();
+});
+=======
     function closeViewProductsModal() {
         const modal = document.getElementById('viewProductsModal');
         if (modal) {
@@ -2698,6 +2863,7 @@ $content = ob_get_clean();
     document.getElementById('viewProductsModal')?.addEventListener('click', function (e) {
         if (e.target === this) closeViewProductsModal();
     });
+<<<<<<< HEAD
 
     // ==========================================
     // EDIT PRODUCT MODAL FUNCTIONS
@@ -2893,6 +3059,9 @@ $content = ob_get_clean();
     document.getElementById('editProductInBrandModal')?.addEventListener('click', function (e) {
         if (e.target === this) closeEditProductModal();
     });
+=======
+>>>>>>> 57f1c143b1ca5e641c466d669eaa01105981141b
+>>>>>>> ff5e29ffedac52692fa3dba04090c49e23d342f0
 </script>
 
 <!-- Edit Product in Brand Modal -->
