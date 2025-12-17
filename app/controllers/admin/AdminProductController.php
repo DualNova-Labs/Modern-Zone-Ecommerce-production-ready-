@@ -36,7 +36,8 @@ class AdminProductController
         $db = Database::getInstance();
 
         // Build query
-        $where = "1=1";
+        // Exclude brand products (those with a brand_subcategory_id)
+        $where = "(p.brand_subcategory_id IS NULL OR p.brand_subcategory_id = 0)";
         $params = [];
 
         if ($search) {
@@ -131,15 +132,31 @@ class AdminProductController
         file_put_contents(PUBLIC_PATH . '/store_debug.txt', date('Y-m-d H:i:s') . " - Store method called\n", FILE_APPEND);
 
         // DEBUG: Check CSRF tokens
-        $sessionToken = $_SESSION['csrf_token'] ?? 'NO_SESSION_TOKEN';
-        $postToken = $_POST['csrf_token'] ?? 'NO_POST_TOKEN';
-        file_put_contents(PUBLIC_PATH . '/store_debug.txt', "Session CSRF: " . $sessionToken . "\n", FILE_APPEND);
-        file_put_contents(PUBLIC_PATH . '/store_debug.txt', "POST CSRF: " . $postToken . "\n", FILE_APPEND);
+        $csrfTokenName = '_csrf_token'; // Default name used by Security class
+        $sessionToken = $_SESSION[$csrfTokenName] ?? 'NOT_SET';
+        $postToken = $_POST['csrf_token'] ?? $_POST[$csrfTokenName] ?? 'NOT_SET';
+        $sessionTime = $_SESSION[$csrfTokenName . '_time'] ?? 'NOT_SET';
+        $currentTime = time();
+        $isExpired = ($sessionTime !== 'NOT_SET' && ($currentTime - $sessionTime > 7200));
+
+        $debugInfo = [
+            'timestamp' => date('Y-m-d H:i:s'),
+            'session_token' => $sessionToken,
+            'post_token' => $postToken,
+            'session_time' => $sessionTime,
+            'current_time' => $currentTime,
+            'is_expired' => $isExpired ? 'YES' : 'NO',
+            'match' => ($sessionToken === $postToken) ? 'YES' : 'NO'
+        ];
+        file_put_contents(PUBLIC_PATH . '/store_debug.txt', print_r($debugInfo, true), FILE_APPEND);
 
         // Validate CSRF token
         if (!$this->security->validateCsrfToken()) {
-            file_put_contents(PUBLIC_PATH . '/store_debug.txt', "CSRF token validation failed\n", FILE_APPEND);
-            $_SESSION['product_error'] = '<strong>CSRF Token Validation Failed</strong><br>Session Token: ' . substr($sessionToken, 0, 20) . '...<br>POST Token: ' . substr($postToken, 0, 20) . '...';
+            $_SESSION['product_error'] = '<strong>CSRF Token Validation Failed</strong><br>' .
+                'Session Token: ' . substr($sessionToken, 0, 10) . '...<br>' .
+                'POST Token: ' . substr($postToken, 0, 10) . '...<br>' .
+                'Match: ' . (($sessionToken === $postToken) ? 'YES' : 'NO') . '<br>' .
+                'Expired: ' . ($isExpired ? 'YES' : 'NO');
             header('Location: ' . View::url('/admin/products'));
             exit;
         }

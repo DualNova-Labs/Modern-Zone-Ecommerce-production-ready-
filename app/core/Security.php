@@ -9,9 +9,9 @@ class Security
     private static $instance = null;
     private $csrfTokenName = '_csrf_token';
     private $csrfCookieName = '_csrf_cookie';
-    private $csrfExpire = 7200; // 2 hours
+    private $csrfExpire = 86400; // 24 hours
     private $csrfRegenerate = false;
-    
+
     private function __construct()
     {
         // Load config if exists
@@ -19,7 +19,7 @@ class Security
             $this->csrfTokenName = CSRF_TOKEN_NAME;
         }
     }
-    
+
     /**
      * Get instance (Singleton)
      */
@@ -30,7 +30,7 @@ class Security
         }
         return self::$instance;
     }
-    
+
     /**
      * Generate CSRF token
      */
@@ -40,10 +40,10 @@ class Security
             $_SESSION[$this->csrfTokenName] = bin2hex(random_bytes(32));
             $_SESSION[$this->csrfTokenName . '_time'] = time();
         }
-        
+
         return $_SESSION[$this->csrfTokenName];
     }
-    
+
     /**
      * Get CSRF token
      */
@@ -52,17 +52,17 @@ class Security
         if (!isset($_SESSION[$this->csrfTokenName])) {
             return $this->generateCsrfToken();
         }
-        
+
         // Check if token expired
         if (isset($_SESSION[$this->csrfTokenName . '_time'])) {
             if (time() - $_SESSION[$this->csrfTokenName . '_time'] > $this->csrfExpire) {
                 return $this->generateCsrfToken();
             }
         }
-        
+
         return $_SESSION[$this->csrfTokenName];
     }
-    
+
     /**
      * Validate CSRF token
      */
@@ -70,35 +70,35 @@ class Security
     {
         if ($token === null) {
             // Try to get token from POST, then headers
-            $token = $_POST['csrf_token'] ?? 
-                     $_POST[$this->csrfTokenName] ?? 
-                     $_SERVER['HTTP_X_CSRF_TOKEN'] ?? 
-                     $_SERVER['HTTP_X_XSRF_TOKEN'] ?? 
-                     null;
+            $token = $_POST['csrf_token'] ??
+                $_POST[$this->csrfTokenName] ??
+                $_SERVER['HTTP_X_CSRF_TOKEN'] ??
+                $_SERVER['HTTP_X_XSRF_TOKEN'] ??
+                null;
         }
-        
+
         if (empty($token) || !isset($_SESSION[$this->csrfTokenName])) {
             return false;
         }
-        
+
         // Check token expiration
         if (isset($_SESSION[$this->csrfTokenName . '_time'])) {
             if (time() - $_SESSION[$this->csrfTokenName . '_time'] > $this->csrfExpire) {
                 return false;
             }
         }
-        
+
         // Validate token
         $valid = hash_equals($_SESSION[$this->csrfTokenName], $token);
-        
+
         // Regenerate token after successful validation if configured
         if ($valid && $this->csrfRegenerate) {
             $this->generateCsrfToken();
         }
-        
+
         return $valid;
     }
-    
+
     /**
      * Get CSRF token field HTML
      */
@@ -107,7 +107,7 @@ class Security
         $token = $this->getCsrfToken();
         return '<input type="hidden" name="' . $this->csrfTokenName . '" value="' . $token . '">';
     }
-    
+
     /**
      * Get CSRF token meta tag HTML
      */
@@ -116,7 +116,7 @@ class Security
         $token = $this->getCsrfToken();
         return '<meta name="csrf-token" content="' . $token . '">';
     }
-    
+
     /**
      * Clean input data (XSS prevention)
      */
@@ -128,23 +128,23 @@ class Security
             }
             return $data;
         }
-        
+
         if (is_string($data)) {
             // Remove NULL characters
             $data = str_replace(chr(0), '', $data);
-            
+
             // Validate UTF-8
             if (!mb_check_encoding($data, $encoding)) {
                 $data = mb_convert_encoding($data, $encoding, $encoding);
             }
-            
+
             // Convert special characters to HTML entities
             $data = htmlspecialchars($data, ENT_QUOTES | ENT_HTML5, $encoding);
         }
-        
+
         return $data;
     }
-    
+
     /**
      * Sanitize filename
      */
@@ -152,21 +152,21 @@ class Security
     {
         // Remove any path info
         $filename = basename($filename);
-        
+
         // Remove special characters
         $filename = preg_replace('/[^a-zA-Z0-9._-]/', '', $filename);
-        
+
         // Remove multiple dots
         $filename = preg_replace('/\.+/', '.', $filename);
-        
+
         // Ensure filename is not empty
         if (empty($filename)) {
             $filename = 'file_' . time();
         }
-        
+
         return $filename;
     }
-    
+
     /**
      * Generate secure random string
      */
@@ -174,7 +174,7 @@ class Security
     {
         return bin2hex(random_bytes($length / 2));
     }
-    
+
     /**
      * Hash password
      */
@@ -182,7 +182,7 @@ class Security
     {
         return password_hash($password, PASSWORD_BCRYPT, ['cost' => 10]);
     }
-    
+
     /**
      * Verify password
      */
@@ -190,7 +190,7 @@ class Security
     {
         return password_verify($password, $hash);
     }
-    
+
     /**
      * Validate email
      */
@@ -198,7 +198,7 @@ class Security
     {
         return filter_var($email, FILTER_VALIDATE_EMAIL) !== false;
     }
-    
+
     /**
      * Validate URL
      */
@@ -206,7 +206,7 @@ class Security
     {
         return filter_var($url, FILTER_VALIDATE_URL) !== false;
     }
-    
+
     /**
      * Generate secure session ID
      */
@@ -216,7 +216,7 @@ class Security
             session_regenerate_id(true);
         }
     }
-    
+
     /**
      * Set secure session cookie parameters
      */
@@ -230,10 +230,10 @@ class Security
             'httponly' => true,
             'samesite' => 'Lax'
         ];
-        
+
         session_set_cookie_params($params);
     }
-    
+
     /**
      * Encrypt data
      */
@@ -242,16 +242,16 @@ class Security
         if ($key === null) {
             $key = $_ENV['APP_KEY'] ?? 'default_encryption_key_change_this';
         }
-        
+
         $cipher = 'AES-256-CBC';
         $ivLength = openssl_cipher_iv_length($cipher);
         $iv = openssl_random_pseudo_bytes($ivLength);
-        
+
         $encrypted = openssl_encrypt($data, $cipher, $key, 0, $iv);
-        
+
         return base64_encode($encrypted . '::' . $iv);
     }
-    
+
     /**
      * Decrypt data
      */
@@ -260,28 +260,28 @@ class Security
         if ($key === null) {
             $key = $_ENV['APP_KEY'] ?? 'default_encryption_key_change_this';
         }
-        
+
         $cipher = 'AES-256-CBC';
-        
+
         list($encryptedData, $iv) = explode('::', base64_decode($data), 2);
-        
+
         return openssl_decrypt($encryptedData, $cipher, $key, 0, $iv);
     }
-    
+
     /**
      * Rate limiting check
      */
     public function checkRateLimit($identifier, $maxAttempts = 5, $decayMinutes = 1)
     {
         $key = 'rate_limit_' . md5($identifier);
-        
+
         if (!isset($_SESSION[$key])) {
             $_SESSION[$key] = [
                 'attempts' => 0,
                 'reset_time' => time() + ($decayMinutes * 60)
             ];
         }
-        
+
         // Reset if decay time has passed
         if (time() > $_SESSION[$key]['reset_time']) {
             $_SESSION[$key] = [
@@ -289,16 +289,16 @@ class Security
                 'reset_time' => time() + ($decayMinutes * 60)
             ];
         }
-        
+
         $_SESSION[$key]['attempts']++;
-        
+
         if ($_SESSION[$key]['attempts'] > $maxAttempts) {
             return false; // Rate limit exceeded
         }
-        
+
         return true; // Within rate limit
     }
-    
+
     /**
      * Clear rate limit
      */

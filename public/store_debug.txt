@@ -18,3 +18,37 @@ POST CSRF: NO_POST_TOKEN
 2025-12-17 18:22:50 - Store method called
 Session CSRF: NO_SESSION_TOKEN
 POST CSRF: NO_POST_TOKEN
+2025-12-17 20:01:56 - Store method called
+Session CSRF: NO_SESSION_TOKEN
+POST CSRF: NO_POST_TOKEN
+CSRF token validation failed
+2025-12-17 20:05:32 - Store method called
+Session CSRF: NO_SESSION_TOKEN
+POST CSRF: NO_POST_TOKEN
+CSRF token validation failed
+2025-12-17 20:11:31 - Store method called
+Session CSRF: 47aa16a3423b6093b4a0109e2e7ef6780fe7bcd6fea74a617a8d320af310d772
+POST CSRF: 47aa16a3423b6093b4a0109e2e7ef6780fe7bcd6fea74a617a8d320af310d772
+CSRF token validation failed
+2025-12-17 20:14:00 - Store method called
+Array
+(
+    [timestamp] => 2025-12-17 20:14:00
+    [session_token] => 47aa16a3423b6093b4a0109e2e7ef6780fe7bcd6fea74a617a8d320af310d772
+    [post_token] => 47aa16a3423b6093b4a0109e2e7ef6780fe7bcd6fea74a617a8d320af310d772
+    [session_time] => 1765987573
+    [current_time] => 1765998840
+    [is_expired] => YES
+    [match] => YES
+)
+2025-12-17 20:16:07 - Store method called
+Array
+(
+    [timestamp] => 2025-12-17 20:16:07
+    [session_token] => 47aa16a3423b6093b4a0109e2e7ef6780fe7bcd6fea74a617a8d320af310d772
+    [post_token] => 47aa16a3423b6093b4a0109e2e7ef6780fe7bcd6fea74a617a8d320af310d772
+    [session_time] => 1765987573
+    [current_time] => 1765998967
+    [is_expired] => YES
+    [match] => YES
+)
