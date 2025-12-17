@@ -2470,7 +2470,7 @@ $content = ob_get_clean();
 </div>
 
 <!-- Edit Product Modal (Inline Editing) -->
-<div id="editProductModal" class="modal-overlay" style="z-index: 100002;">
+<div id="editProductModal" class="modal-overlay" style="z-index: 100010 !important;">
     <div class="modal-container" style="max-width: 700px;">
         <div class="modal-header">
             <h3 class="modal-title">
@@ -2930,7 +2930,7 @@ onclick="openEditProductModal(${product.id}, ${brandId}, ${subcatId})">
         bottom: 0;
         background: rgba(0, 0, 0, 0.6);
         backdrop-filter: blur(4px);
-        z-index: 100002;
+        z-index: 100010 !important;
         align-items: center;
         justify-content: center;
     }
