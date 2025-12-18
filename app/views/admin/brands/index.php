@@ -2485,6 +2485,7 @@ $content = ob_get_clean();
         </div>
 
         <form id="editProductForm" onsubmit="saveProductEdit(event)">
+            <?= View::csrfField() ?>
             <div class="modal-body">
                 <input type="hidden" id="edit_product_id">
                 <input type="hidden" id="edit_product_brand_id">
@@ -2811,26 +2812,30 @@ onclick="openEditProductModal(${product.id}, ${brandId}, ${subcatId})">
         const brandId = document.getElementById('edit_product_brand_id').value;
         const subcatId = document.getElementById('edit_product_subcat_id').value;
 
-        const data = {
-            name: document.getElementById('edit_product_name').value,
-            sku: document.getElementById('edit_product_sku').value,
-            price: document.getElementById('edit_product_price').value,
-            quantity: document.getElementById('edit_product_quantity').value,
-            status: document.getElementById('edit_product_status').value,
-            csrf_token: document.querySelector('input[name="csrf_token"]').value
-        };
+        const formData = new FormData();
+        formData.append('name', document.getElementById('edit_product_name').value);
+        formData.append('sku', document.getElementById('edit_product_sku').value);
+        formData.append('price', document.getElementById('edit_product_price').value);
+        formData.append('quantity', document.getElementById('edit_product_quantity').value);
+        formData.append('status', document.getElementById('edit_product_status').value);
+
+        // Add CSRF token from the form
+        const csrfToken = event.target.querySelector('input[name="_csrf_token"]')?.value || document.querySelector('input[name="csrf_token"]')?.value;
+        if (csrfToken) {
+            formData.append('csrf_token', csrfToken);
+        }
 
         const submitBtn = event.target.querySelector('button[type="submit"]');
+        const originalBtnText = submitBtn.textContent;
         submitBtn.textContent = 'Saving...';
         submitBtn.disabled = true;
 
         fetch(`<?= View::url('/admin/products/') ?>${productId}`, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json',
                 'X-Requested-With': 'XMLHttpRequest'
             },
-            body: JSON.stringify(data)
+            body: formData
         })
             .then(response => response.json())
             .then(data => {
@@ -2840,14 +2845,14 @@ onclick="openEditProductModal(${product.id}, ${brandId}, ${subcatId})">
                     viewSubsectionProducts(brandId, subcatId, '', '');
                 } else {
                     alert(data.message || 'Failed to update product');
-                    submitBtn.textContent = 'Save Changes';
+                    submitBtn.textContent = originalBtnText;
                     submitBtn.disabled = false;
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Error updating product');
-                submitBtn.textContent = 'Save Changes';
+                alert('Error updating product: ' + error.message);
+                submitBtn.textContent = originalBtnText;
                 submitBtn.disabled = false;
             });
     }
@@ -2858,86 +2863,5 @@ onclick="openEditProductModal(${product.id}, ${brandId}, ${subcatId})">
 
 </script>
 
-<!-- Edit Product Modal (Inline Editing) -->
-
-<div id="editProductModal" class="modal-overlay" style="z-index: 100002;">
-    <div class="modal-container" style="max-width: 700px;">
-        <div class="modal-header">
-            <h3 class="modal-title">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                    style="width: 24px; height: 24px;">
-                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                </svg>
-                <span>Edit Product</span>
-            </h3>
-            <button class="modal-close" onclick="closeEditProductModal()">&times;</button>
-        </div>
-
-        <form id="editProductForm" onsubmit="saveProductEdit(event)">
-            <div class="modal-body">
-                <input type="hidden" id="edit_product_id">
-                <input type="hidden" id="edit_product_brand_id">
-                <input type="hidden" id="edit_product_subcat_id">
-
-                <div class="form-group">
-                    <label class="form-label">Product Name*</label>
-                    <input type="text" id="edit_product_name" class="form-input" required>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">SKU*</label>
-                    <input type="text" id="edit_product_sku" class="form-input" required>
-                </div>
-
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                    <div class="form-group">
-                        <label class="form-label">Price (SAR)*</label>
-                        <input type="number" step="0.01" id="edit_product_price" class="form-input" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">Stock Quantity*</label>
-                        <input type="number" id="edit_product_quantity" class="form-input" required>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="form-label">Status</label>
-                    <select id="edit_product_status" class="form-input">
-                        <option value="active">Active</option>
-                        <option value="inactive">Inactive</option>
-                        <option value="out_of_stock">Out of Stock</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-actions">
-                <button type="submit" class="btn-modal-primary">Save Changes</button>
-                <button type="button" class="btn-modal-secondary" onclick="closeEditProductModal()">Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
-<!-- Style for Edit Product Modal -->
-<style>
-    #editProductModal.modal-overlay {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        backdrop-filter: blur(4px);
-        z-index: 100010 !important;
-        align-items: center;
-        justify-content: center;
-    }
-
-    #editProductModal.modal-overlay.active {
-        display: flex;
-    }
-</style>
 
 <?php require_once APP_PATH . '/views/admin/layouts/main.php'; ?>
