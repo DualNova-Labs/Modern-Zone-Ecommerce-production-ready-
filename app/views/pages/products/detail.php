@@ -90,7 +90,7 @@ ob_start();
                 <div class="product-meta">
                     <div class="meta-item">
                         <i class="fas fa-truck"></i>
-                        <span>Free shipping on orders over 500 SAR</span>
+                        <span>Free shipping on orders over 100 SAR</span>
                     </div>
                     <div class="meta-item">
                         <i class="fas fa-shield-alt"></i>
@@ -110,9 +110,6 @@ ob_start();
                 <button class="tab-btn active" data-tab="description">
                     <i class="fas fa-file-alt"></i> Description
                 </button>
-                <button class="tab-btn" data-tab="specifications">
-                    <i class="fas fa-list-ul"></i> Specifications
-                </button>
             </div>
             
             <div class="tabs-content">
@@ -130,23 +127,7 @@ ob_start();
                     </ul>
                 </div>
                 
-                <div class="tab-panel" id="specifications">
-                    <h3>Technical Specifications</h3>
-                    <table class="specs-table">
-                        <?php if (!empty($product['specifications'])): ?>
-                            <?php foreach ($product['specifications'] as $key => $value): ?>
-                                <tr>
-                                    <th><?= htmlspecialchars($key) ?></th>
-                                    <td><?= htmlspecialchars($value) ?></td>
-                                </tr>
-                            <?php endforeach; ?>
-                        <?php else: ?>
-                            <tr>
-                                <td colspan="2" style="text-align: center; color: #6c757d;">No specifications available</td>
-                            </tr>
-                        <?php endif; ?>
-                    </table>
-                </div>
+
             </div>
         </div>
         
