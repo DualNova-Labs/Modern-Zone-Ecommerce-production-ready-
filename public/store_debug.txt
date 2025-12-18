@@ -52,3 +52,14 @@ Array
     [is_expired] => YES
     [match] => YES
 )
+2025-12-18 04:47:38 - Store method called
+Array
+(
+    [timestamp] => 2025-12-18 04:47:38
+    [session_token] => 1c8653a0a6ba60c1ba4eee48477ecf831d3d8e67de23cc9a6c5d0e0abd8b10d9
+    [post_token] => 1c8653a0a6ba60c1ba4eee48477ecf831d3d8e67de23cc9a6c5d0e0abd8b10d9
+    [session_time] => 1766029219
+    [current_time] => 1766029658
+    [is_expired] => NO
+    [match] => YES
+)

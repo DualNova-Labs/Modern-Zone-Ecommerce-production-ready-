@@ -155,10 +155,10 @@ ob_start();
                             </span>
                         </div>
                         
-                        <?php if ($summary['subtotal'] < 500 && $summary['shipping'] > 0): ?>
+                        <?php if (($summary['subtotal'] + $summary['tax_amount']) < 100 && $summary['shipping'] > 0): ?>
                             <div class="summary-note">
                                 <i class="fas fa-info-circle"></i>
-                                Add <?= number_format(500 - $summary['subtotal'], 2) ?> SAR more for free shipping!
+                                Add <?= number_format(100 - ($summary['subtotal'] + $summary['tax_amount']), 2) ?> SAR more for free shipping!
                             </div>
                         <?php endif; ?>
                         
