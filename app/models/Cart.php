@@ -377,13 +377,17 @@ class Cart extends Model
         $subtotal = $this->getSubtotal();
         $taxRate = 0.15; // 15% VAT
         $tax = $subtotal * $taxRate;
-        $shipping = $subtotal > 500 ? 0 : 50; // Free shipping over 500 SAR
+        
+        // Free shipping if (subtotal + tax) > 100 SAR, otherwise 18 SAR
+        $subtotalWithTax = $subtotal + $tax;
+        $shipping = $subtotalWithTax > 100 ? 0 : 18;
+        
         $total = $subtotal + $tax + $shipping;
         
         return [
             'items_count' => $this->getCount(),
             'subtotal' => $subtotal,
-            'tax_rate' => $taxRate,
+            'tax_rate' => 15, // Return as 15 for display (15%)
             'tax_amount' => $tax,
             'shipping' => $shipping,
             'total' => $total,

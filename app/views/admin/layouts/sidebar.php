@@ -54,15 +54,6 @@ $user = Auth::getInstance()->user();
             <span>Orders</span>
         </a>
 
-        <a href="<?= View::url('/admin/analytics') ?>"
-            class="nav-item <?= strpos($currentPath, '/admin/analytics') !== false ? 'active' : '' ?>">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="20" x2="12" y2="10"></line>
-                <line x1="18" y1="20" x2="18" y2="4"></line>
-                <line x1="6" y1="20" x2="6" y2="16"></line>
-            </svg>
-            <span>Analytics</span>
-        </a>
 
         <a href="<?= View::url('/admin/banners') ?>"
             class="nav-item <?= strpos($currentPath, '/admin/banners') !== false ? 'active' : '' ?>">
