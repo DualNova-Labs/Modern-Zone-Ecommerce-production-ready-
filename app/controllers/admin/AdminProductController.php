@@ -403,7 +403,7 @@ class AdminProductController
         }
 
         // Get and validate input
-        $data = $this->validateProductData(true);
+        $data = $this->validateProductData(true, $existingProduct);
 
         if (!empty($data['errors'])) {
             if ($isAjax) {
@@ -602,7 +602,7 @@ class AdminProductController
     /**
      * Validate product data
      */
-    private function validateProductData($isUpdate = false)
+    private function validateProductData($isUpdate = false, $existingProduct = null)
     {
         $errors = [];
 
@@ -638,7 +638,7 @@ class AdminProductController
             $where = $isUpdate ? "sku = :sku AND id != :id" : "sku = :sku";
             $params = ['sku' => $sku];
             if ($isUpdate) {
-                $params['id'] = Request::post('id');
+                $params['id'] = $existingProduct['id'] ?? Request::post('id');
             }
 
             $existing = $db->selectOne(
@@ -656,9 +656,14 @@ class AdminProductController
             $errors['category_type'] = 'Valid category type is required';
         }
 
-        // Validate category_id
+        // Validate category_id (Skip for brand subsection products which have category_id = NULL)
+        $isBrandProduct = ($existingProduct && !empty($existingProduct['brand_subcategory_id'])) ||
+            ($isUpdate && Request::post('brand_subcategory_id'));
+
         if (empty($categoryId)) {
-            $errors['category_id'] = 'Category is required';
+            if (!$isBrandProduct) {
+                $errors['category_id'] = 'Category is required';
+            }
         } else {
             try {
                 $db = Database::getInstance();

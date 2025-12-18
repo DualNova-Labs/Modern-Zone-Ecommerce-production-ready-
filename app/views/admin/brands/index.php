@@ -2487,9 +2487,10 @@ $content = ob_get_clean();
         <form id="editProductForm" onsubmit="saveProductEdit(event)">
             <?= View::csrfField() ?>
             <div class="modal-body">
-                <input type="hidden" id="edit_product_id">
-                <input type="hidden" id="edit_product_brand_id">
-                <input type="hidden" id="edit_product_subcat_id">
+                <input type="hidden" id="edit_product_id" name="id">
+                <input type="hidden" id="edit_product_brand_id" name="brand_id">
+                <input type="hidden" id="edit_product_subcat_id" name="brand_subcategory_id">
+                <input type="hidden" id="edit_product_category_id" name="category_id">
 
                 <div class="form-group">
                     <label class="form-label">Product Name*</label>
@@ -2776,6 +2777,7 @@ onclick="openEditProductModal(${product.id}, ${brandId}, ${subcatId})">
                     document.getElementById('edit_product_id').value = product.id;
                     document.getElementById('edit_product_brand_id').value = brandId;
                     document.getElementById('edit_product_subcat_id').value = subcatId;
+                    document.getElementById('edit_product_category_id').value = product.category_id || '';
                     document.getElementById('edit_product_name').value = product.name;
                     document.getElementById('edit_product_sku').value = product.sku;
                     document.getElementById('edit_product_price').value = product.price;
@@ -2801,7 +2803,14 @@ onclick="openEditProductModal(${product.id}, ${brandId}, ${subcatId})">
         if (modal) {
             modal.classList.remove('active');
             modal.style.display = 'none';
-            document.getElementById('editProductForm').reset();
+            const form = document.getElementById('editProductForm');
+            form.reset();
+            // Reset button state
+            const submitBtn = form.querySelector('button[type="submit"]');
+            if (submitBtn) {
+                submitBtn.textContent = 'Save Changes';
+                submitBtn.disabled = false;
+            }
         }
     }
 
@@ -2813,6 +2822,10 @@ onclick="openEditProductModal(${product.id}, ${brandId}, ${subcatId})">
         const subcatId = document.getElementById('edit_product_subcat_id').value;
 
         const formData = new FormData();
+        formData.append('id', document.getElementById('edit_product_id').value);
+        formData.append('brand_id', document.getElementById('edit_product_brand_id').value);
+        formData.append('brand_subcategory_id', document.getElementById('edit_product_subcat_id').value);
+        formData.append('category_id', document.getElementById('edit_product_category_id').value);
         formData.append('name', document.getElementById('edit_product_name').value);
         formData.append('sku', document.getElementById('edit_product_sku').value);
         formData.append('price', document.getElementById('edit_product_price').value);
@@ -2841,7 +2854,7 @@ onclick="openEditProductModal(${product.id}, ${brandId}, ${subcatId})">
             .then(data => {
                 if (data.success) {
                     closeEditProductModal();
-                    // Reload the products list
+              // Reload the products list
                     viewSubsectionProducts(brandId, subcatId, '', '');
                 } else {
                     alert(data.message || 'Failed to update product');
